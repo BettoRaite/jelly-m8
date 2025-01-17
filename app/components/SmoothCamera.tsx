@@ -21,7 +21,7 @@ export function SmoothCamera({ targetPos }: Props) {
   useFrame(() => {
     if (cameraRef.current) {
       // Interpolate the camera position
-      currentPosition.current.lerp(targetPos, 0.1); // Adjust the factor for speed
+      currentPosition.current.lerp(targetPos, 0.06); // Adjust the factor for speed
       cameraRef.current.position.copy(currentPosition.current);
     }
   });
