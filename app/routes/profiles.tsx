@@ -1,7 +1,7 @@
 import type { Route } from "./+types/home";
 import { useRef, useState, useEffect, type Ref } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Statue } from "~/components/Statue";
+import { Statue } from "@/components/Statue";
 import { PerspectiveCamera } from "@react-three/drei";
 import { Link } from "react-router";
 import {
@@ -12,10 +12,13 @@ import {
 } from "@react-three/drei";
 import type { RefObject } from "react";
 import { Vector3 } from "three";
-import { SmoothCamera } from "~/components/SmoothCamera";
+import { SmoothCamera } from "@/components/SmoothCamera";
 import type { CameraPos, Axis } from "lib/types";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { div } from "three/tsl";
+import { useQuery } from "@tanstack/react-query";
+import { config } from "@/lib/config";
+import { Card } from "@/components/Card";
 
 export function meta(_: Route.MetaArgs) {
   return [
@@ -29,42 +32,30 @@ type Person = {
   description: string;
 };
 
-const items: Person[] = [
-  {
-    id: 1,
-    name: "Вика",
-    description:
-      "Дерзкая, использует людей только для личных целей. Сообразительная, быстро думает. Очень стильная, точнее она сама элегатность ",
-  },
-  {
-    id: 2,
-    name: "Соня",
-    description: "",
-  },
-  {
-    id: 3,
-    name: "Соня",
-    description: "",
-  },
-  {
-    id: 4,
-    name: "Соня",
-    description: "",
-  },
-  {
-    id: 5,
-    name: "Соня",
-    description: "",
-  },
-  {
-    id: 6,
-    name: "Соня",
-    description: "",
-  },
-];
-
+type Profile = {
+  name: string;
+  bio: string;
+  isActivated: boolean;
+  id: number;
+};
+type ApiProfileGetResponse = {
+  data: Profile[];
+};
 const CAM_MOVE_DIST = 1.2;
 export default function Home() {
+  const {
+    isPending,
+    error,
+    data: profilesGetResponse,
+    isSuccess,
+    isLoading,
+  } = useQuery<ApiProfileGetResponse>({
+    queryKey: ["profiles"],
+    queryFn: () =>
+      fetch(`${config.server.url}/profiles`).then((res) => res.json()),
+  });
+  const items = profilesGetResponse?.data ?? [];
+  console.log(profilesGetResponse?.data);
   const [cameraPos, setCameraPos] = useState<CameraPos>({
     x: 0,
     y: 0,
@@ -99,7 +90,11 @@ export default function Home() {
       setHasScrolled(true);
     }
   }
-  const person = items.find((p, i) => i === activeIndex) as Person;
+  if (isLoading) {
+    return "...loading";
+  }
+  const profile: Profile | Record<string, undefined> =
+    items?.find((p, i) => i === activeIndex) ?? {};
 
   return (
     <div
@@ -142,7 +137,7 @@ export default function Home() {
           return (
             <div key={p.id} className="flex justify-center">
               <h1 className="absolute top-[10%] w-full text-center pb-8 font-bold text-3xl text-white p-4 rounded-lg shadow-lg">
-                {person.name}
+                {profile.name ?? "None"}
               </h1>
               <button
                 onClick={handleScrollDown}
@@ -188,7 +183,7 @@ export default function Home() {
         id="target-section"
         className="w-full h-dvh"
       >
-        sd
+        <Card>{profile.bio}</Card>
       </section>
       <section id="target-section" className="w-full h-dvh">
         sd

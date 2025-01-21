@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, type Ref } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Statue } from "~/components/Statue";
+import { Statue } from "@/components/Statue";
 import { PerspectiveCamera } from "@react-three/drei";
 import {
   useGLTF,
