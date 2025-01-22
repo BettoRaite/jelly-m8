@@ -51,9 +51,12 @@ export default function Home() {
     isLoading,
   } = useQuery<ApiProfileGetResponse>({
     queryKey: ["profiles"],
-    queryFn: () =>
-      fetch(`${config.server.url}/profiles`).then((res) => res.json()),
+    queryFn: async () => {
+      const response = await fetch(`${config.server.url}/profiles`);
+      return await response.json();
+    },
   });
+
   const items = profilesGetResponse?.data ?? [];
   console.log(profilesGetResponse?.data);
   const [cameraPos, setCameraPos] = useState<CameraPos>({

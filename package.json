@@ -24,6 +24,7 @@
     "react-router": "^7.1.1",
     "styled-components": "^6.1.14",
     "three": "^0.172.0",
+    "utility-types": "^3.11.0",
     "valtio": "^2.1.2"
   },
   "devDependencies": {

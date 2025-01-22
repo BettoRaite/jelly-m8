@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import type { Route } from "./+types/home";
 import { queryClient } from "@/lib/config";
 import { useUser } from "@/hooks/useUser";
+import { Loader } from "@/components/Loader";
 
 export function meta(_: Route.MetaArgs) {
   return [
@@ -12,12 +13,11 @@ export function meta(_: Route.MetaArgs) {
 
 export default function Home() {
   const { data: getUserResponse, status } = useUser();
+
   if (status === "pending") {
-    return "...loading";
+    return <Loader />;
   }
-  if (status === "error") {
-    return "error";
-  }
+
   const { role } = getUserResponse?.data ?? {};
 
   const createLink = (to: string, name = to) => (
@@ -28,11 +28,12 @@ export default function Home() {
       {name}
     </Link>
   );
+
   return (
     <>
       {!role && createLink("login", "Рег")}
       {role === "admin" && createLink("dashboard")}
-      {role === "user" && createLink("user-profile")}
+      {role === "user" && createLink("user-profile", "Профиль")}
     </>
   );
 }
