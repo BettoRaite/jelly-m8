@@ -1,21 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { QUERY_USER_KEY } from "@/lib/constants";
 import { constructFetchUrl } from "@/lib/utils";
 import httpStatus from "http-status";
-import type { UseQueryResult } from "@tanstack/react-query";
+import { queryClient } from "@/lib/config";
+import { queryKeys } from "@/lib/config";
+import type { User } from "@/lib/types";
 
-type User = {
-  id: number;
-  role: string;
-  name: string;
-  accessKey: string;
-};
 type GetUserResponse = {
   data: User;
 };
+
 export const useUser = () => {
   const query = useQuery<GetUserResponse | null>({
-    queryKey: [QUERY_USER_KEY],
+    queryKey: queryKeys.authKey,
     queryFn: async () => {
       const response = await fetch(constructFetchUrl("/users/me"), {
         credentials: "include",
@@ -28,4 +24,10 @@ export const useUser = () => {
   });
 
   return query;
+};
+
+export const getAuth = () => {
+  return (
+    (queryClient.getQueryData(queryKeys.authKey) as GetUserResponse)?.data ?? {}
+  );
 };

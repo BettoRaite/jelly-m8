@@ -1,9 +1,8 @@
 import { Link } from "react-router";
 import type { Route } from "./+types/home";
-import { QUERY_USER_KEY } from "@/lib/constants";
 import { constructFetchUrl } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
-import { queryClient } from "@/lib/config";
+import { queryClient, queryKeys } from "@/lib/config";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 type Credentials = {
@@ -19,8 +18,8 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(creds),
         credentials: "include",
+        body: JSON.stringify(creds),
       });
       if (!response.ok) {
         throw new Error("Failed to login user");
@@ -29,7 +28,7 @@ export default function Home() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_USER_KEY],
+        queryKey: queryKeys.authKey,
       });
       navigate("/");
     },
