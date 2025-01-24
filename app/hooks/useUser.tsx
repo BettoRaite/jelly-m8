@@ -21,6 +21,7 @@ export const useUser = () => {
       }
       return null;
     },
+    retry: false,
   });
 
   return query;

@@ -5,4 +5,4 @@ export const createProfileSchema = z.object({
   bio: z.string().trim().min(3),
 });
 
-export type CreateProfilePayload = z.infer<typeof createProfileSchema>;
+export type CreateProfileSchema = z.infer<typeof createProfileSchema>;

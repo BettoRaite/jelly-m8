@@ -9,18 +9,24 @@ import { constructFetchUrl } from "@/lib/utils";
 import { queryClient, queryKeys } from "@/lib/config";
 
 export function CreateUser() {
-  const { register, handleSubmit } = useForm<CreateUserSchema>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateUserSchema>({
     resolver: zodResolver(createUserSchema),
   });
+
   const mutation = useMutation({
     mutationFn: async (creds: CreateUserSchema) => {
       console.log(creds);
+      const formData = new FormData();
+      formData.append("name", creds.name);
+      formData.append("profileImage", creds.profileImage);
+      formData.append("role", creds.role);
       const response = await fetch(constructFetchUrl("/users"), {
         method: "POST",
-        body: JSON.stringify(creds),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        body: formData,
         credentials: "include",
       });
       console.log(await response.text());
@@ -34,7 +40,7 @@ export function CreateUser() {
       });
     },
     onError: (err) => {
-      // do something
+      // Handle error (e.g., show a toast notification)
     },
   });
 
@@ -51,6 +57,27 @@ export function CreateUser() {
 
       <div className="mb-4">
         <label
+          htmlFor="profileImage"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Profile image:
+        </label>
+        <input
+          {...register("profileImage")}
+          type="file"
+          id="profileImage"
+          className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
+          required
+        />
+        {errors.profileImage && (
+          <p className="text-red-500 text-sm mt-1">
+            {errors?.profileImage?.message as string}
+          </p>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <label
           htmlFor="name"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
@@ -64,6 +91,9 @@ export function CreateUser() {
           placeholder="Enter your name"
           required
         />
+        {errors.name && (
+          <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+        )}
       </div>
 
       <div className="mb-4">
@@ -82,6 +112,9 @@ export function CreateUser() {
           <option value="user">User</option>
           <option value="admin">Admin</option>
         </select>
+        {errors.role && (
+          <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
+        )}
       </div>
 
       <button

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { UsersTab } from "./tabs/usersTab/UsersTab";
+import { ProfilesTab } from "./tabs/profilesTab/ProfilesTab";
 
 type Tab = "users" | "profiles";
 const TABS: Tab[] = ["users", "profiles"];
@@ -9,7 +10,7 @@ export function Tabs() {
   let selectedTab = <UsersTab />;
   switch (tab) {
     case "profiles": {
-      selectedTab = <div>...</div>;
+      selectedTab = <ProfilesTab />;
     }
   }
   function handleSelect(tab: Tab) {

@@ -11,6 +11,7 @@ import {
 import type { RefObject } from "react";
 import { Vector3 } from "three";
 import type { CameraPos } from "lib/types";
+
 type Props = {
   targetPos: CameraPos;
 };

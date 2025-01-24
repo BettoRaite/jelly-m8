@@ -19,6 +19,11 @@ import { div } from "three/tsl";
 import { useQuery } from "@tanstack/react-query";
 import { config } from "@/lib/config";
 import { Card } from "@/components/Card";
+import { AppScene } from "@/components/AppScene";
+import { GoBack } from "@/components/GoBack";
+import { Loader } from "@/components/Loader";
+import { GoArrowDown } from "react-icons/go";
+import { FaLock } from "react-icons/fa";
 
 export function meta(_: Route.MetaArgs) {
   return [
@@ -43,22 +48,17 @@ type ApiProfileGetResponse = {
 };
 const CAM_MOVE_DIST = 1.2;
 export default function Home() {
-  const {
-    isPending,
-    error,
-    data: profilesGetResponse,
-    isSuccess,
-    isLoading,
-  } = useQuery<ApiProfileGetResponse>({
-    queryKey: ["profiles"],
-    queryFn: async () => {
-      const response = await fetch(`${config.server.url}/profiles`);
-      return await response.json();
-    },
-  });
+  const { data: profilesGetResponse, status } = useQuery<ApiProfileGetResponse>(
+    {
+      queryKey: ["profiles"],
+      queryFn: async () => {
+        const response = await fetch(`${config.server.url}/profiles`);
+        return await response.json();
+      },
+    }
+  );
 
   const items = profilesGetResponse?.data ?? [];
-  console.log(profilesGetResponse?.data);
   const [cameraPos, setCameraPos] = useState<CameraPos>({
     x: 0,
     y: 0,
@@ -91,10 +91,18 @@ export default function Home() {
         inline: "nearest", // Aligns the section horizontally if needed
       });
       setHasScrolled(true);
+      section.addEventListener("scroll", () => {
+        if (section.scrollTop < 0) {
+          window.screenY = 0;
+        }
+      });
     }
   }
-  if (isLoading) {
-    return "...loading";
+  if (status === "pending") {
+    return <Loader />;
+  }
+  if (status === "error") {
+    return "Failed";
   }
   const profile: Profile | Record<string, undefined> =
     items?.find((p, i) => i === activeIndex) ?? {};
@@ -104,24 +112,8 @@ export default function Home() {
       className={hasScrolled ? "overflow-y-scroll" : "overflow-hidden"}
       style={{ width: "100dvw", height: "100dvh" }}
     >
-      <Canvas camera={{}} shadows>
-        <SmoothCamera targetPos={cameraPos} />
-        <ambientLight intensity={0.7} />
-        {/* <spotLight
-          intensity={0.5}
-          angle={0.3}
-          penumbra={1}
-          position={[10, 15, 10]}
-          castShadow
-        /> */}
-        <Environment preset="city" />
-        {/* <ContactShadows
-          position={[0, -0.8, 0]}
-          opacity={0.25}
-          scale={10}
-          blur={1.5}
-          far={0.8}
-        /> */}
+      <GoBack to="/" />
+      <AppScene cameraPosition={cameraPos as Vector3}>
         {items.map((p, i) => {
           const pos = [CAM_MOVE_DIST * i, -0.3, 0];
           return (
@@ -130,29 +122,21 @@ export default function Home() {
             </group>
           );
         })}
-      </Canvas>
-
-      {!hasScrolled &&
-        items.map((p, i) => {
-          if (i !== activeIndex) {
-            return;
-          }
-          return (
-            <div key={p.id} className="flex justify-center">
-              <h1 className="absolute top-[10%] w-full text-center pb-8 font-bold text-3xl text-white p-4 rounded-lg shadow-lg">
-                {profile.name ?? "None"}
-              </h1>
-              <button
-                onClick={handleScrollDown}
-                type="button"
-                className="absolute bottom-8"
-              >
-                Посмотреть
-              </button>
-            </div>
-          );
-        })}
-
+      </AppScene>
+      {!hasScrolled && (
+        <div key={profile.id} className="flex justify-center">
+          <h1 className="absolute top-[10%] w-full text-center pb-8 font-bold text-4xl text-pink-500 p-4 rounded-lg">
+            {profile.name ?? "None"}
+          </h1>
+          <button
+            onClick={handleScrollDown}
+            type="button"
+            className="absolute bottom-8 bg-gray-200 rounded-lg p-4 shadow-lg"
+          >
+            <FaLock className="text-2xl" />
+          </button>
+        </div>
+      )}
       <button
         onClick={() =>
           handleMoveClick(
@@ -184,9 +168,11 @@ export default function Home() {
       <section
         ref={profileSectionRef}
         id="target-section"
-        className="w-full h-dvh"
+        className="w-full h-dvh bg-gray-300"
       >
-        <Card>{profile.bio}</Card>
+        <Card>
+          <p className="text-gray-500">{profile.bio}</p>
+        </Card>
       </section>
       <section id="target-section" className="w-full h-dvh">
         sd

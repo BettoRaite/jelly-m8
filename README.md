@@ -65,3 +65,8 @@ This template comes with [Tailwind CSS](https://tailwindcss.com/) already config
 ---
 
 Built with ❤️ using React Router.
+
+
+Attributions:
+- "Event Stage with Islamic Elements" (https://skfb.ly/oCUnM) by cryptonx is licensed under CC Attribution-NonCommercial-ShareAlike (http://creativecommons.org/licenses/by-nc-sa/4.0/).
+- "Concert Stage" (https://skfb.ly/6Dto7) by Koekphon is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).

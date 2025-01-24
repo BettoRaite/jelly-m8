@@ -10,6 +10,7 @@ import type { User } from "@/lib/types";
 import { UsersTab } from "@/components/adminDashboard/tabs/usersTab/UsersTab";
 import { Tabs } from "@/components/adminDashboard/Tabs";
 import { Loader } from "@/components/Loader";
+import { GoBack } from "@/components/GoBack";
 
 export default function AdminDashboard() {
   const { data: getUserResponse, status } = useUser();
@@ -21,7 +22,7 @@ export default function AdminDashboard() {
     return <Loader />;
   }
   if (status === "error") {
-    return "error";
+    return "How about you reload the page :??";
   }
   if (!user) {
     return navigate("/");
@@ -30,8 +31,9 @@ export default function AdminDashboard() {
   const { accessKey, id, name, role } = user;
   return (
     <div className="min-h-screen bg-gray-100">
+      <GoBack to="/" />
       <header className="bg-blue-600 text-white p-4">
-        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold text-center">Admin Dashboard</h1>
       </header>
       <main className="p-6">
         <div className="bg-white shadow-md rounded-lg p-6" />
