@@ -19,7 +19,7 @@ export function Tabs() {
 
   return (
     <>
-      <div className="flex justify-center">
+      <div className="">
         <div className="flex border-b border-gray-300 mb-4 justify-center gap-10 bg-white shadow-lg p-4 rounded-md">
           {TABS.map((tabValue, index) => (
             <button

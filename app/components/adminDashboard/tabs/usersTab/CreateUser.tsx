@@ -7,6 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { constructFetchUrl } from "@/lib/utils";
 import { queryClient, queryKeys } from "@/lib/config";
+import { Loader } from "@/components/Loader";
+import { TextInput } from "@/ui/form/TextInput";
 
 export function CreateUser() {
   const {
@@ -51,7 +53,7 @@ export function CreateUser() {
   return (
     <form
       onSubmit={handleSubmit(handleCreateUserSubmit)}
-      className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
+      className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md h-min"
     >
       <h2 className="text-2xl font-semibold mb-4 text-center">Create User</h2>
 
@@ -75,27 +77,7 @@ export function CreateUser() {
           </p>
         )}
       </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="name"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Name:
-        </label>
-        <input
-          {...register("name")}
-          type="text"
-          id="name"
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
-          placeholder="Enter your name"
-          required
-        />
-        {errors.name && (
-          <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-        )}
-      </div>
-
+      {<TextInput register={register} errors={errors} fieldName="name" />}
       <div className="mb-4">
         <label
           htmlFor="role"

@@ -26,9 +26,9 @@ export function UsersTab() {
   }
 
   return (
-    <div>
+    <div className="grid grid-cols-[auto_1fr] mt-16 px-8">
       <CreateUser />
-      <div className="grid grid-cols-3 items-center gap-4 mt-8 px-10">
+      <div className="flex justify-start flex-wrap items-start gap-10 px-10 mb-60">
         {getUsersResponse.map((u) => {
           if (auth.id === u.id) {
             return null;
