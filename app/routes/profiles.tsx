@@ -105,7 +105,7 @@ export default function Home() {
     <div
       className={`${
         hasScrolled ? "overflow-y-scroll" : "overflow-hidden"
-      } bg-white`}
+      } bg-transparent relative`}
       style={{ width: "100dvw", height: "100dvh" }}
     >
       <GoBack to="/" />
@@ -119,10 +119,14 @@ export default function Home() {
 
       <ParticlesWrapper />
 
+      <div className="rounded-full bg-pink-100 blur-lg animate-pulse opacity-5 -z-10 absolute top-[10%] left-[25%] h-[80%] w-[40%]" />
+      <div className="absolute bg-black w-dvw h-dvh -z-20 left-0 top-0" />
+
       {!hasScrolled && (
         <div>
-          <h1 className="absolute top-[40%] left-40 first-letter:uppercase pb-8 font-bold text-6xl bg-gradient-to-r from-green-900 via-rose-600 to-neutral-600 bg-clip-text text-transparent p-4 rounded-lg">
+          <h1 className="flex  absolute top-[40%] left-40 first-letter:uppercase pb-8 font-bold text-6xl bg-gradient-to-r from-green-900 via-rose-600 to-neutral-600 bg-clip-text text-transparent p-4 rounded-lg">
             {profile.name ?? "None"}
+            <div className="rounded-full bg-pink-100 blur-lg animate-pulse opacity-5 -z-10 w-32 h-32" />
           </h1>
 
           <button

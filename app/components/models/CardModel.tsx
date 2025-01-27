@@ -1,14 +1,7 @@
-import { a, useSpring } from "@react-spring/three";
-import type { MeshProps } from "@react-three/fiber";
-import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
-import type { Vector3 } from "three";
 import * as THREE from "three";
-
-// type Props = {
-//   children: ReactNode;
-//   cameraPosition: Vector3;
-// };
+import { useRef, useState, useEffect } from "react";
+import { useSpring, animated as a } from "@react-spring/three";
+import { useFrame, type MeshProps } from "@react-three/fiber";
 
 const gradientShader = {
   vertexShader: `
@@ -56,14 +49,61 @@ const gradientShader = {
   },
 };
 
+const roundedCornersShader = {
+  uniforms: {
+    map: { value: null }, // Texture
+    radius: { value: 0.1 }, // Corner radius (normalized)
+    aspect: { value: 1.0 }, // Aspect ratio (width / height)
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform sampler2D map;
+    uniform float radius;
+    uniform float aspect;
+    varying vec2 vUv;
+
+    void main() {
+      vec2 uv = vUv;
+      uv.x *= aspect; // Adjust for aspect ratio
+
+      // Calculate distance from the edges
+      vec2 position = abs(uv - vec2(aspect * 0.5, 0.5)) * 2.0;
+      float distance = length(max(position - vec2(aspect - radius, 1.0 - radius), 0.0));
+
+      // Discard fragments outside the rounded rectangle
+      if (distance > radius) {
+        discard;
+      }
+
+      gl_FragColor = texture2D(map, vUv);
+    }
+  `,
+};
+
 export function CardModel(props: MeshProps = {}) {
   const cardRef = useRef<THREE.Mesh | null>(null);
-  const [frontTexture, setFrontTexture] = useState<THREE.Texture | null>(null);
-  const [backTexture, setBackTexture] = useState<THREE.Texture | null>(null);
-  const [borderTexture, setBorderTexture] = useState<THREE.Texture | null>(
-    null
-  ); // New state for border texture
+  const groupRef = useRef<THREE.Group | null>(null);
+  const [textures, setTextures] = useState<{
+    frontTexture: null | THREE.Texture;
+    backTexture: null | THREE.Texture;
+    borderTexture: null | THREE.Texture;
+  }>({
+    frontTexture: null,
+    backTexture: null,
+    borderTexture: null,
+  });
 
+  // useFrame(() => {
+  //   if (groupRef.current) {
+  //     groupRef.current.rotation.y += 0.001;
+  //   }
+  // });
   useEffect(() => {
     const loadTextures = async () => {
       const front = await new THREE.TextureLoader().loadAsync(
@@ -74,14 +114,26 @@ export function CardModel(props: MeshProps = {}) {
       );
       const border = await new THREE.TextureLoader().loadAsync(
         "./public/border-texture.jpg"
-      ); // Load border texture
-      setFrontTexture(front);
-      setBackTexture(back);
-      setBorderTexture(border);
+      );
+
+      setTextures({
+        frontTexture: front,
+        backTexture: back,
+        borderTexture: border,
+      });
     };
 
     loadTextures();
   }, []);
+
+  const { frontTexture, backTexture, borderTexture } = textures;
+
+  if (frontTexture) {
+    frontTexture.wrapS = THREE.ClampToEdgeWrapping;
+    frontTexture.wrapT = THREE.ClampToEdgeWrapping;
+    frontTexture.repeat.set(1, 1);
+    frontTexture.offset.set(0, 0);
+  }
 
   const frontAspect = frontTexture
     ? frontTexture.image.width / frontTexture.image.height
@@ -91,13 +143,11 @@ export function CardModel(props: MeshProps = {}) {
   const [flipped, setFlipped] = useState(false);
 
   const { rotationY, scale } = useSpring({
-    opacity: flipped ? 1 : 0,
     rotationY: flipped ? Math.PI : 0,
     scale: hovered ? 1.1 : 1,
     config: { mass: 1, tension: 300, friction: 20 },
   });
 
-  // Create a rounded rectangle shape
   const createRoundedRectangle = (
     width: number,
     height: number,
@@ -127,55 +177,38 @@ export function CardModel(props: MeshProps = {}) {
 
   const cardWidth = 0.5 * frontAspect;
   const cardHeight = 0.5;
-  const cardDepth = 0.02; // Depth of the card
-  // Border dimensions
-  const borderWidth = 0.55 * frontAspect; // Slightly larger than the card
-  const borderHeight = 0.55;
-  const borderRadius = 0.02; // Radius of the rounded corners
-  const offset = 0.0;
-  // Create the border geometry
+  const cardDepth = 0.02;
+  const borderRadius = 0.05;
 
   const cardShape = createRoundedRectangle(cardWidth, cardHeight, borderRadius);
   const cardGeometry = new THREE.ExtrudeGeometry(cardShape, {
-    depth: cardDepth, // Depth of the card
-    bevelEnabled: false, // Disable bevel for simplicity
+    depth: cardDepth,
+    bevelEnabled: false,
   });
 
-  const frontMaterial = new THREE.MeshStandardMaterial({
-    map: frontTexture,
-    side: THREE.FrontSide,
+  const frontMaterial = new THREE.ShaderMaterial({
+    ...roundedCornersShader,
+    uniforms: {
+      map: { value: frontTexture },
+      radius: { value: 0.1 }, // Adjust radius as needed
+      aspect: { value: frontAspect },
+    },
   });
 
-  const backMaterial = new THREE.MeshStandardMaterial({
-    map: backTexture,
-    side: THREE.BackSide,
+  const backMaterial = new THREE.ShaderMaterial({
+    ...roundedCornersShader,
+    uniforms: {
+      map: { value: backTexture },
+      radius: { value: 0.1 }, // Adjust radius as needed
+      aspect: { value: frontAspect },
+    },
   });
 
-  const sideMaterial = new THREE.MeshStandardMaterial({
-    color: 0x808080, // Gray color for the sides
-  });
-
-  const materials = [
-    sideMaterial, // Sides
-    frontMaterial, // Front
-    backMaterial, // Back
-  ];
-
-  const borderShape = createRoundedRectangle(
-    borderWidth,
-    borderHeight,
-    borderRadius
-  );
-  const borderBigShape = createRoundedRectangle(
-    borderWidth + offset,
-    borderHeight + offset,
-    borderRadius
-  );
-  const borderGeometry = new THREE.ShapeGeometry(borderShape);
-  const borderBigGeometry = new THREE.ShapeGeometry(borderBigShape);
+  const materials = [backMaterial, frontMaterial];
 
   return (
     <a.group
+      ref={groupRef}
       {...props}
       scale={scale}
       rotation-y={rotationY}
@@ -183,38 +216,47 @@ export function CardModel(props: MeshProps = {}) {
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
-      <mesh position={[0, 0, -0.01]}>
-        {" "}
-        {/* Slightly in front of the card */}
-        <primitive object={borderGeometry} />
-        {/* Shader material with texture support */}
-        <shaderMaterial
-          attach="material"
-          {...gradientShader}
-          uniforms-textureMap-value={borderTexture} // Pass the border texture
-          uniforms-glowColor-value={new THREE.Color(0x00ff00)} // Glow color (green)
-          uniforms-glowIntensity-value={2.0} // Increase glow intensity
-          uniforms-glowThreshold-value={0.3} // Lower threshold for more glow
-        />
+      <mesh
+        ref={cardRef}
+        geometry={cardGeometry}
+        material={materials}
+        castShadow
+        receiveShadow
+      >
+        {frontTexture && (
+          <mesh position={[0, 0, cardDepth / 2 + 0.02]}>
+            <planeGeometry args={[cardWidth, cardHeight]} />
+            <primitive object={frontMaterial} />
+          </mesh>
+        )}
+
+        {backTexture && (
+          <mesh position={[0, 0, -cardDepth / 2 - 0.001]} rotation-y={Math.PI}>
+            <planeGeometry args={[cardWidth, cardHeight]} />
+            <primitive object={backMaterial} />
+          </mesh>
+        )}
       </mesh>
 
-      <mesh position={[0, 0, -0.02]}>
-        <primitive object={borderBigGeometry} />
-      </mesh>
-
-      {/* Card Front */}
-      {frontTexture && (
-        <mesh>
-          <planeGeometry args={[0.5 * frontAspect, 0.5]} />
-          <meshStandardMaterial map={frontTexture} />
-        </mesh>
-      )}
-
-      {/* Card Back */}
-      {backTexture && (
-        <mesh>
-          <planeGeometry args={[0.5 * frontAspect, 0.5]} />
-          <meshStandardMaterial map={backTexture} side={THREE.BackSide} />
+      {borderTexture && (
+        <mesh position={[0, 0, -cardDepth / 2 - 0.01]}>
+          <shapeGeometry
+            args={[
+              createRoundedRectangle(
+                cardWidth * 1.13,
+                cardHeight * 1.13,
+                borderRadius * 1.1
+              ),
+            ]}
+          />
+          <shaderMaterial
+            attach="material"
+            {...gradientShader}
+            uniforms-textureMap-value={borderTexture}
+            uniforms-glowColor-value={new THREE.Color(0x00ff00)}
+            uniforms-glowIntensity-value={2.0}
+            uniforms-glowThreshold-value={0.3}
+          />
         </mesh>
       )}
     </a.group>
