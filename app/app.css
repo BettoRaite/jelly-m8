@@ -10,3 +10,37 @@ body {
     color-scheme: dark;
   }
 }
+
+@layer utilities {
+  .bg-conic-gradient {
+  }
+
+  .bg-conic-gradient::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: black; /* Black background for the edges */
+    z-index: -2; /* Place it below the gradient */
+  }
+
+  .bg-conic-gradient::after {
+    opacity: 0;
+    content: "";
+    border-radius: 100%;
+    position: absolute;
+    top: 25%;
+    left: 30%;
+    width: 50dvh;
+    height: 50dvh;
+    background: conic-gradient(
+      #ff7f50,
+      /* Coral */ #ff69b4,
+      /* Hot Pink */ #ff1493,
+      /* Deep Pink */ #ff7f50 /* Coral */
+    );
+    z-index: -1; /* Place it above the black background */
+  }
+}

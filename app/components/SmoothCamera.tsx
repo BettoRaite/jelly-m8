@@ -1,28 +1,20 @@
-import { useRef, useState, useEffect, type Ref } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Statue } from "@/components/Statue";
 import { PerspectiveCamera } from "@react-three/drei";
-import {
-  useGLTF,
-  ContactShadows,
-  Environment,
-  OrbitControls,
-} from "@react-three/drei";
-import type { RefObject } from "react";
-import { Vector3 } from "three";
+import { useFrame } from "@react-three/fiber";
 import type { CameraPos } from "lib/types";
+import { useRef } from "react";
+import { Vector3 } from "three";
 
 type Props = {
   targetPos: CameraPos;
 };
 export function SmoothCamera({ targetPos }: Props) {
   const cameraRef = useRef(null);
-  const currentPosition = useRef(new Vector3());
+  const currentPosition = useRef<Vector3>(new Vector3());
 
   useFrame(() => {
     if (cameraRef.current) {
       // Interpolate the camera position
-      currentPosition.current.lerp(targetPos, 0.06); // Adjust the factor for speed
+      currentPosition.current.lerp(targetPos, 0.08); // Adjust the factor for speed
       cameraRef.current.position.copy(currentPosition.current);
     }
   });

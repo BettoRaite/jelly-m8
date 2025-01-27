@@ -10,7 +10,7 @@ export function HomeStage(props: GroupProps = {}) {
 
   return (
     <group ref={groupRef}>
-      <primitive object={scene} scale={1} />;
+      <primitive object={scene} scale={1} />
     </group>
   );
   // Use groupRef and render the scene
