@@ -22,15 +22,13 @@ type Action =
 export const runProfilesFetch = (action: Action): Promise<Response> => {
   const reqInit: RequestInit = {
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
   };
+  console.log(action);
   let url = `${config.server.url}/profiles`;
   switch (action.type) {
     case "create": {
-      reqInit.body = JSON.stringify(action.profileData);
-      reqInit.method = "post";
+      reqInit.body = action.profileData as unknown as BodyInit;
+      reqInit.method = "POST";
       break;
     }
     case "get": {

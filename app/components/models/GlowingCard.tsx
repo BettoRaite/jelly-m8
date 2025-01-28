@@ -12,6 +12,7 @@ import {
 import { a, useSpring } from "@react-spring/three";
 import type { Group } from "three";
 import * as THREE from "three";
+import type { Profile } from "@/lib/types";
 
 // Configuration
 const CONFIG = {
@@ -61,6 +62,7 @@ const createMaterial = (fragmentShader, textures) => {
       },
       noiseTex: { value: textures.noiseTex },
       color: { value: textures.color },
+      blurAmount: { value: 5.0 }, // Add blurAmount uniform
     },
     fragmentShader,
     vertexShader: vert,
@@ -108,10 +110,14 @@ function createRoundedPlane(width: number, height: number, radius: number) {
 }
 
 // Main Scene Component
-
-export function GlowingCard(props: GroupProps) {
+type Props = {
+  cardProps: GroupProps;
+  profile: Profile;
+};
+export function GlowingCard({ cardProps, profile }: Props) {
   const { camera, gl, scene } = useThree();
-  const [frontMaterial, setFrontMaterial] = useState(null);
+  const [frontMaterial, setFrontMaterial] =
+    useState<THREE.ShaderMaterial | null>(null);
   const [backMaterial, setBackMaterial] = useState(null);
   const clock = useRef(new THREE.Clock());
   const matrix = useRef(new THREE.Matrix4());
@@ -140,6 +146,11 @@ export function GlowingCard(props: GroupProps) {
     config: { mass: 1, tension: 200, friction: 20 }, // Animation config
   }));
 
+  const [blurSpring, blurApi] = useSpring(() => ({
+    blurAmount: 1.0, // Start with a high blur
+    config: { mass: 1, tension: 200, friction: 20 },
+  }));
+
   useEffect(() => {
     api.start({
       rotation: [Math.PI * 2, Math.PI * 2, Math.PI * 2.05], // Rotate 360 degrees around the Y-axis
@@ -151,6 +162,15 @@ export function GlowingCard(props: GroupProps) {
       from: { position: [0, -30, -50] }, // Start from above
       config: {
         duration: 600, // Duration of 1 second
+        easing: (t) => t * (2 - t), // Decelerate easing function
+      },
+    });
+
+    blurApi.start({
+      blurAmount: 0, // End with no blur
+      from: { blurAmount: 1.0 }, // Start from a high blur
+      config: {
+        duration: 1000, // Duration of 1 second
         easing: (t) => t * (2 - t), // Decelerate easing function
       },
     });
@@ -166,31 +186,28 @@ export function GlowingCard(props: GroupProps) {
     }
   });
   useFrame(() => {
-    const b = bloomRef.current;
+    if (frontMaterial) {
+      frontMaterial.uniforms.blurAmount.value = blurSpring.blurAmount.get();
+    }
   });
 
   // Load textures and create materials
   useEffect(() => {
     CONFIG.dimensions.height = window.innerHeight;
     const textureLoader = new THREE.TextureLoader();
+    console.log(profile);
     const textures = {
       cardtemplate: textureLoader.load(CONFIG.textures.cardtemplate),
       cardtemplateback: textureLoader.load(CONFIG.textures.cardtemplateback),
-      profile: textureLoader.load(CONFIG.textures.profile), // Load profile texture
+      profile: textureLoader.load(profile.profileImageUrl), // Load profile texture
       backtexture: textureLoader.load(CONFIG.textures.backtexture),
       noise: textureLoader.load(CONFIG.textures.noise2),
       noiseTex: textureLoader.load(CONFIG.textures.voronoi),
       color: textureLoader.load(CONFIG.textures.color11),
       flower: textureLoader.load(CONFIG.textures.flower),
     };
-    const frontTextures = {
-      cardtemplate: textureLoader.load(CONFIG.textures.cardtemplate),
-      backtexture: textureLoader.load(CONFIG.textures.backtexture),
-      // noise: textureLoader.load(CONFIG.textures.noise2),
-      // noiseTex: textureLoader.load(CONFIG.textures.voronoi),
-      color: textureLoader.load(CONFIG.textures.color11),
-    };
-    const frontMat = createMaterial(fragPlane, frontTextures);
+
+    const frontMat = createMaterial(fragPlane, textures);
     const backMat = createMaterial(fragPlaneback, textures);
     setFrontMaterial(frontMat);
     setBackMaterial(backMat);
@@ -241,7 +258,7 @@ export function GlowingCard(props: GroupProps) {
         <Bloom
           ref={bloomRef}
           luminanceThreshold={0}
-          luminanceSmoothing={2}
+          luminanceSmoothing={1}
           intensity={1}
           height={300}
         />

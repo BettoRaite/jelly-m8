@@ -18,6 +18,7 @@ import { CardModel } from "@/components/models/CardModel";
 import { ParticlesWrapper } from "@/components/ParticlesWrapper";
 import { GlowingCard } from "@/components/models/GlowingCard";
 import GradientBackground from "@/components/GradientBackground";
+import Drag from "@/components/Heart";
 export function meta(_: Route.MetaArgs) {
   return [
     { title: "New React Router App" },
@@ -117,9 +118,14 @@ export default function Home() {
       <AppScene
         cameraPosition={new Vector3(cameraPos.x, cameraPos.y, cameraPos.z)}
       >
-        <GlowingCard key={profile.id} position={[0, 0, -50]} />
+        <GlowingCard
+          key={profile.id}
+          position={[0, 0, -50]}
+          profile={profile}
+        />
       </AppScene>
 
+      {/* {<Drag />} */}
       {!hasScrolled && (
         <div>
           <h1 className="flex absolute shadow-lg top-[40%] left-40 hover:scale-125 cursor-pointer active:text-pink-600  transition-all duration-300 first-letter:uppercase font-bold text-6xl text-white p-4 rounded-lg">

@@ -1,13 +1,12 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { CreateUserSchema } from "@/lib/schemas/users.schema";
-import { config, queryKeys } from "@/lib/config";
+import type { CreateProfileSchema } from "@/lib/schemas/profiles.schema";
 import { fetchApi } from "@/lib/fetchApi";
-
+import { useMutation } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { config, queryKeys } from "@/lib/config";
 type Action =
   | {
       id?: number;
       type: "create";
-      payload: CreateUserSchema;
     }
   | {
       type: "delete";
@@ -16,20 +15,18 @@ type Action =
   | {
       type: "update";
       id: number;
-      payload: Partial<CreateUserSchema>;
-    }
-  | {
-      type: "invalidate-access-key";
-      id: number;
     };
 
 type UserMutationReturn = {
   [key: string]: ReturnType<typeof useMutation>;
 };
-export const useUserMutation = (action: Action) => {
+
+export const useProfileMutation = (action: Action) => {
   const queryClient = useQueryClient();
 
-  let url = `${config.server.url}/users${action.id ? `/${action.id}` : ""}`;
+  const url = `${config.server.url}/profiles${
+    action.id ? `/${action.id}` : ""
+  }`;
   let method = "";
   let payload = null;
 
@@ -48,11 +45,6 @@ export const useUserMutation = (action: Action) => {
       method = "delete";
       break;
     }
-    case "invalidate-access-key": {
-      method = "patch";
-      url += "/access-token/invalidate";
-      break;
-    }
   }
   const actionNameformatted = action.type
     .split("-")
@@ -62,7 +54,7 @@ export const useUserMutation = (action: Action) => {
     .join("");
 
   return {
-    [`user${actionNameformatted}Mutation`]: useMutation({
+    [`profile${actionNameformatted}Mutation`]: useMutation({
       mutationFn: async () => {
         return await fetchApi(url, {
           method: method.toUpperCase(),
@@ -71,7 +63,7 @@ export const useUserMutation = (action: Action) => {
       },
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.usersKey,
+          queryKey: queryKeys.profilesKey,
         });
       },
     }),

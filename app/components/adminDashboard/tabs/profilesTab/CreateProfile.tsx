@@ -5,13 +5,13 @@ import {
 } from "@/lib/schemas/users.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { queryClient, queryKeys } from "@/lib/config";
+import { config, queryClient, queryKeys } from "@/lib/config";
 import {
   createProfileSchema,
   type CreateProfileSchema,
 } from "@/lib/schemas/profiles.schema";
 import { runProfilesFetch } from "@/api/profiles.api";
-
+import { Pass } from "postprocessing";
 export function CreateProfile() {
   const {
     register,
@@ -25,11 +25,16 @@ export function CreateProfile() {
 
   const mutation = useMutation({
     mutationFn: async (profileData: CreateProfileSchema) => {
-      const res = await runProfilesFetch({
-        type: "create",
-        profileData,
-      });
+      const formData = new FormData();
+      formData.append("name", profileData.name);
+      formData.append("profileImage", profileData.profileImage);
+      formData.append("bio", profileData.bio);
 
+      const res = await fetch(`${config.server.url}/profiles`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
       if (!res.ok) {
         throw new Error(await res.text());
       }
@@ -44,7 +49,7 @@ export function CreateProfile() {
   function handleCreateProfileSubmit(profileData: CreateProfileSchema) {
     console.log("submit");
     mutation.mutate(profileData);
-    reset();
+    // reset();
   }
 
   return (
