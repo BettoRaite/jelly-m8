@@ -126,15 +126,15 @@ export function ParticlesWrapper({ children }: Props) {
     console.log(container);
   };
 
-  // if (init) {
-  //   return (
-  //     <Particles
-  //       id="tsparticles"
-  //       particlesLoaded={particlesLoaded}
-  //       options={config}
-  //     />
-  //   );
-  // }
+  if (init) {
+    return (
+      <Particles
+        id="tsparticles"
+        particlesLoaded={particlesLoaded}
+        options={config}
+      />
+    );
+  }
 
   return <></>;
 }

@@ -1,8 +1,19 @@
 import { SmoothCamera } from "@/components/SmoothCamera";
 import { Environment } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
-import type { ReactNode } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { useRef, useState, type ReactNode } from "react";
 import type { Vector3 } from "three";
+import * as THREE from "three";
+import { GlowingCard } from "./models/GlowingCard";
+import { OrbitControls } from "@react-three/drei";
+import { ContactShadows } from "@react-three/drei";
+import {
+  Bloom,
+  DepthOfField,
+  EffectComposer,
+  Noise,
+  Vignette,
+} from "@react-three/postprocessing";
 
 type Props = {
   children: ReactNode;
@@ -10,24 +21,33 @@ type Props = {
 };
 
 export function AppScene({ children, cameraPosition }: Props) {
-  console.log(cameraPosition);
+  const [scene, setScene] = useState<THREE.Scene | null>(null);
+  const bloomRef = useRef<typeof Bloom | null>(null);
   return (
-    <Canvas camera={{}} shadows>
+    <Canvas
+      camera={{}}
+      shadows
+      onCreated={({ gl, scene }) => {
+        gl.setPixelRatio(2);
+        gl.shadowMap.type = THREE.PCFSoftShadowMap;
+        gl.toneMapping = THREE.ACESFilmicToneMapping;
+        setScene(scene);
+      }}
+    >
       <SmoothCamera targetPos={cameraPosition} />
       <ambientLight intensity={1} />
       <pointLight
-        color="white" // Set the light color to pink
-        intensity={0.3} // Adjust the intensity of the light
-        position={[0, 0, 0.5]} // Position the light behind the statue
+        color="#FFB6C1" // Set the light color to pink
+        intensity={4} // Adjust the intensity of the light
+        position={[0, 0, 0]} // Position the light behind the statue
       />
-      {/* <ContactShadows
+      <ContactShadows
         position={[0, -0.8, 0]}
         opacity={0.25}
         scale={10}
         blur={1.5}
         far={0.8}
-      /> */}
-      <Environment preset="city" />
+      />
       {children}
     </Canvas>
   );

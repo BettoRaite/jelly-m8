@@ -58,6 +58,31 @@ export function CreateProfile() {
 
       <div className="mb-4">
         <label
+          htmlFor="image"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Profile image:
+        </label>
+        <input
+          {...register("profileImage", {
+            required: "profileImage is required",
+          })}
+          type="file"
+          id="name"
+          className={`text-sm mt-1 block w-full p-2 border ${
+            errors.profileImage ? "border-red-500" : "border-gray-200"
+          } rounded-md focus:outline-none focus:border-gray-400 duration-300`}
+          placeholder="profileImage"
+        />
+        {errors.profileImage && (
+          <p className="mt-1 text-sm text-red-500">
+            {errors.profileImage.message as string}
+          </p>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <label
           htmlFor="name"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
