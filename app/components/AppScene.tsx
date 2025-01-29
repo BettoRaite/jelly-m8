@@ -7,13 +7,6 @@ import * as THREE from "three";
 import { GlowingCard } from "./models/GlowingCard";
 import { OrbitControls } from "@react-three/drei";
 import { ContactShadows } from "@react-three/drei";
-import {
-  Bloom,
-  DepthOfField,
-  EffectComposer,
-  Noise,
-  Vignette,
-} from "@react-three/postprocessing";
 
 type Props = {
   children: ReactNode;
@@ -35,19 +28,19 @@ export function AppScene({ children, cameraPosition }: Props) {
       }}
     >
       <SmoothCamera targetPos={cameraPosition} />
-      <ambientLight intensity={1} />
-      <pointLight
+      {/* <ambientLight intensity={1} /> */}
+      {/* <pointLight
         color="#FFB6C1" // Set the light color to pink
         intensity={4} // Adjust the intensity of the light
         position={[0, 0, 0]} // Position the light behind the statue
-      />
-      <ContactShadows
+      /> */}
+      {/* <ContactShadows
         position={[0, -0.8, 0]}
         opacity={0.25}
         scale={10}
         blur={1.5}
         far={0.8}
-      />
+      /> */}
       {children}
     </Canvas>
   );

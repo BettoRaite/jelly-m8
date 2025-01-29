@@ -1,4 +1,9 @@
-import { useFrame, useThree, type GroupProps } from "@react-three/fiber";
+import {
+  useFrame,
+  useThree,
+  type GroupProps,
+  type Vector3,
+} from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 
 import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
@@ -13,6 +18,7 @@ import { a, useSpring } from "@react-spring/three";
 import type { Group } from "three";
 import * as THREE from "three";
 import type { Profile } from "@/lib/types";
+import { MdHeight } from "react-icons/md";
 
 // Configuration
 const CONFIG = {
@@ -25,43 +31,49 @@ const CONFIG = {
   color2: [0, 150, 255],
   isanimate: false,
   textures: {
-    cardtemplate:
-      "https://raw.githubusercontent.com/pizza3/asset/master/cardtemplate3.png",
-    cardtemplateback:
+    cardTemplate: "./public/cardtemplate.png",
+    cardTemplateBack:
       "https://raw.githubusercontent.com/pizza3/asset/master/cardtemplateback4.png",
-    flower: "https://raw.githubusercontent.com/pizza3/asset/master/flower3.png",
-    noise2: "https://raw.githubusercontent.com/pizza3/asset/master/noise2.png",
-    color11:
+    flower: "./public/heart.png",
+    noise: "https://raw.githubusercontent.com/pizza3/asset/master/noise2.png",
+    color:
       "https://images.unsplash.com/photo-1581257107100-f952b3a5c451?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bG92ZSUyMHBhdHRlcm58ZW58MHx8MHx8fDI%3D",
-    backtexture:
+    backTexture:
       "https://raw.githubusercontent.com/pizza3/asset/master/color3.jpg",
-    skullmodel:
-      "https://raw.githubusercontent.com/pizza3/asset/master/skull5.obj",
-    voronoi:
-      "https://raw.githubusercontent.com/pizza3/asset/master/rgbnoise2.png",
     profile: "./public/private/girly.jpeg", // Path to profile picture
   },
   dimensions: {
     width: 1301,
+    height: 0,
   },
 };
 
+type Textures = {
+  cardTemplate: THREE.Texture;
+  cardTemplateBack: THREE.Texture;
+  flower: THREE.Texture;
+  noise: THREE.Texture;
+  color: THREE.Texture;
+  colorBack?: THREE.Texture;
+  backTexture: THREE.Texture;
+  profile: THREE.Texture;
+};
 // Helper function to create materials
-const createMaterial = (fragmentShader, textures) => {
+const createMaterial = (fragmentShader: string, textures: Textures) => {
   return new THREE.ShaderMaterial({
     uniforms: {
-      cardtemplate: { value: textures.cardtemplate },
-      backtexture: { value: textures.backtexture },
-      noise: { value: textures.noise },
-      skullrender: { value: textures.flower },
+      u_card_template: { value: textures.cardTemplate },
+      u_back_texture: { value: textures.backTexture },
+      u_noise: { value: textures.noise },
+      u_skull_render: { value: textures.flower },
       resolution: {
         value: new THREE.Vector2(
           CONFIG.dimensions.width / 2,
           CONFIG.dimensions.height
         ),
       },
-      noiseTex: { value: textures.noiseTex },
-      color: { value: textures.color },
+      u_noise_tex: { value: textures.noise },
+      u_color: { value: textures.color },
       blurAmount: { value: 5.0 }, // Add blurAmount uniform
     },
     fragmentShader,
@@ -118,7 +130,9 @@ export function GlowingCard({ cardProps, profile }: Props) {
   const { camera, gl, scene } = useThree();
   const [frontMaterial, setFrontMaterial] =
     useState<THREE.ShaderMaterial | null>(null);
-  const [backMaterial, setBackMaterial] = useState(null);
+  const [backMaterial, setBackMaterial] = useState<THREE.ShaderMaterial | null>(
+    null
+  );
   const clock = useRef(new THREE.Clock());
   const matrix = useRef(new THREE.Matrix4());
   const cardRef = useRef<Group | null>(null);
@@ -146,11 +160,6 @@ export function GlowingCard({ cardProps, profile }: Props) {
     config: { mass: 1, tension: 200, friction: 20 }, // Animation config
   }));
 
-  const [blurSpring, blurApi] = useSpring(() => ({
-    blurAmount: 1.0, // Start with a high blur
-    config: { mass: 1, tension: 200, friction: 20 },
-  }));
-
   useEffect(() => {
     api.start({
       rotation: [Math.PI * 2, Math.PI * 2, Math.PI * 2.05], // Rotate 360 degrees around the Y-axis
@@ -165,15 +174,6 @@ export function GlowingCard({ cardProps, profile }: Props) {
         easing: (t) => t * (2 - t), // Decelerate easing function
       },
     });
-
-    blurApi.start({
-      blurAmount: 0, // End with no blur
-      from: { blurAmount: 1.0 }, // Start from a high blur
-      config: {
-        duration: 1000, // Duration of 1 second
-        easing: (t) => t * (2 - t), // Decelerate easing function
-      },
-    });
   }, [api, positionApi]);
 
   const period = 5;
@@ -185,11 +185,6 @@ export function GlowingCard({ cardProps, profile }: Props) {
       c.rotation.x += 0.002;
     }
   });
-  useFrame(() => {
-    if (frontMaterial) {
-      frontMaterial.uniforms.blurAmount.value = blurSpring.blurAmount.get();
-    }
-  });
 
   // Load textures and create materials
   useEffect(() => {
@@ -197,18 +192,23 @@ export function GlowingCard({ cardProps, profile }: Props) {
     const textureLoader = new THREE.TextureLoader();
     console.log(profile);
     const textures = {
-      cardtemplate: textureLoader.load(CONFIG.textures.cardtemplate),
-      cardtemplateback: textureLoader.load(CONFIG.textures.cardtemplateback),
+      cardTemplate: textureLoader.load(CONFIG.textures.cardTemplate),
+      cardTemplateBack: textureLoader.load(CONFIG.textures.cardTemplateBack),
       profile: textureLoader.load(profile.profileImageUrl), // Load profile texture
-      backtexture: textureLoader.load(CONFIG.textures.backtexture),
-      noise: textureLoader.load(CONFIG.textures.noise2),
-      noiseTex: textureLoader.load(CONFIG.textures.voronoi),
-      color: textureLoader.load(CONFIG.textures.color11),
+      backTexture: textureLoader.load(CONFIG.textures.backTexture),
+      noise: textureLoader.load(CONFIG.textures.noise),
+      color: textureLoader.load(CONFIG.textures.color),
       flower: textureLoader.load(CONFIG.textures.flower),
     };
-
+    const backTextures = {
+      ...textures,
+      cardTemplate: textureLoader.load(CONFIG.textures.cardTemplateBack),
+      color: textureLoader.load(
+        CONFIG.textures.colorBack ?? CONFIG.textures.color
+      ),
+    };
     const frontMat = createMaterial(fragPlane, textures);
-    const backMat = createMaterial(fragPlaneback, textures);
+    const backMat = createMaterial(fragPlaneback, backTextures);
     setFrontMaterial(frontMat);
     setBackMaterial(backMat);
 
@@ -226,9 +226,7 @@ export function GlowingCard({ cardProps, profile }: Props) {
     }
 
     // Setup composer and bloom pass
-  }, [camera, gl]);
-
-  // Animation loop
+  }, [camera, gl, profile]);
 
   return (
     <a.group
@@ -237,7 +235,7 @@ export function GlowingCard({ cardProps, profile }: Props) {
       onClick={() => setFlipped(!flipped)}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
-      position={positionSpring.position} // Apply animated position
+      position={positionSpring.position as unknown as Vector3} // Apply animated position
       rotation={spring.rotation} // Apply animated rotation
       rotation-y={!isAnimating && rotationY}
     >

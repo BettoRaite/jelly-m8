@@ -19,6 +19,9 @@ import { ParticlesWrapper } from "@/components/ParticlesWrapper";
 import { GlowingCard } from "@/components/models/GlowingCard";
 import GradientBackground from "@/components/GradientBackground";
 import Drag from "@/components/Heart";
+import { FadeInExpand } from "@/components/animations/FadeInExpand";
+import Confetti from "react-confetti";
+import { ProfileActivationOverlay } from "@/components/ProfileActivationOverlay";
 export function meta(_: Route.MetaArgs) {
   return [
     { title: "New React Router App" },
@@ -111,7 +114,8 @@ export default function Home() {
       } bg-transparent relative`}
       style={{ width: "100dvw", height: "100dvh" }}
     >
-      {<GradientBackground />}
+      <ProfileActivationOverlay />
+      <GradientBackground />
       <GoBack to="/" />
       <ParticlesWrapper />
 
@@ -127,19 +131,14 @@ export default function Home() {
 
       {/* {<Drag />} */}
       {!hasScrolled && (
-        <div>
-          <h1 className="flex absolute shadow-lg top-[40%] left-40 hover:scale-125 cursor-pointer active:text-pink-600  transition-all duration-300 first-letter:uppercase font-bold text-6xl text-white p-4 rounded-lg">
+        <div className="flex justify-center">
+          <h1 className="flex absolute top-[40%] left-40 hover:scale-125 cursor-pointer active:text-pink-600  transition-all duration-300 first-letter:uppercase font-bold text-7xl text-white p-4 rounded-lg">
             {profile.name ?? "None"}
+            <Confetti className="w-full h-full" />
           </h1>
-
-          <button
-            onClick={handleScrollDown}
-            type="button"
-            className="absolute bottom-8 left-4 bg-gray-200 rounded-lg p-4 shadow-lg"
-            aria-label="Scroll down"
-          >
-            <FaLock className="text-2xl text-gray-600" />
-          </button>
+          {/* <h1 className="absolute top-10 left-40 text-white text-7xl font-extrabold italic">
+            {activeIndex + 1} / {items.length}
+          </h1> */}
         </div>
       )}
 
