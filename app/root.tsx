@@ -25,6 +25,13 @@ export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
+export function meta(_: Route.MetaArgs) {
+  return [
+    { title: "Jellym8🐙" },
+    { name: "8TH OF MARCH", content: "Congrats with 8th of March" },
+  ];
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">

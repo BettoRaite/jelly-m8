@@ -22,17 +22,20 @@ export const fragPlane = `
   uniform sampler2D u_noise_tex;
   uniform sampler2D u_color;
   uniform sampler2D u_noise;
+  uniform float time;
   uniform vec4 u_resolution;
   varying vec3 v_cam_pos;
   varying vec3 v_eye_vector;
   varying vec3 v_normal;
+  precision highp float;
+  precision highp sampler2D;
 
   float fresnel(vec3 eye_vector, vec3 world_normal) {
     return pow(1.0 + dot(eye_vector, world_normal), 1.80);
   }
 
   void main() {
-    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+    vec2 uv = v_uv * vec2(u_resolution.x / u_resolution.y, 1.0);
     vec4 template_texture = texture2D(u_card_template, v_uv);
     vec4 skull_texture = texture2D(u_skull_render, uv - 0.5);
     gl_FragColor = template_texture;
@@ -45,7 +48,11 @@ export const fragPlane = `
     } else {
       vec4 back_texture = texture2D(u_back_texture, v_uv);
       float tone = pow(dot(normalize(v_cam_pos), normalize(back_texture.rgb)), 1.0);
-      vec4 color_texture = texture2D(u_color, vec2(tone, 0.0));
+
+      vec2 center = vec2(0.5, 0.5); // Center of the texture
+      vec2 animatedUv = v_uv + vec2(time * 0.1, time * 0.05); // Diagonal scroll
+      vec4 color_texture = texture2D(u_color, animatedUv);
+      color_texture.b = color_texture.b + 0.2;
 
       // Sparkle code
       vec2 uv2 = v_uv;

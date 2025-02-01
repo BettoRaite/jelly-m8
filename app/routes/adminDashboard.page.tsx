@@ -1,8 +1,7 @@
 import { Link } from "react-router";
-import type { Route } from "./+types/home";
 import { queryClient, queryKeys } from "@/lib/config";
 import { useEffect } from "react";
-import { useUser } from "@/hooks/useUser";
+import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { constructFetchUrl } from "@/lib/utils";
@@ -13,8 +12,7 @@ import { Loader } from "@/components/Loader";
 import { GoBack } from "@/components/GoBack";
 
 export default function AdminDashboard() {
-  const { data: getUserResponse, status } = useUser();
-  const user = getUserResponse?.data;
+  const { data: getUserResponse, status } = useAuth();
 
   const navigate = useNavigate();
 
@@ -24,11 +22,12 @@ export default function AdminDashboard() {
   if (status === "error") {
     return "How about you reload the page :??";
   }
-  if (!user) {
+
+  const user = getUserResponse;
+  if (!user || user.userRole !== "admin") {
     return navigate("/");
   }
 
-  const { accessKey, id, name, role } = user;
   return (
     <div className="min-h-screen bg-gray-100">
       <GoBack to="/" />

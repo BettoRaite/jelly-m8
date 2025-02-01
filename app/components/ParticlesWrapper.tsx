@@ -122,18 +122,8 @@ export function ParticlesWrapper({ children }: Props) {
     });
   }, []);
 
-  const particlesLoaded = async (container?: Container): Promise<void> => {
-    console.log(container);
-  };
-
   if (init) {
-    return (
-      <Particles
-        id="tsparticles"
-        particlesLoaded={particlesLoaded}
-        options={config}
-      />
-    );
+    return <Particles id="tsparticles" options={config} />;
   }
 
   return <></>;

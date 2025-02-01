@@ -1,46 +1,30 @@
-import type { User } from "@/lib/types";
-import { useMutation } from "@tanstack/react-query";
+import type { Profile } from "@/lib/types";
 import { IoIosRemove } from "react-icons/io";
-import { createMutateUsersFn } from "@/api/users.api";
-import { queryClient, queryKeys } from "@/lib/config";
-import type { CreateProfileSchema } from "@/lib/schemas/profiles.schema";
-import { runProfilesFetch } from "@/api/profiles.api";
-
+import { useUserProfileMutation } from "@/hooks/useUserProfileMutation";
+import { useProfileMutation } from "@/hooks/useProfileMutation";
 type Props = {
-  profile: CreateProfileSchema;
+  profile: Profile;
 };
 
 export function ProfileCard({ profile }: Props) {
-  const mutation = useMutation({
-    mutationFn: async () => {
-      const res = await runProfilesFetch({
-        type: "delete",
-        id: profile.id,
-      });
-      if (!res.ok) {
-        throw new Error(`Failed to delete profile with id ${profile.id}`);
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.profilesKey,
-      });
-    },
-  });
-
+  const mutation = useUserProfileMutation();
+  const profileMutation = useProfileMutation();
   function handleDeleteUserClick() {
-    mutation.mutate();
+    mutation.mutate({
+      type: "delete",
+      userId: profile.userId,
+    });
   }
 
   return (
     <section className="flex p-6 items-center bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 gap-4">
       <div className="flex flex-col">
         <h1 className="text-xl font-semibold text-gray-800 capitalize">
-          {profile.name}
+          {profile.displayName}
         </h1>
 
         <p className="text-gray-600 mt-1">
-          <span className="font-medium">{profile.bio}</span>
+          <span className="font-medium">{profile.biography}</span>
         </p>
       </div>
       <button
@@ -49,6 +33,18 @@ export function ProfileCard({ profile }: Props) {
         onClick={handleDeleteUserClick}
       >
         <IoIosRemove />
+      </button>
+      <button
+        className="bg-red-100 rounded-lg p-4 hover:bg-red-300 duration-300"
+        type="button"
+        onClick={() => {
+          profileMutation.mutate({
+            type: "deactivate",
+            profileId: profile.id,
+          });
+        }}
+      >
+        d
       </button>
     </section>
   );

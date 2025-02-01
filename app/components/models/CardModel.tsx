@@ -107,13 +107,13 @@ export function CardModel(props: MeshProps = {}) {
   useEffect(() => {
     const loadTextures = async () => {
       const front = await new THREE.TextureLoader().loadAsync(
-        "./public/tao-tsuchia.jpg"
+        "./public/private/tao.jpg"
       );
       const back = await new THREE.TextureLoader().loadAsync(
         "./public/pattern.jpg"
       );
       const border = await new THREE.TextureLoader().loadAsync(
-        "./public/border-texture.jpg"
+        "./public/blue-pattern.jpg"
       );
 
       setTextures({

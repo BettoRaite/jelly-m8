@@ -1,53 +1,26 @@
-import { useForm } from "react-hook-form";
+import { useUserMutation } from "@/hooks/useUserMutation";
 import {
-  type CreateUserSchema,
+  type CreateUserPayload,
   createUserSchema,
-} from "@/lib/schemas/users.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { constructFetchUrl } from "@/lib/utils";
-import { queryClient, queryKeys } from "@/lib/config";
-import { Loader } from "@/components/Loader";
+} from "@/lib/schemas/user.schema";
 import { TextInput } from "@/ui/form/TextInput";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 export function CreateUser() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateUserSchema>({
+  } = useForm<CreateUserPayload>({
     resolver: zodResolver(createUserSchema),
   });
-
-  const mutation = useMutation({
-    mutationFn: async (creds: CreateUserSchema) => {
-      console.log(creds);
-      const formData = new FormData();
-      formData.append("name", creds.name);
-      formData.append("profileImage", creds.profileImage);
-      formData.append("role", creds.role);
-      const response = await fetch(constructFetchUrl("/users"), {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-      console.log(await response.text());
-      if (response.status === 400) {
-        throw new Error(await response.text());
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.usersKey,
-      });
-    },
-    onError: (err) => {
-      // Handle error (e.g., show a toast notification)
-    },
-  });
-
-  function handleCreateUserSubmit(creds: CreateUserSchema) {
-    mutation.mutate(creds);
+  const mutation = useUserMutation();
+  function handleCreateUserSubmit(payload: CreateUserPayload) {
+    mutation.mutate({
+      type: "create",
+      payload,
+    });
   }
 
   return (
@@ -57,27 +30,7 @@ export function CreateUser() {
     >
       <h2 className="text-2xl font-semibold mb-4 text-center">Create User</h2>
 
-      <div className="mb-4">
-        <label
-          htmlFor="profileImage"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Profile image:
-        </label>
-        <input
-          {...register("profileImage")}
-          type="file"
-          id="profileImage"
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
-          required
-        />
-        {errors.profileImage && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors?.profileImage?.message as string}
-          </p>
-        )}
-      </div>
-      {<TextInput register={register} errors={errors} fieldName="name" />}
+      {<TextInput register={register} errors={errors} fieldName="username" />}
       <div className="mb-4">
         <label
           htmlFor="role"
@@ -87,15 +40,15 @@ export function CreateUser() {
         </label>
         <select
           id="role"
-          {...register("role")}
+          {...register("userRole")}
           defaultValue="user"
           className="mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
         >
           <option value="user">User</option>
           <option value="admin">Admin</option>
         </select>
-        {errors.role && (
-          <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
+        {errors.userRole && (
+          <p className="text-red-500 text-sm mt-1">{errors.userRole.message}</p>
         )}
       </div>
 

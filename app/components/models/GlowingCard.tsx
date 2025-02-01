@@ -1,24 +1,21 @@
+import { loadTexturesAsync } from "@/lib/helpers/loadTextures";
+import {
+  fragPlane,
+  fragPlaneback,
+  vert,
+} from "@/lib/shaders/glowingCard.shader";
+import type { Profile } from "@/lib/types";
+import { a, useSpring } from "@react-spring/three";
 import {
   useFrame,
   useThree,
   type GroupProps,
   type Vector3,
 } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
-
-import { Bloom, EffectComposer, Vignette } from "@react-three/postprocessing";
-import { type BloomEffect, GlitchMode, BlendFunction } from "postprocessing";
-
-import {
-  fragPlane,
-  fragPlaneback,
-  vert,
-} from "@/lib/shaders/glowingCard.shader";
-import { a, useSpring } from "@react-spring/three";
+import type { BloomEffect } from "postprocessing";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import * as THREE from "three";
-import type { Profile } from "@/lib/types";
-import { MdHeight } from "react-icons/md";
 
 // Configuration
 const CONFIG = {
@@ -37,7 +34,7 @@ const CONFIG = {
     flower: "./public/heart.png",
     noise: "https://raw.githubusercontent.com/pizza3/asset/master/noise2.png",
     color:
-      "https://images.unsplash.com/photo-1581257107100-f952b3a5c451?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bG92ZSUyMHBhdHRlcm58ZW58MHx8MHx8fDI%3D",
+      "https://images.unsplash.com/photo-1589307004173-3c95204d00ee?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHBhdHRlcm58ZW58MHx8MHx8fDI%3D",
     backTexture:
       "https://raw.githubusercontent.com/pizza3/asset/master/color3.jpg",
     profile: "./public/private/girly.jpeg", // Path to profile picture
@@ -60,6 +57,12 @@ type Textures = {
 };
 // Helper function to create materials
 const createMaterial = (fragmentShader: string, textures: Textures) => {
+  for (const t of Object.values(textures)) {
+    t.minFilter = THREE.LinearMipmapLinearFilter;
+    t.magFilter = THREE.LinearFilter;
+    t.generateMipmaps = true;
+    t.needsUpdate = true;
+  }
   return new THREE.ShaderMaterial({
     uniforms: {
       u_card_template: { value: textures.cardTemplate },
@@ -72,6 +75,9 @@ const createMaterial = (fragmentShader: string, textures: Textures) => {
           CONFIG.dimensions.height
         ),
       },
+      time: {
+        value: 0.0,
+      },
       u_noise_tex: { value: textures.noise },
       u_color: { value: textures.color },
       blurAmount: { value: 5.0 }, // Add blurAmount uniform
@@ -83,190 +89,148 @@ const createMaterial = (fragmentShader: string, textures: Textures) => {
   });
 };
 
-function createRoundedPlane(width: number, height: number, radius: number) {
-  const shape = new THREE.Shape();
-
-  // Define the rounded rectangle
-  shape.moveTo(-width / 2 + radius, -height / 2);
-  shape.lineTo(width / 2 - radius, -height / 2);
-  shape.quadraticCurveTo(
-    width / 2,
-    -height / 2,
-    width / 2,
-    -height / 2 + radius
-  );
-  shape.lineTo(width / 2, height / 2 - radius);
-  shape.quadraticCurveTo(width / 2, height / 2, width / 2 - radius, height / 2);
-  shape.lineTo(-width / 2 + radius, height / 2);
-  shape.quadraticCurveTo(
-    -width / 2,
-    height / 2,
-    -width / 2,
-    height / 2 - radius
-  );
-  shape.lineTo(-width / 2, -height / 2 + radius);
-  shape.quadraticCurveTo(
-    -width / 2,
-    -height / 2,
-    -width / 2 + radius,
-    -height / 2
-  );
-
-  // Extrude the shape into a 3D geometry
-  const geometry = new THREE.ExtrudeGeometry(shape, {
-    depth: 0.1, // Thickness of the plane
-    bevelEnabled: false,
-  });
-
-  return geometry;
-}
-
 // Main Scene Component
 type Props = {
   cardProps: GroupProps;
   profile: Profile;
 };
 export function GlowingCard({ cardProps, profile }: Props) {
-  const { camera, gl, scene } = useThree();
-  const [frontMaterial, setFrontMaterial] =
-    useState<THREE.ShaderMaterial | null>(null);
-  const [backMaterial, setBackMaterial] = useState<THREE.ShaderMaterial | null>(
-    null
-  );
-  const clock = useRef(new THREE.Clock());
-  const matrix = useRef(new THREE.Matrix4());
+  const { gl } = useThree();
+  const [textures, setTextures] = useState<Record<
+    keyof typeof CONFIG.textures,
+    THREE.Texture
+  > | null>(null);
   const cardRef = useRef<Group | null>(null);
-  const bloomRef = useRef<BloomEffect | null>(null);
-  const [hovered, setHovered] = useState(false);
-  const [flipped, setFlipped] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(true);
-
+  const [cardState, setCardState] = useState({
+    hovered: false,
+    flipped: false,
+    isAnimating: true,
+  });
+  const { hovered, flipped, isAnimating } = cardState;
   const { rotationY, scale } = useSpring({
     rotationY: flipped ? Math.PI : 0,
     scale: hovered ? 1.1 : 1,
     config: { mass: isAnimating ? 30 : 2, tension: 300, friction: 20 },
   });
 
+  const materials = useMemo(() => {
+    if (!textures) return null;
+    const backTextures = {
+      ...textures,
+      cardTemplate: textures.cardTemplateBack,
+    };
+    return {
+      front: createMaterial(fragPlane, textures),
+      back: createMaterial(fragPlaneback, backTextures),
+    };
+  }, [textures]);
+
   const [spring, api] = useSpring(() => ({
     rotation: [0, 0, 0], // Initial rotation
     config: { mass: 10, tension: 300, friction: 20 }, // Animation config
     onRest: () => {
-      setIsAnimating(false);
+      setCardState({
+        ...cardState,
+        isAnimating: false,
+      });
     },
   }));
 
   const [positionSpring, positionApi] = useSpring(() => ({
-    position: [0, 20, -50], // Initial position (above the final position)
+    position: [0, 20, -40], // Initial position (above the final position)
     config: { mass: 1, tension: 200, friction: 20 }, // Animation config
   }));
 
   useEffect(() => {
-    api.start({
-      rotation: [Math.PI * 2, Math.PI * 2, Math.PI * 2.05], // Rotate 360 degrees around the Y-axis
-      from: { rotation: [0, 0, 0] }, // Start from 0 rotation
+    if (materials?.front && materials?.back) {
+      api.start({
+        rotation: [Math.PI * 2, Math.PI * 2, Math.PI * 2.05], // Rotate 360 degrees around the Y-axis
+        from: { rotation: [0, 0, 0] }, // Start from 0 rotation
+      });
+
+      positionApi.start({
+        position: [0, 0, -50], // Final position
+        from: { position: [0, -30, -40] }, // Start from above
+        config: {
+          duration: 600, // Duration of 1 second
+          easing: (t) => t * (2 - t), // Decelerate easing function
+        },
+      });
+    }
+  }, [api, positionApi, materials]);
+
+  useEffect(() => {
+    CONFIG.dimensions.height = window.innerHeight;
+    const loadTextures = async () => {
+      const loadedTextures = await loadTexturesAsync<typeof CONFIG.textures>(
+        CONFIG.textures
+      );
+      loadedTextures.color.wrapS = THREE.RepeatWrapping;
+      loadedTextures.color.wrapT = THREE.RepeatWrapping;
+      for (const t of Object.values(loadedTextures)) {
+        t.anisotropy = gl.capabilities.getMaxAnisotropy();
+      }
+
+      setTextures(loadedTextures);
+    };
+
+    loadTextures();
+  }, []);
+
+  useEffect(() => {
+    if (!textures || !cardRef.current) return;
+
+    const loader = new THREE.TextureLoader();
+    let profileMesh: THREE.Mesh;
+    loader.load(profile.profileImageUrl, (texture) => {
+      const material = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+      });
+      profileMesh = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), material);
+      profileMesh.position.set(0, 0, 0.1);
+      cardRef.current?.add(profileMesh);
     });
 
-    positionApi.start({
-      position: [0, 0, -50], // Final position
-      from: { position: [0, -30, -50] }, // Start from above
-      config: {
-        duration: 600, // Duration of 1 second
-        easing: (t) => t * (2 - t), // Decelerate easing function
-      },
-    });
-  }, [api, positionApi]);
+    return () => {
+      if (profileMesh) {
+        cardRef.current?.remove(profileMesh);
+      }
+    };
+  }, [profile, textures]);
 
-  const period = 5;
-
-  useFrame(() => {
+  useFrame(({ clock }) => {
+    if (materials?.front)
+      materials.front.uniforms.time.value += clock.getDelta();
     const c = cardRef.current;
-    if (c) {
+    if (c && !(hovered || isAnimating)) {
       c.rotation.y += 0.002;
       c.rotation.x += 0.002;
     }
   });
 
-  // Load textures and create materials
-  useEffect(() => {
-    CONFIG.dimensions.height = window.innerHeight;
-    const textureLoader = new THREE.TextureLoader();
-    console.log(profile);
-    const textures = {
-      cardTemplate: textureLoader.load(CONFIG.textures.cardTemplate),
-      cardTemplateBack: textureLoader.load(CONFIG.textures.cardTemplateBack),
-      profile: textureLoader.load(profile.profileImageUrl), // Load profile texture
-      backTexture: textureLoader.load(CONFIG.textures.backTexture),
-      noise: textureLoader.load(CONFIG.textures.noise),
-      color: textureLoader.load(CONFIG.textures.color),
-      flower: textureLoader.load(CONFIG.textures.flower),
-    };
-    const backTextures = {
-      ...textures,
-      cardTemplate: textureLoader.load(CONFIG.textures.cardTemplateBack),
-      color: textureLoader.load(
-        CONFIG.textures.colorBack ?? CONFIG.textures.color
-      ),
-    };
-    const frontMat = createMaterial(fragPlane, textures);
-    const backMat = createMaterial(fragPlaneback, backTextures);
-    setFrontMaterial(frontMat);
-    setBackMaterial(backMat);
-
-    // Create a plane for the profile picture
-    const profileGeometry = new THREE.PlaneGeometry(18, 18); // Adjust size as needed
-    const profileMaterial = new THREE.MeshBasicMaterial({
-      map: textures.profile,
-      transparent: true,
-    });
-    const profilePlane = new THREE.Mesh(profileGeometry, profileMaterial);
-    profilePlane.position.set(0, 0, 0.1); // Slightly in front of the card
-
-    if (cardRef.current) {
-      cardRef.current.add(profilePlane);
-    }
-
-    // Setup composer and bloom pass
-  }, [camera, gl, profile]);
-
   return (
     <a.group
       ref={cardRef}
       scale={scale}
-      onClick={() => setFlipped(!flipped)}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
+      onClick={() => setCardState({ ...cardState, flipped: !flipped })}
+      onPointerOver={() => setCardState({ ...cardState, hovered: true })}
+      onPointerOut={() => setCardState({ ...cardState, hovered: false })}
       position={positionSpring.position as unknown as Vector3} // Apply animated position
       rotation={spring.rotation} // Apply animated rotation
       rotation-y={!isAnimating && rotationY}
     >
-      {/* Front Card */}
-      {frontMaterial && (
-        <mesh material={frontMaterial}>
+      {materials?.front && (
+        <mesh material={materials.front}>
           <planeGeometry args={[20, 30]} />
         </mesh>
       )}
 
-      {/* Back Card */}
-      {backMaterial && (
-        <mesh material={backMaterial} rotation={[0, Math.PI, 0]}>
+      {materials?.back && (
+        <mesh material={materials.back} rotation={[0, Math.PI, 0]}>
           <planeGeometry args={[20, 30]} />
         </mesh>
       )}
-      {/* <EffectComposer>
-        <Bloom
-          ref={bloomRef}
-          luminanceThreshold={0}
-          luminanceSmoothing={1}
-          intensity={1}
-          height={300}
-        />
-        <Vignette
-          offset={0.5} // vignette offset
-          darkness={1} // vignette darkness
-          eskil={false} // Eskil's vignette technique
-          blendFunction={BlendFunction.NORMAL} // blend mode
-        />
-      </EffectComposer> */}
     </a.group>
   );
 }

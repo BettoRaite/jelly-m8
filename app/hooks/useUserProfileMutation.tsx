@@ -1,5 +1,5 @@
 import { queryKeys } from "@/lib/config";
-import type { ProfileActivationPayload } from "@/lib/schemas/profile.schema";
+import type { CreateProfilePayload } from "@/lib/schemas/profile.schema";
 import { fetchWithHandler } from "@/lib/utils";
 import {
   useMutation,
@@ -9,37 +9,44 @@ import {
 
 export type Action =
   | {
-      type: "activate";
-      profileId: number;
-      payload: ProfileActivationPayload;
+      type: "create";
+      userId: number;
+      payload: FormData;
     }
   | {
-      type: "deactivate";
-      profileId: number;
+      type: "update";
+      userId: number;
+      payload: FormData;
+    }
+  | {
+      type: "delete";
+      userId: number;
     };
 // Profile is an entity that can be access through
 // two separate routes like user/:userId/profile and profile/:profileId/
-// This is /profiles/:profileId route
-export function useProfileMutation(
+// This is user/:userId/profile route
+export function useUserProfileMutation(
   options?: UseMutationOptions<unknown, Error, Action>
 ) {
   const queryClient = useQueryClient();
 
   return useMutation<unknown, Error, Action>({
     mutationFn: async (action) => {
-      let route = `/profiles/${action.profileId}`;
-      let method: "POST" | "PUT" | "DELETE" | "PATCH";
-      let body: FormData | Record<string, unknown> | undefined;
+      const route = `/users/${action.userId}/profile`;
+      let method: "POST" | "PUT" | "DELETE";
+      let body: FormData | undefined;
 
       switch (action.type) {
-        case "activate":
-          route += "/activate";
-          method = "PATCH";
+        case "create":
+          method = "POST";
           body = action.payload;
           break;
-        case "deactivate":
-          route += "/deactivate";
-          method = "PATCH";
+        case "update":
+          method = "PUT";
+          body = action.payload;
+          break;
+        case "delete":
+          method = "DELETE";
           break;
         default:
           throw new Error("Invalid action type");

@@ -8,55 +8,48 @@ import { MdKey } from "react-icons/md";
 import { useState } from "react";
 import { FaLock } from "react-icons/fa";
 import { FaLockOpen } from "react-icons/fa";
-
 type Props = {
   user: User;
 };
 
 export function UserCard({ user }: Props) {
   const [panelUnlocked, setPanelUnlocked] = useState(false);
-  const { userDeleteMutation } = useUserMutation({
-    type: "delete",
-    id: user.id,
-  });
+  const userDeleteMutation = useUserMutation();
 
-  const { userInvalidateAccessKeyMutation } = useUserMutation({
-    type: "invalidate-access-key",
-    id: user.id,
-  });
+  const userInvalidateAccessKeyMutation = useUserMutation();
 
   function handleDeleteUserClick() {
-    userDeleteMutation.mutate();
+    userDeleteMutation.mutate({
+      type: "delete",
+      id: user.id,
+    });
   }
-
   function handleInvalidateAccessKeyClick() {
-    userInvalidateAccessKeyMutation.mutate();
+    userInvalidateAccessKeyMutation.mutate({
+      type: "invalidate-access-key",
+      id: user.id,
+    });
   }
 
   function handleUnlockClick() {
     setPanelUnlocked(!panelUnlocked);
   }
 
-  const { name, accessKey, role, profileImageUrl } = user;
+  const { username, accessSecret, userRole } = user;
   return (
     <section className="w-96 flex p-6 items-center bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 gap-4">
       <div className="flex flex-col">
-        <img
-          src={profileImageUrl}
-          alt={`image of ${name}`}
-          className="rounded-full h-32 w-32 object-cover self-center mb-4 border border-gray-200"
-        />
-        <h1 className="text-xl font-semibold text-gray-800 capitalize text-center">
-          {name}
+        <h1 className="text-2xl font-semibold text-gray-800 capitalize">
+          {username}
         </h1>
         <p className="text-gray-600 mt-2">
           Access Key:{" "}
           <span className="font-medium bg-gray-600 hover:bg-white transition-colors duration-300">
-            {accessKey}
+            {accessSecret}
           </span>
         </p>
         <p className="text-gray-600 mt-1">
-          Role: <span className="font-medium">{role}</span>
+          Role: <span className="font-medium">{userRole}</span>
         </p>
       </div>
 

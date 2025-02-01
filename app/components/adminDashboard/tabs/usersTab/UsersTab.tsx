@@ -5,18 +5,14 @@ import type { User } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "@/components/Loader";
 import { UserCard } from "./UserCard";
-import { getAuth } from "@/hooks/useUser";
+import { getAuth } from "@/hooks/useAuth";
+import useUserQuery from "@/hooks/useUserQuery";
 
 export function UsersTab() {
   const auth = getAuth();
-  const { data: getUsersResponse, status } = useQuery<User[]>({
+  const { data: getUsersResponse, status } = useUserQuery({
+    type: "users",
     queryKey: queryKeys.usersKey,
-    queryFn: async () => {
-      const response = await fetch(constructFetchUrl("/users"), {
-        credentials: "include",
-      });
-      return (await response.json()).data;
-    },
   });
   if (status === "pending") {
     return <Loader />;
@@ -30,7 +26,7 @@ export function UsersTab() {
       <CreateUser />
       <div className="flex justify-start flex-wrap items-start gap-10 px-10 mb-60">
         {getUsersResponse.map((u) => {
-          if (auth.id === u.id) {
+          if (auth?.id === u.id) {
             return null;
           }
           return <UserCard key={u.id} user={u} />;

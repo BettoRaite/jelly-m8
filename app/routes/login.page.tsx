@@ -1,25 +1,34 @@
-import { Link } from "react-router";
-import type { Route } from "./+types/home";
 import { constructFetchUrl } from "@/lib/utils";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient, queryKeys } from "@/lib/config";
-import { useState } from "react";
-import { useNavigate } from "react-router";
-type Credentials = {
-  accessKey: string;
-};
-export default function Home() {
+import { useNavigate, Link } from "react-router"; // Updated import for react-router-dom
+import { useForm } from "react-hook-form";
+import {
+  userLoginSchema,
+  type UserLoginPayload,
+} from "@/lib/schemas/login.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+export default function Login() {
   const navigate = useNavigate();
-  const [accessKey, setAccessKey] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<UserLoginPayload>({
+    resolver: zodResolver(userLoginSchema),
+  });
+
   const mutation = useMutation({
-    mutationFn: async (creds: Credentials) => {
+    mutationFn: async (data: UserLoginPayload) => {
+      console.log(data);
       const response = await fetch(constructFetchUrl("/auth/login"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(creds),
+        body: JSON.stringify(data),
       });
       if (!response.ok) {
         throw new Error("Failed to login user");
@@ -38,39 +47,40 @@ export default function Home() {
     },
   });
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    mutation.mutate({
-      accessKey,
-    }); // Trigger the mutation with the credentials
-  }
+  const onSubmit = (data: UserLoginPayload) => {
+    mutation.mutate(data); // Trigger the mutation with the credentials
+  };
 
-  const { status } = mutation;
   return (
     <main className="flex justify-center items-center h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-96">
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
             <input
               type="text"
               placeholder="Access Key"
-              value={accessKey}
-              onChange={(e) => setAccessKey(e.target.value)}
-              required
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {...register("accessSecret", {
+                required: "Access Key is required",
+              })}
+              className={`w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.accessSecret ? "border-red-500" : ""
+              }`}
             />
+            {errors.accessSecret && (
+              <span className="text-red-500 text-sm">
+                {errors.accessSecret.message}
+              </span>
+            )}
           </div>
           <button
             type="submit"
-            disabled={status === "pending"}
+            disabled={isSubmitting}
             className={`w-full p-2 text-white font-semibold rounded ${
-              status === "pending"
-                ? "bg-gray-400"
-                : "bg-blue-500 hover:bg-blue-600"
+              isSubmitting ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
             } transition duration-200`}
           >
-            {status === "pending" ? "Loading..." : "Login"}
+            {isSubmitting ? "Loading..." : "Login"}
           </button>
           {mutation.isError && (
             <div className="mt-4 text-red-500 text-center">

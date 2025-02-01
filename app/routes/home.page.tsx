@@ -1,38 +1,23 @@
-import { Link } from "react-router";
-import type { Route } from "./+types/home";
-import { queryClient } from "@/lib/config";
-import { useUser } from "@/hooks/useUser";
-import { Loader } from "@/components/Loader";
 import { AppScene } from "@/components/AppScene";
-import { Vector3 } from "three";
+import { Loader } from "@/components/Loader";
 import { HomeStage } from "@/components/models/HomeStage";
-import { OrbitControls } from "@react-three/drei";
-import { FaDashcube } from "react-icons/fa";
+import { useAuth } from "@/hooks/useAuth";
 import type { IconType } from "react-icons/lib";
-import { MdOutlineSpaceDashboard } from "react-icons/md";
-import { BiShow } from "react-icons/bi";
 import { LuEyeClosed } from "react-icons/lu";
 import { RxEyeOpen } from "react-icons/rx";
-
+import { Link } from "react-router";
+import { Vector3 } from "three";
+import AnimatedGradientBackground from "@/components/Backgrounds/AnimatedGradientBackground";
 import { useState } from "react";
-import { GlowingCard } from "@/components/models/GlowingCard";
-import GradientBackground from "@/components/GradientBackground";
-
-export function meta(_: Route.MetaArgs) {
-  return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
-}
+import { HiOutlineSquare2Stack } from "react-icons/hi2";
 
 export default function Home() {
-  const { data: getUserResponse, status } = useUser();
+  const { data: getUserResponse, status } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
   if (status === "pending") {
     return <Loader />;
   }
-
-  const { role } = getUserResponse?.data ?? {};
+  const { userRole: role } = getUserResponse ?? {};
 
   const createLink = (to: string, name = to, Icon?: IconType) => {
     if (Icon) {
@@ -57,7 +42,7 @@ export default function Home() {
 
   return (
     <div className="relative" style={{ width: "100dvw", height: "100dvh" }}>
-      <GradientBackground />
+      <AnimatedGradientBackground />
       {!role && createLink("login", "Рег")}
       {role === "admin" && createLink("dashboard")}
       {role === "user" && createLink("user-profile", "Профиль")}
@@ -69,11 +54,10 @@ export default function Home() {
         <Link
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="bg-white rounded-lg p-2 shadow-lg hover:p-4 duration-300"
-          to={"/profiles"}
+          className=" rounded-lg p-2 shadow-lg hover:scale-125 duration-500"
+          to={"/cards"}
         >
-          {isHovered && <RxEyeOpen className="text-5xl" />}
-          {!isHovered && <LuEyeClosed className="text-5xl" />}
+          <HiOutlineSquare2Stack className="text-4xl text-cyan-50" />
         </Link>
       </div>
     </div>
