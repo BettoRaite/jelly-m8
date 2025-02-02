@@ -16,7 +16,8 @@ import type { BloomEffect } from "postprocessing";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import * as THREE from "three";
-
+import { createMaterial } from "@/lib/helpers/createMaterial";
+import { Texture } from "@react-three/drei";
 // Configuration
 const CONFIG = {
   exposure: 2.8,
@@ -28,65 +29,20 @@ const CONFIG = {
   color2: [0, 150, 255],
   isanimate: false,
   textures: {
-    cardTemplate: "./public/cardtemplate.png",
-    cardTemplateBack:
+    u_card_template: "./public/cardtemplate.png",
+    u_card_template_back:
       "https://raw.githubusercontent.com/pizza3/asset/master/cardtemplateback4.png",
-    flower: "./public/heart.png",
-    noise: "https://raw.githubusercontent.com/pizza3/asset/master/noise2.png",
-    color:
+    u_flower: "./public/heart.png",
+    u_noise: "https://raw.githubusercontent.com/pizza3/asset/master/noise2.png",
+    u_color:
       "https://images.unsplash.com/photo-1589307004173-3c95204d00ee?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHBhdHRlcm58ZW58MHx8MHx8fDI%3D",
-    backTexture:
+    u_back_texture:
       "https://raw.githubusercontent.com/pizza3/asset/master/color3.jpg",
-    profile: "./public/private/girly.jpeg", // Path to profile picture
   },
   dimensions: {
     width: 1301,
     height: 0,
   },
-};
-
-type Textures = {
-  cardTemplate: THREE.Texture;
-  cardTemplateBack: THREE.Texture;
-  flower: THREE.Texture;
-  noise: THREE.Texture;
-  color: THREE.Texture;
-  colorBack?: THREE.Texture;
-  backTexture: THREE.Texture;
-  profile: THREE.Texture;
-};
-// Helper function to create materials
-const createMaterial = (fragmentShader: string, textures: Textures) => {
-  for (const t of Object.values(textures)) {
-    t.minFilter = THREE.LinearMipmapLinearFilter;
-    t.magFilter = THREE.LinearFilter;
-    t.generateMipmaps = true;
-    t.needsUpdate = true;
-  }
-  return new THREE.ShaderMaterial({
-    uniforms: {
-      u_card_template: { value: textures.cardTemplate },
-      u_back_texture: { value: textures.backTexture },
-      u_noise: { value: textures.noise },
-      u_skull_render: { value: textures.flower },
-      resolution: {
-        value: new THREE.Vector2(
-          CONFIG.dimensions.width / 2,
-          CONFIG.dimensions.height
-        ),
-      },
-      time: {
-        value: 0.0,
-      },
-      u_noise_tex: { value: textures.noise },
-      u_color: { value: textures.color },
-      blurAmount: { value: 5.0 }, // Add blurAmount uniform
-    },
-    fragmentShader,
-    vertexShader: vert,
-    transparent: true,
-    depthWrite: false,
-  });
 };
 
 // Main Scene Component
@@ -117,15 +73,15 @@ export function GlowingCard({ cardProps, profile }: Props) {
     if (!textures) return null;
     const backTextures = {
       ...textures,
-      cardTemplate: textures.cardTemplateBack,
+      u_card_template: textures.u_card_template_back,
     };
     return {
-      front: createMaterial(fragPlane, textures),
-      back: createMaterial(fragPlaneback, backTextures),
+      front: createMaterial(fragPlane, vert, textures),
+      back: createMaterial(fragPlaneback, vert, backTextures),
     };
   }, [textures]);
 
-  const [spring, api] = useSpring(() => ({
+  const [rotationSpring, rotationApi] = useSpring(() => ({
     rotation: [0, 0, 0], // Initial rotation
     config: { mass: 10, tension: 300, friction: 20 }, // Animation config
     onRest: () => {
@@ -141,9 +97,10 @@ export function GlowingCard({ cardProps, profile }: Props) {
     config: { mass: 1, tension: 200, friction: 20 }, // Animation config
   }));
 
+  // Starting card animation only after the card materials has loaded(front and back)
   useEffect(() => {
     if (materials?.front && materials?.back) {
-      api.start({
+      rotationApi.start({
         rotation: [Math.PI * 2, Math.PI * 2, Math.PI * 2.05], // Rotate 360 degrees around the Y-axis
         from: { rotation: [0, 0, 0] }, // Start from 0 rotation
       });
@@ -157,26 +114,36 @@ export function GlowingCard({ cardProps, profile }: Props) {
         },
       });
     }
-  }, [api, positionApi, materials]);
+  }, [rotationApi, positionApi, materials]);
 
+  // Loading textures
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Textures are loaded only once
   useEffect(() => {
     CONFIG.dimensions.height = window.innerHeight;
     const loadTextures = async () => {
       const loadedTextures = await loadTexturesAsync<typeof CONFIG.textures>(
         CONFIG.textures
       );
-      loadedTextures.color.wrapS = THREE.RepeatWrapping;
-      loadedTextures.color.wrapT = THREE.RepeatWrapping;
+      loadedTextures.u_color.wrapS = THREE.RepeatWrapping;
+      loadedTextures.u_color.wrapT = THREE.RepeatWrapping;
       for (const t of Object.values(loadedTextures)) {
         t.anisotropy = gl.capabilities.getMaxAnisotropy();
       }
 
-      setTextures(loadedTextures);
+      setTextures({
+        ...loadedTextures,
+        u_resolution: new THREE.Vector2(
+          CONFIG.dimensions.width / 2,
+          CONFIG.dimensions.height
+        ),
+        time: 0.0,
+      });
     };
 
     loadTextures();
   }, []);
 
+  // Creating a profile surface and loading image from the web
   useEffect(() => {
     if (!textures || !cardRef.current) return;
 
@@ -199,9 +166,9 @@ export function GlowingCard({ cardProps, profile }: Props) {
     };
   }, [profile, textures]);
 
+  // Do card rotation, update texture
   useFrame(({ clock }) => {
-    if (materials?.front)
-      materials.front.uniforms.time.value += clock.getDelta();
+    if (materials?.front) materials.front.uniforms.time.value += 0.01;
     const c = cardRef.current;
     if (c && !(hovered || isAnimating)) {
       c.rotation.y += 0.002;
@@ -217,7 +184,7 @@ export function GlowingCard({ cardProps, profile }: Props) {
       onPointerOver={() => setCardState({ ...cardState, hovered: true })}
       onPointerOut={() => setCardState({ ...cardState, hovered: false })}
       position={positionSpring.position as unknown as Vector3} // Apply animated position
-      rotation={spring.rotation} // Apply animated rotation
+      rotation={rotationSpring.rotation} // Apply animated rotation
       rotation-y={!isAnimating && rotationY}
     >
       {materials?.front && (

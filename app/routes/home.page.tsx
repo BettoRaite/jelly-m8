@@ -1,15 +1,13 @@
 import { AppScene } from "@/components/AppScene";
+import AnimatedGradientBackground from "@/components/Backgrounds/AnimatedGradientBackground";
 import { Loader } from "@/components/Loader";
 import { HomeStage } from "@/components/models/HomeStage";
 import { useAuth } from "@/hooks/useAuth";
-import type { IconType } from "react-icons/lib";
-import { LuEyeClosed } from "react-icons/lu";
-import { RxEyeOpen } from "react-icons/rx";
-import { Link } from "react-router";
-import { Vector3 } from "three";
-import AnimatedGradientBackground from "@/components/Backgrounds/AnimatedGradientBackground";
 import { useState } from "react";
 import { HiOutlineSquare2Stack } from "react-icons/hi2";
+import type { IconType } from "react-icons/lib";
+import { Link } from "react-router";
+import { Vector3 } from "three";
 
 export default function Home() {
   const { data: getUserResponse, status } = useAuth();

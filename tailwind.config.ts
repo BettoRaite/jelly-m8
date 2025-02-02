@@ -21,8 +21,13 @@ export default {
         moveInCircle: "moveInCircle 20s ease infinite",
         moveVertical: "moveVertical 30s ease infinite",
         moveHorizontal: "moveHorizontal 40s ease infinite",
+        "scale-up-down": "scale-up-down 2s infinite",
       },
       keyframes: {
+        "scale-up-down": {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.5)" },
+        },
         moveInCircle: {
           "0%": { transform: "rotate(0deg)" },
           "50%": { transform: "rotate(180deg)" },
