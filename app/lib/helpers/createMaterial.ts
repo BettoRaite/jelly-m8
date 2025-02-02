@@ -13,6 +13,8 @@ export const createMaterial = (
       uniform.magFilter = THREE.LinearFilter;
       uniform.generateMipmaps = true;
       uniform.needsUpdate = true;
+      uniform.wrapS = THREE.ClampToEdgeWrapping;
+      uniform.wrapT = THREE.ClampToEdgeWrapping;
     }
     uniforms[t] = {
       value: uniform,
