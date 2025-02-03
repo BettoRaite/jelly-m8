@@ -1,14 +1,19 @@
 import { Link } from "react-router";
-import { RiArrowGoBackFill } from "react-icons/ri";
-import { MdKeyboardDoubleArrowLeft } from "react-icons/md";
+import { RiArrowGoBackLine } from "react-icons/ri";
+import { joinClasses } from "@/lib/utils/strings";
 
-export function GoBack({ to }: { to: string }) {
+type Props = { to: string; className?: string };
+export function GoBack({ to, className }: Props) {
   return (
     <Link
       to={to}
-      className="absolute top-4 left-4 z-10 rounded-lg shadow-lg p-2 border border-gray-200 hover:scale-110 hover:border-pink-400 text-gray-400 hover:text-pink-400 duration-300"
+      className={joinClasses(
+        "absolute top-4 left-4 z-50 rounded-lg shadow-lg p-4 transition-opacity duration-300",
+        "opacity-40 hover:opacity-100 hover:text-white",
+        className
+      )}
     >
-      <MdKeyboardDoubleArrowLeft className="text-2xl" />
+      <RiArrowGoBackLine className="text-lg" />
     </Link>
   );
 }

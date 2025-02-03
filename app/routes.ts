@@ -12,8 +12,8 @@ export default [
     route("cards", "./routes/cards.page.tsx"),
     route("login", "./routes/login.page.tsx"),
     route("dashboard", "./routes/adminDashboard.page.tsx"),
-    ...prefix("cards", [
-      route("profiles/:profileId", "./routes/profile.page.tsx"),
-    ]),
+    route("cards/tribute/:profileId", "./routes/tribute.page.tsx"),
+    route("profile", "./routes/profile.page.tsx"),
+    route("user-dashboard", "./routes/userDashboard.page.tsx"),
   ]),
 ] satisfies RouteConfig;

@@ -27,7 +27,8 @@ export interface Profile {
 // Type for Compliments Table
 export interface Compliment {
   id: number; // serial type
-  messageContent: string; // text
   userId: number; // integer type
   profileId: number; // integer type
+  title: string;
+  content: string; // text
 }

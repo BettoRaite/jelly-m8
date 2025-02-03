@@ -4,6 +4,7 @@ import { Loader } from "@/components/Loader";
 import { HomeStage } from "@/components/models/HomeStage";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
+import { FaUser } from "react-icons/fa";
 import { HiOutlineSquare2Stack } from "react-icons/hi2";
 import type { IconType } from "react-icons/lib";
 import { Link } from "react-router";
@@ -48,14 +49,22 @@ export default function Home() {
         <ambientLight color="0x999999" position={[0, 0, 0]} scale={10} />
         <HomeStage />
       </AppScene>
-      <div className="flex w-full absolute bottom-0 justify-center mb-8">
+      <div className="flex w-full absolute bottom-0 gap-4 justify-center mb-8">
         <Link
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           className=" rounded-lg p-2 shadow-lg hover:scale-125 duration-500"
           to={"/cards"}
         >
-          <HiOutlineSquare2Stack className="text-4xl text-cyan-50" />
+          <HiOutlineSquare2Stack className="text-3xl text-cyan-50" />
+        </Link>
+        <Link
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className=" rounded-lg p-2 shadow-lg hover:scale-125 duration-500"
+          to={"/user-dashboard"}
+        >
+          <FaUser className="text-3xl text-cyan-50" />
         </Link>
       </div>
     </div>

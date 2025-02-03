@@ -1,14 +1,21 @@
 import { useFormContext } from "react-hook-form";
 import { useFormFieldContext } from "./FormFieldContext";
+import { joinClasses } from "@/lib/utils/strings";
 
 interface FieldSelectInputProps {
   options: {
     label: string;
     value: string | number;
   }[]; // Array of options for the select field
+  ctaText?: string;
+  className?: string;
 }
 
-export default function FieldSelectInput({ options }: FieldSelectInputProps) {
+export default function FieldSelectInput({
+  options,
+  ctaText,
+  className,
+}: FieldSelectInputProps) {
   const {
     formState: { errors },
     register,
@@ -19,12 +26,18 @@ export default function FieldSelectInput({ options }: FieldSelectInputProps) {
     <select
       {...register(fieldName)}
       id={fieldName}
-      className={`text-sm mt-1 block w-full p-2 border ${
-        errors[fieldName] ? "border-red-500" : "border-gray-200"
-      } rounded-md focus:outline-none focus:border-gray-400 transition-colors duration-200`}
+      className={joinClasses(
+        "w-full border border-slate-200 bg-transparent rounded-md px-3 py-2 transition",
+        "duration-300 ease focus:outline-none focus:border-slate-400",
+        "hover:border-slate-300 shadow-sm focus:shadow",
+        {
+          "border-red-500": errors.fieldName,
+        },
+        className
+      )}
     >
-      <option value="" disabled>
-        Select {fieldName}
+      <option className="" value="" disabled>
+        {ctaText ?? "Select"}
       </option>
       {options.map((option) => (
         <option

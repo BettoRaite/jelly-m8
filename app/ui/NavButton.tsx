@@ -23,16 +23,22 @@ function NavButton({
 
   return (
     <motion.button
-      whileTap={{ scale: 0.5 }}
       onClick={onClick}
       className={joinClasses(
-        "p-4 bg-transparent border border-gray-300 rounded-full transition-transform duration-500 overflow-hidden hover:scale-150",
+        "h-16 w-16 ",
+        "border border-gray-300 rounded-full transition-transform duration-500 overflow-hidden",
         className
       )}
       aria-label={ariaLabel}
       disabled={disabled}
     >
-      <Icon className={classNameIcon ?? ""} />
+      <motion.div
+        whileTap={{ scale: 0.4 }} // Slightly reduced scale for tap effect
+        className="h-full w-full flex justify-center items-center"
+      >
+        <Icon className={classNameIcon ?? ""} />
+      </motion.div>
+      <div className="bg-white w-full h-full blur-xl opacity-10 shadow-lg" />
     </motion.button>
   );
 }

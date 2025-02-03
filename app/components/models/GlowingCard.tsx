@@ -2,6 +2,8 @@ import { loadTexturesAsync } from "@/lib/helpers/loadTextures";
 import {
   fragPlane,
   fragPlaneback,
+  profileImageFragmentShader,
+  profileImageVertexShader,
   vert,
 } from "@/lib/shaders/glowingCard.shader";
 import type { Profile } from "@/lib/types";
@@ -123,9 +125,9 @@ export function GlowingCard({ cardProps, profile }: Props) {
   useEffect(() => {
     CONFIG.dimensions.height = window.innerHeight;
     const loadTextures = async () => {
-      const loadedTextures = await loadTexturesAsync<typeof CONFIG.textures>(
-        CONFIG.textures
-      );
+      const loadedTextures = await loadTexturesAsync<typeof CONFIG.textures>({
+        ...CONFIG.textures,
+      });
       loadedTextures.u_color.wrapS = THREE.RepeatWrapping;
       loadedTextures.u_color.wrapT = THREE.RepeatWrapping;
       for (const t of Object.values(loadedTextures)) {
@@ -136,7 +138,6 @@ export function GlowingCard({ cardProps, profile }: Props) {
         ...loadedTextures,
         u_resolution: new THREE.Vector2(
           CONFIG.dimensions.width / 2,
-          // There is a weird artifact on the texture like a red spot, the magic num is offset
           CONFIG.dimensions.height
         ),
         time: 0.0,
@@ -152,15 +153,36 @@ export function GlowingCard({ cardProps, profile }: Props) {
 
     const loader = new THREE.TextureLoader();
     let profileMesh: THREE.Mesh;
-    loader.load(profile.profileImageUrl, (texture) => {
-      const material = new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-      });
-      profileMesh = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), material);
-      profileMesh.position.set(0, 0, 0.1);
-      cardRef.current?.add(profileMesh);
-    });
+    loader.load(
+      profile.profileImageUrl,
+      (texture) => {
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+        texture.generateMipmaps = true;
+        texture.anisotropy = gl.capabilities.getMaxAnisotropy();
+
+        const material = createMaterial(
+          profileImageFragmentShader,
+          profileImageVertexShader,
+          {
+            profileImage: texture,
+            brightness: 1.0,
+            borderRadius: 1.38,
+            time: 0.0,
+          }
+        );
+        profileMesh = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), material);
+        profileMesh.position.set(0, 0, 0.1);
+        cardRef.current?.add(profileMesh);
+      },
+      undefined, // onProgress callback (optional)
+      (error) => {
+        console.error(
+          "An error occurred while loading the profile image texture.",
+          error
+        );
+      }
+    );
 
     return () => {
       if (profileMesh) {

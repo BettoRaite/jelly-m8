@@ -1,8 +1,9 @@
 import { useFormContext } from "react-hook-form";
 import { useFormFieldContext } from "./FormFieldContext";
 import type { HTMLProps } from "react";
+import { joinClasses } from "@/lib/utils/strings";
 export default function FieldTextInput(
-  inputProps: Omit<HTMLProps<HTMLInputElement>, "type" | "id"> = {}
+  props: Omit<HTMLProps<HTMLInputElement>, "type" | "id"> = {}
 ) {
   const {
     formState: { errors },
@@ -15,12 +16,16 @@ export default function FieldTextInput(
       type="text"
       id={fieldName}
       placeholder={fieldName}
-      {...inputProps}
-      className={`text-sm bg-white mt-1 block w-full p-2 border text-gray-700 ${
-        errors.fieldName ? "border-red-500" : "border-gray-200"
-      } rounded-md focus:outline-none transition-colors duration-200 ${
-        inputProps.className ?? ""
-      }`}
+      {...props}
+      className={joinClasses(
+        "w-full border border-slate-200 bg-transparent rounded-md px-3 py-2 transition",
+        "duration-300 ease focus:outline-none focus:border-slate-400",
+        "hover:border-slate-300 shadow-sm focus:shadow",
+        {
+          "border-red-500": errors.fieldName,
+        },
+        props.className
+      )}
     />
   );
 }

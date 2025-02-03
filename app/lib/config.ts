@@ -7,6 +7,7 @@ export const queryKeys = {
   authKey: [uuidv4()],
   usersKey: [uuidv4()],
   profilesKey: [uuidv4()],
+  complimentsKey: [uuidv4()],
 };
 
 export const config = {

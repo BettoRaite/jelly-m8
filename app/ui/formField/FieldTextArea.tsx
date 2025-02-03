@@ -6,8 +6,12 @@ import type {
 } from "react-hook-form";
 import { useFormContext } from "react-hook-form";
 import { useFormFieldContext } from "./FormFieldContext";
+import type { HTMLProps } from "react";
+import { joinClasses } from "@/lib/utils/strings";
 
-export default function FieldTextArea() {
+export default function FieldTextArea(
+  props: Omit<HTMLProps<HTMLTextAreaElement>, "type" | "id"> = {}
+) {
   const {
     formState: { errors },
     register,
@@ -18,9 +22,16 @@ export default function FieldTextArea() {
       placeholder={fieldName}
       id={fieldName}
       {...register(fieldName)}
-      className={`w-full border ${
-        errors[fieldName] ? "border-red-500" : "border-gray-200"
-      } rounded-lg focus:outline-0 focus:border-gray-400 duration-300 p-2 text-sm`}
+      {...props}
+      className={joinClasses(
+        "w-full border border-slate-200 bg-transparent rounded-md px-3 py-2 transition",
+        "duration-300 ease focus:outline-none focus:border-slate-400",
+        "hover:border-slate-300 shadow-sm focus:shadow",
+        {
+          "border-red-500": errors.fieldName,
+        },
+        props.className
+      )}
     />
   );
 }

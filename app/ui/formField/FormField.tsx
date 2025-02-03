@@ -1,4 +1,3 @@
-import { createContext, useContext } from "react";
 import type { ReactNode } from "react";
 import type { FieldValues, Path } from "react-hook-form";
 import { TextInput } from "../form/TextInput";
@@ -24,7 +23,14 @@ export function FormField<T extends FieldValues>({
 }: Props<T>) {
   return (
     <FormFieldContext.Provider value={{ fieldName }}>
-      <div className={joinClasses("mb-4", className)}>{children}</div>
+      <div
+        className={joinClasses(
+          "placeholder:text-slate-400 text-slate-700 text-sm",
+          className
+        )}
+      >
+        {children}
+      </div>
     </FormFieldContext.Provider>
   );
 }

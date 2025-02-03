@@ -15,6 +15,7 @@ export default {
           '"Segoe UI Symbol"',
           '"Noto Color Emoji"',
         ],
+        inter: ['"Inter"'],
       },
       animation: {
         moveInCircle: "moveInCircle 20s ease infinite",

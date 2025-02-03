@@ -115,7 +115,7 @@ export default function Home() {
       section.scrollIntoView({ behavior: "smooth", block: "start" });
       setHasScrolled(target === "down");
       setTimeout(() => {
-        navigate(`profiles/${profile.id}`);
+        navigate(`tribute/${profile.id}`);
       }, 500);
     }
   };
@@ -146,7 +146,7 @@ export default function Home() {
             className={joinClasses(
               "z-20 flex absolute top-[40%] left-[10%] hover:scale-125 cursor-pointer",
               "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
-              "font-bold text-7xl text-white p-4 rounded-lg",
+              "text-6xl font-bold text-white p-4 rounded-lg font-inter",
               {
                 "top-[23%] left-auto": !profile.isActivated,
               }
@@ -161,8 +161,8 @@ export default function Home() {
           onClick={() => handleMoveClick(-1)}
           disabled={activeIndex === 0}
           ariaLabel="Previous profile"
-          className="z-40 absolute bottom-4 left-4"
-          classNameIcon="text-gray-200"
+          className="z-40 absolute bottom-4 left-4 border-none cursor-pointer hover:text-gray-100 text-gray-500"
+          classNameIcon="duration-300"
         />
 
         <NavButton
@@ -170,8 +170,8 @@ export default function Home() {
           onClick={() => handleMoveClick(1)}
           disabled={activeIndex === (profiles?.length ?? 1) - 1}
           ariaLabel="Next profile"
-          className="z-40 absolute bottom-4 right-4 border-gray-700"
-          classNameIcon="text-gray-200"
+          className="z-40 absolute bottom-4 right-4 border-none cursor-pointer hover:text-gray-100 text-gray-500"
+          classNameIcon="duration-300"
         />
 
         {profile.isActivated && (
