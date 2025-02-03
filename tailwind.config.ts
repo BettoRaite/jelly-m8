@@ -16,7 +16,6 @@ export default {
           '"Noto Color Emoji"',
         ],
       },
-
       animation: {
         moveInCircle: "moveInCircle 20s ease infinite",
         moveVertical: "moveVertical 30s ease infinite",

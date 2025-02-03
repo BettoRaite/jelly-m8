@@ -18,39 +18,40 @@ import { joinClasses } from "@/lib/utils/strings";
 import type { Profile } from "@/lib/types";
 import ReactConfetti from "react-confetti";
 import { forwardRef } from "react";
+import NavButton from "@/ui/NavButton";
 const CAM_MOVE_DIST = 1.2;
 
 // Extracted NavButton Component
-const NavButton = ({
-  direction,
-  onClick,
-  disabled,
-  ariaLabel,
-}: {
-  direction: "left" | "right";
-  onClick: () => void;
-  disabled: boolean;
-  ariaLabel: string;
-}) => {
-  const Icon = direction === "left" ? FaChevronLeft : FaChevronRight;
+// const NavButton = ({
+//   direction,
+//   onClick,
+//   disabled,
+//   ariaLabel,
+// }: {
+//   direction: "left" | "right";
+//   onClick?: () => void;
+//   disabled?: boolean;
+//   ariaLabel?: string;
+// }) => {
+//   const Icon = direction === "left" ? FaChevronLeft : FaChevronRight;
 
-  return (
-    <motion.button
-      whileTap={{ scale: 0.8 }}
-      onClick={onClick}
-      className={`z-20 absolute top-[45%] ${
-        direction === "left" ? "left-4" : "right-4"
-      }
-        p-4 bg-gray-200 rounded-full transition-all duration-300 ${
-          disabled ? "pointer-events-none opacity-20" : ""
-        }`}
-      aria-label={ariaLabel}
-      disabled={disabled}
-    >
-      <Icon />
-    </motion.button>
-  );
-};
+//   return (
+//     <motion.button
+//       whileTap={{ scale: 0.8 }}
+//       onClick={onClick}
+//       className={`z-20 absolute top-[45%] ${
+//         direction === "left" ? "left-4" : "right-4"
+//       }
+//         p-4 bg-gray-200 rounded-full transition-all duration-300 ${
+//           disabled ? "pointer-events-none opacity-20" : ""
+//         }`}
+//       aria-label={ariaLabel}
+//       disabled={disabled}
+//     >
+//       <Icon />
+//     </motion.button>
+//   );
+// };
 
 // Extracted ProfileScene Component
 const ProfileScene = ({ profile }: { profile: Profile }) => (
@@ -132,8 +133,9 @@ export default function Home() {
       style={{ width: "100dvw", height: "100dvh" }}
     >
       <ScrollSection ref={cardsSectionRef} hasScrolled={hasScrolled}>
+        <AnimatedGradientBackground preset="DEFAULT" />
         {!profile.isActivated && <ProfileActivationOverlay profile={profile} />}
-        <AnimatedGradientBackground />
+        {/* <div className="absolute z-0 opacity-100 top-0 left-0 h-full w-full bg-[url('../public/hearts-no-bg.png')] bg-repeat bg-center animate-scroll" /> */}
         <GoBack to="/" />
         {!hasScrolled && <ParticlesWrapper />}
 
@@ -150,16 +152,17 @@ export default function Home() {
               }
             )}
           >
-            {profile.displayName ?? "..."}
+            {(profile.isActivated && profile.displayName) ?? "..."}
             <ReactConfetti className="h-full w-full" />
           </h1>
         </header>
-
         <NavButton
           direction="left"
           onClick={() => handleMoveClick(-1)}
           disabled={activeIndex === 0}
           ariaLabel="Previous profile"
+          className="z-40 absolute bottom-4 left-4"
+          classNameIcon="text-gray-200"
         />
 
         <NavButton
@@ -167,6 +170,8 @@ export default function Home() {
           onClick={() => handleMoveClick(1)}
           disabled={activeIndex === (profiles?.length ?? 1) - 1}
           ariaLabel="Next profile"
+          className="z-40 absolute bottom-4 right-4 border-gray-700"
+          classNameIcon="text-gray-200"
         />
 
         {profile.isActivated && (
@@ -183,9 +188,9 @@ export default function Home() {
         )}
       </ScrollSection>
 
-      <ScrollSection ref={profileSectionRef} hasScrolled={hasScrolled}>
-        <GlassyBackground>{/* Profile Details Content */}</GlassyBackground>
-      </ScrollSection>
+      <section ref={profileSectionRef} className="h-dvh w-dvh bg-black">
+        {hasScrolled && <ReactConfetti className="h-full w-full" />}
+      </section>
     </div>
   );
 }

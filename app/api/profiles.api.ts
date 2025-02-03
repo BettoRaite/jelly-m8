@@ -1,5 +1,5 @@
 import { config } from "@/lib/config";
-import type { CreateProfileSchema } from "@/lib/schemas/profiles.schema";
+import type { CreateProfilePayload } from "@/lib/schemas/profile.schema";
 
 type Action =
   | {
@@ -7,7 +7,7 @@ type Action =
     }
   | {
       type: "create";
-      profileData: CreateProfileSchema;
+      profileData: CreateProfilePayload;
     }
   | {
       type: "delete";
@@ -16,7 +16,7 @@ type Action =
   | {
       type: "update";
       id: number;
-      fields: Partial<CreateProfileSchema>;
+      fields: Partial<CreateProfilePayload>;
     };
 
 export const runProfilesFetch = (action: Action): Promise<Response> => {

@@ -30,9 +30,11 @@ const CONFIG = {
   isanimate: false,
   textures: {
     u_card_template: "./public/cardtemplate.png",
+    cardTemplate: "./public/cardtemplate.png",
     u_card_template_back:
       "https://raw.githubusercontent.com/pizza3/asset/master/cardtemplateback4.png",
     u_skull_render: "./public/heart.png",
+    backPattern: "./public/heart.png",
     u_noise: "https://raw.githubusercontent.com/pizza3/asset/master/noise2.png",
     u_color:
       "https://images.unsplash.com/photo-1589307004173-3c95204d00ee?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHBhdHRlcm58ZW58MHx8MHx8fDI%3D",
@@ -135,7 +137,7 @@ export function GlowingCard({ cardProps, profile }: Props) {
         u_resolution: new THREE.Vector2(
           CONFIG.dimensions.width / 2,
           // There is a weird artifact on the texture like a red spot, the magic num is offset
-          CONFIG.dimensions.height + 50
+          CONFIG.dimensions.height
         ),
         time: 0.0,
       });

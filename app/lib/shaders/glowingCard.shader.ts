@@ -16,12 +16,13 @@ export const vert = `
 
 export const fragPlane = `
   varying vec2 v_uv;
-  uniform sampler2D u_skull_render;
-  uniform sampler2D u_card_template;
+  uniform sampler2D backPattern;
+  uniform sampler2D cardTemplate;
   uniform sampler2D u_back_texture;
   uniform sampler2D u_noise_tex;
   uniform sampler2D u_color;
   uniform sampler2D u_noise;
+  uniform sampler2D u_profile;
   uniform float time;
   uniform vec4 u_resolution;
   varying vec3 v_cam_pos;
@@ -36,11 +37,11 @@ export const fragPlane = `
 
   void main() {
     vec2 uv = v_uv * vec2(u_resolution.x / u_resolution.y, 1.0);
-    vec4 template_texture = texture2D(u_card_template, v_uv);
-    vec4 skull_texture = texture2D(u_skull_render, uv - 0.5);
+    vec4 template_texture = texture2D(cardTemplate, v_uv);
+    vec4 skull_texture = texture2D(backPattern, uv - 1.0);
     gl_FragColor = template_texture;
     float f = fresnel(v_eye_vector, v_normal);
-    vec4 noise_texture = texture2D(u_noise, mod(v_uv * 2.0, 1.0));
+    vec4 noise_texture = texture2D(u_noise, mod(v_uv * 1.0, 1.0));
 
     if (gl_FragColor.g >= 0.5 && gl_FragColor.r < 0.6) {
       gl_FragColor = f + skull_texture;
@@ -67,7 +68,7 @@ export const fragPlane = `
       result *= texture2D(u_noise_tex, mod(uv2 * 4.0, 1.0) * 0.9 + vec2(i_time * +0.002)).b;
       result = pow(result, 10.0);
       gl_FragColor *= color_texture;
-      gl_FragColor += vec4(sin((tone + v_uv.x + v_uv.y / 10.0) * 10.0)) / 8.0;
+      gl_FragColor += vec4(sin((0.1 + v_uv.x + v_uv.y / 10.0) * 10.0)) / 8.0;
       // Uncomment if needed (adjust brightness)
       // gl_FragColor += vec4(108.0) * result;
     }
