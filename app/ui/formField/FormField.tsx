@@ -25,7 +25,7 @@ export function FormField<T extends FieldValues>({
     <FormFieldContext.Provider value={{ fieldName }}>
       <div
         className={joinClasses(
-          "placeholder:text-slate-400 text-slate-700 text-sm",
+          "placeholder:text-slate-400 text-slate-700 text-[0.95rem]",
           className
         )}
       >

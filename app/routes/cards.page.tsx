@@ -146,7 +146,7 @@ export default function Home() {
             className={joinClasses(
               "z-20 flex absolute top-[40%] left-[10%] hover:scale-125 cursor-pointer",
               "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
-              "text-6xl font-bold text-white p-4 rounded-lg font-inter",
+              "text-8xl font-bold text-white p-4 rounded-lg font-caveat",
               {
                 "top-[23%] left-auto": !profile.isActivated,
               }

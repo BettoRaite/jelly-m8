@@ -25,7 +25,7 @@ function NavButton({
     <motion.button
       onClick={onClick}
       className={joinClasses(
-        "h-16 w-16 ",
+        "h-16 w-16",
         "border border-gray-300 rounded-full transition-transform duration-500 overflow-hidden",
         className
       )}

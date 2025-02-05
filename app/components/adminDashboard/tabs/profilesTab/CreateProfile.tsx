@@ -18,7 +18,8 @@ import { useState } from "react";
 import { jsonToFormData } from "@/lib/utils/conversion";
 import { FormField } from "@/ui/formField/FormField";
 import { FormProvider } from "react-hook-form";
-import type { label } from "motion/react-client";
+import { label } from "motion/react-client";
+import SelectInput from "@/ui/form/SelectInput";
 
 interface CreateProfileFormFields extends CreateProfilePayload {
   userId: number;
@@ -54,12 +55,10 @@ export function CreateProfile() {
     });
     // reset();
   }
-  const options = users.map((u) => {
-    return {
-      value: u.id,
-      label: u.username,
-    };
-  });
+  const options = users.map((u) => ({
+    label: u.username,
+    value: u.id,
+  }));
   return (
     <FormProvider {...methods}>
       <form
@@ -70,22 +69,12 @@ export function CreateProfile() {
           Create profile
         </h2>
 
-        <select
-          value={userId}
-          onChange={(e) => setUserId(Number.parseInt(e.currentTarget.value))}
-          id={"userId"}
-          className="mb-4 text-sm mt-1 block w-full p-2 border rounded-md focus:outline-none focus:border-gray-400 transition-colors duration-200"
-        >
-          {options.map((option) => (
-            <option
-              key={option.value}
-              value={option.value}
-              className="first-letter:capitalize"
-            >
-              {option.label}
-            </option>
-          ))}
-        </select>
+        <SelectInput
+          options={options}
+          onChange={(id) => {
+            setUserId(id as number);
+          }}
+        />
 
         <FormField<CreateProfileFormFields> fieldName="imageFile">
           <FormField.Label />

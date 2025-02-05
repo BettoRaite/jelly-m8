@@ -28,7 +28,7 @@ function useComplimentQuery(
   return useQuery({
     queryKey: queryKeys.complimentsKey,
     queryFn: async () => {
-      const route = `profiles/${action.profileId}`;
+      const route = `/profiles/${action.profileId}/compliments`;
       switch (action.type) {
         case "compliments": {
           const { data } = await fetchWithHandler<{ data: Compliment[] }>(

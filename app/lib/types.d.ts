@@ -31,4 +31,5 @@ export interface Compliment {
   profileId: number; // integer type
   title: string;
   content: string; // text
+  author: Profile;
 }

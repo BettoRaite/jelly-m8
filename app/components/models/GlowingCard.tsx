@@ -77,7 +77,7 @@ export function GlowingCard({ cardProps, profile }: Props) {
     if (!textures) return null;
     const backTextures = {
       ...textures,
-      u_card_template: textures.u_card_template_back,
+      cardTemplate: textures.u_card_template_back,
     };
     return {
       front: createMaterial(fragPlane, vert, textures),
