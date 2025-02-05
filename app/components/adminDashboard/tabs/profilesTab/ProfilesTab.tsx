@@ -8,6 +8,7 @@ import ProfileForm from "./ProfileForm";
 import useProfileQuery from "@/hooks/useProfileQuery";
 import useUserQuery from "@/hooks/useUserQuery";
 import { useState } from "react";
+import { AnimatePresence } from "motion/react";
 
 export function ProfilesTab() {
   const { data: profiles, status: profilesQueryStatus } = useProfileQuery({
@@ -31,14 +32,15 @@ export function ProfilesTab() {
   if (usersQueryStatus === "error") {
     return "failed to load users";
   }
-  console.log("reload");
   return (
     <div className="md:grid  grid-cols-[auto_1fr] mt-16 px-8">
       <ProfileForm users={users} formType="create" />
       <div className="mt-20 md:mt-0 flex justify-center md:justify-start flex-wrap items-start gap-10 px-10 mb-60">
-        {profiles.map((p) => {
-          return <ProfileCard key={p.id} initialProfile={p} />;
-        })}
+        <AnimatePresence>
+          {profiles.map((p) => {
+            return <ProfileCard key={p.id} initialProfile={p} />;
+          })}
+        </AnimatePresence>
       </div>
     </div>
   );

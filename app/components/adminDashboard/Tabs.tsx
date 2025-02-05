@@ -11,7 +11,6 @@ export function Tabs() {
   useEffect(() => {
     const t = localStorage.getItem(KEY) as Tab;
     setTab(t ?? "users");
-    console.log(t);
   }, []);
 
   let selectedTab = <UsersTab />;

@@ -11,6 +11,7 @@ import IconButton from "@/ui/IconButton";
 import StatusBadge from "@/ui/StatusBadge";
 import { BiLock } from "react-icons/bi";
 import { useQueryClient } from "@tanstack/react-query";
+import { motion } from "motion/react";
 
 type Props = {
   initialProfile: Profile;
@@ -76,9 +77,17 @@ function ProfileCard({ initialProfile }: Props) {
       },
     });
   }
-
   return (
-    <section className="flex flex-col p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow gap-4 min-w-[280px] w-full max-w-[400px]">
+    <motion.section
+      exit={{
+        scale: 0.0,
+      }}
+      animate={{
+        scale: [0.5, 1],
+      }}
+      className="flex flex-col p-6 bg-white rounded-lg shadow-md
+      hover:shadow-lg transition-shadow gap-4 min-w-[280px] w-full max-w-[400px]"
+    >
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-4">
           <img
@@ -119,7 +128,7 @@ function ProfileCard({ initialProfile }: Props) {
       </div>
 
       {isEditing && <ProfileForm profile={profile} formType="edit" />}
-    </section>
+    </motion.section>
   );
 }
 

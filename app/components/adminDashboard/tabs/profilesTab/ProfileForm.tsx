@@ -11,6 +11,7 @@ import { jsonToFormData } from "@/lib/utils/conversion";
 import SelectInput from "@/ui/form/SelectInput";
 import { FormField } from "@/ui/formField/FormField";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
@@ -30,7 +31,7 @@ type Props =
     };
 function ProfileForm({ formType, users, profile }: Props) {
   const isCreateForm = formType === "create";
-
+  const queryClient = useQueryClient();
   const methods = useForm<CreateProfileFormFields>({
     resolver: zodResolver(
       isCreateForm ? createProfileSchema : updateProfileSchema
@@ -38,32 +39,34 @@ function ProfileForm({ formType, users, profile }: Props) {
     reValidateMode: "onChange",
     defaultValues: isCreateForm ? {} : profile,
   });
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = methods;
-  const [userId, setUserId] = useState(1);
-  const profileMutation = useProfileMutation(
-    isCreateForm
-      ? {}
-      : {
-          queryKey: QUERY_KEYS.createProfileKey(profile.userId),
+  const { handleSubmit, reset } = methods;
+  const [newProfileUserId, setNewProfileUserId] = useState(1);
+  const profileMutation = useProfileMutation({
+    options: {
+      onSuccess: (_, { type }) => {
+        if (type === "update" && formType === "edit") {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEYS.createProfileKey(profile.userId),
+          });
+        } else {
+          queryClient.invalidateQueries({
+            queryKey: QUERY_KEYS.profilesKey,
+          });
         }
-  );
+      },
+    },
+  });
+
   function handleCreateProfileSubmit(payload: CreateProfileFormFields) {
     if (formType === "edit") {
-      profileMutation.mutate({
-        userId,
-        payload: jsonToFormData(payload as CreateProfilePayload),
+      return profileMutation.mutate({
+        userId: profile.userId,
+        payload: payload.imageFile ? jsonToFormData(payload) : payload,
         type: "update",
       });
-      return;
     }
     profileMutation.mutate({
-      userId,
+      userId: newProfileUserId,
       payload: jsonToFormData(payload as CreateProfilePayload),
       type: "create",
     });
@@ -89,7 +92,7 @@ function ProfileForm({ formType, users, profile }: Props) {
           <SelectInput
             options={options}
             onChange={(id) => {
-              setUserId(id as number);
+              setNewProfileUserId(id as number);
             }}
           />
         )}

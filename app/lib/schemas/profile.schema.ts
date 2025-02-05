@@ -42,12 +42,22 @@ export const updateProfileSchema = z
     gender: z.enum(["male", "female"]),
     isActivated: z.boolean(),
     activationSecret: z.string().trim().min(3),
+    imageFile: z
+      .any()
+      .transform((fileList) => fileList[0])
+      .refine(
+        (file) => {
+          console.log(file);
+          return file instanceof File && file.size > 0;
+        },
+        {
+          message: "File is required",
+        }
+      )
+      .refine(checkFileType, {
+        message: "Only .jpg, .jpeg file is supported",
+      }),
   })
-  .strict()
-  .partial()
-  .refine(
-    (data) => hasAtLeastOneField(data),
-    "Must container at least one field"
-  );
+  .partial();
 
 export type UpdateProfilePayload = z.infer<typeof updateProfileSchema>;
