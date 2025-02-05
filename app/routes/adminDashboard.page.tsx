@@ -10,6 +10,7 @@ import { UsersTab } from "@/components/adminDashboard/tabs/usersTab/UsersTab";
 import { Tabs } from "@/components/adminDashboard/Tabs";
 import { Loader } from "@/components/Loader";
 import { GoBack } from "@/components/GoBack";
+import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
 
 export default function AdminDashboard() {
   const { data: getUserResponse, status } = useAuth();
@@ -29,7 +30,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="bg-gray-200 pb-20">
       <GoBack to="/" />
       <header className="bg-blue-600 text-white p-4">
         <h1 className="text-2xl font-bold text-center">Admin Dashboard</h1>

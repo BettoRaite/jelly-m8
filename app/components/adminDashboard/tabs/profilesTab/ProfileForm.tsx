@@ -1,80 +1,98 @@
-import { useForm } from "react-hook-form";
-import {
-  type CreateUserPayload,
-  createUserSchema,
-} from "@/lib/schemas/user.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { config, queryClient, queryKeys } from "@/lib/config";
+import { useProfileMutation } from "@/hooks/useProfileMutation";
+import useUserQuery from "@/hooks/useUserQuery";
+import { QUERY_KEYS } from "@/lib/config";
 import {
   createProfileSchema,
+  updateProfileSchema,
   type CreateProfilePayload,
 } from "@/lib/schemas/profile.schema";
-import { runProfilesFetch } from "@/api/profiles.api";
-import { Pass } from "postprocessing";
-import useUserQuery from "@/hooks/useUserQuery";
-import { useUserProfileMutation } from "@/hooks/useUserProfileMutation";
-import { useState } from "react";
+import type { Profile, User } from "@/lib/types";
 import { jsonToFormData } from "@/lib/utils/conversion";
-import { FormField } from "@/ui/formField/FormField";
-import { FormProvider } from "react-hook-form";
-import { label } from "motion/react-client";
 import SelectInput from "@/ui/form/SelectInput";
+import { FormField } from "@/ui/formField/FormField";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 
 interface CreateProfileFormFields extends CreateProfilePayload {
   userId: number;
 }
-export function CreateProfile() {
-  const { data: users, status } = useUserQuery({
-    type: "users",
-    queryKey: queryKeys.usersKey,
-  });
-  const [userId, setUserId] = useState(1);
-  if (status === "pending") {
-    return "...loading";
-  }
-  if (status === "error") {
-    return "failed to load users";
-  }
+type Props =
+  | {
+      formType: "create";
+      users: User[];
+      profile?: Profile;
+    }
+  | {
+      formType: "edit";
+      users?: User[];
+      profile: Profile;
+    };
+function ProfileForm({ formType, users, profile }: Props) {
+  const isCreateForm = formType === "create";
+
   const methods = useForm<CreateProfileFormFields>({
-    resolver: zodResolver(createProfileSchema),
+    resolver: zodResolver(
+      isCreateForm ? createProfileSchema : updateProfileSchema
+    ),
     reValidateMode: "onChange",
+    defaultValues: isCreateForm ? {} : profile,
   });
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
   } = methods;
-  const mutation = useUserProfileMutation();
+  const [userId, setUserId] = useState(1);
+  const profileMutation = useProfileMutation(
+    isCreateForm
+      ? {}
+      : {
+          queryKey: QUERY_KEYS.createProfileKey(profile.userId),
+        }
+  );
   function handleCreateProfileSubmit(payload: CreateProfileFormFields) {
-    mutation.mutate({
+    if (formType === "edit") {
+      profileMutation.mutate({
+        userId,
+        payload: jsonToFormData(payload as CreateProfilePayload),
+        type: "update",
+      });
+      return;
+    }
+    profileMutation.mutate({
       userId,
       payload: jsonToFormData(payload as CreateProfilePayload),
       type: "create",
     });
     // reset();
   }
-  const options = users.map((u) => ({
-    label: u.username,
-    value: u.id,
-  }));
+  const options = isCreateForm
+    ? users.map((u) => ({
+        label: u.username,
+        value: u.id,
+      }))
+    : [];
   return (
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(handleCreateProfileSubmit)}
-        className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
+        className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md flex flex-col gap-4"
       >
-        <h2 className="text-2xl font-semibold mb-4 text-center">
-          Create profile
+        <h2 className="text-2xl font-semibold mb-4 text-center first-letter:capitalize">
+          {formType} profile
         </h2>
 
-        <SelectInput
-          options={options}
-          onChange={(id) => {
-            setUserId(id as number);
-          }}
-        />
+        {isCreateForm && (
+          <SelectInput
+            options={options}
+            onChange={(id) => {
+              setUserId(id as number);
+            }}
+          />
+        )}
 
         <FormField<CreateProfileFormFields> fieldName="imageFile">
           <FormField.Label />
@@ -115,9 +133,11 @@ export function CreateProfile() {
           type="submit"
           className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition duration-200"
         >
-          Create profile
+          {isCreateForm ? "Create profile" : "Save"}
         </button>
       </form>
     </FormProvider>
   );
 }
+
+export default ProfileForm;

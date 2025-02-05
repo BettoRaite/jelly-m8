@@ -1,4 +1,5 @@
 import z from "zod";
+import { hasAtLeastOneField } from "../utils/object";
 
 const checkFileType = (file: File) => {
   console.log(file.type);
@@ -33,3 +34,20 @@ export const profileActivationSchema = z.object({
 });
 
 export type ProfileActivationPayload = z.infer<typeof profileActivationSchema>;
+
+export const updateProfileSchema = z
+  .object({
+    displayName: z.string().trim().min(3),
+    biography: z.string().trim().min(3),
+    gender: z.enum(["male", "female"]),
+    isActivated: z.boolean(),
+    activationSecret: z.string().trim().min(3),
+  })
+  .strict()
+  .partial()
+  .refine(
+    (data) => hasAtLeastOneField(data),
+    "Must container at least one field"
+  );
+
+export type UpdateProfilePayload = z.infer<typeof updateProfileSchema>;

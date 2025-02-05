@@ -10,6 +10,16 @@ export const queryKeys = {
   complimentsKey: [uuidv4()],
 };
 
+export const QUERY_KEYS = {
+  authKey: ["auth"],
+  usersKey: ["users"],
+  profilesKey: ["profiles"],
+  complimentsKey: ["compliments"],
+  createProfileKey(userId: number) {
+    return [...this.profilesKey, userId.toString()];
+  },
+};
+
 export const config = {
   server: {
     url: "http://localhost:5000/api/v1",

@@ -1,8 +1,8 @@
 import type { HTMLProps } from "react";
 import { useFormFieldContext } from "./FormFieldContext";
-import { joinClasses } from "@/lib/utils/strings";
+import { joinClasses, splitCamelCaseToLowercase } from "@/lib/utils/strings";
 interface Props extends HTMLProps<HTMLLabelElement> {
-  content: string;
+  content?: string;
 }
 export default function FieldLabel({ content, ...props }: Props) {
   const { fieldName } = useFormFieldContext();
@@ -15,7 +15,7 @@ export default function FieldLabel({ content, ...props }: Props) {
         props.className
       )}
     >
-      {content ?? fieldName}:
+      {content ?? splitCamelCaseToLowercase(fieldName)}:
     </label>
   );
 }

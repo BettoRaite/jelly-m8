@@ -33,3 +33,5 @@ export interface Compliment {
   content: string; // text
   author: Profile;
 }
+
+export type Methods = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";

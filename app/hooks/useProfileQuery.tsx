@@ -1,7 +1,7 @@
-import { queryKeys } from "@/lib/config";
+import { QUERY_KEYS, queryKeys } from "@/lib/config";
 import {
   useQuery,
-  type QueryOptions,
+  type UseQueryOptions,
   type UseQueryResult,
 } from "@tanstack/react-query";
 import { fetchWithHandler } from "@/lib/utils";
@@ -9,54 +9,45 @@ import type { Profile, User } from "@/lib/types";
 
 type Action =
   | {
-      id?: number;
+      userId?: number;
       type: "profiles";
-      queryKey?: string[];
     }
   | {
-      id?: number;
-      type: "get_many";
-      queryKey?: string[];
-    }
-  | {
-      id: number;
-      type: "get";
-      queryKey?: string[];
+      userId: number;
+      type: "profile";
     };
 
 function useProfileQuery(
   action: {
-    id?: number;
+    userId?: number;
     type: "profiles";
-    queryKey?: string[];
   },
-  queryOptions?: QueryOptions
+  queryOptions?: UseQueryOptions
 ): UseQueryResult<Profile[]>;
 
 function useProfileQuery(
   action: {
-    id: number;
-    type: "get";
-    queryKey?: string[];
+    userId: number;
+    type: "profile";
   },
-  queryOptions?: QueryOptions
+  queryOptions?: UseQueryOptions
 ): UseQueryResult<Profile>;
 
 function useProfileQuery(
   action: Action,
-  queryOptions: QueryOptions = {}
+  queryOptions: Partial<UseQueryOptions> = {} as UseQueryOptions
 ): UseQueryResult<Profile[] | Profile> {
   return useQuery({
-    queryKey: action.queryKey ?? queryKeys.profilesKey,
+    ...queryOptions,
     queryFn: async () => {
-      const route = `/profiles/${action.id ? action.id : ""}`;
+      const route = `/users/${action.userId}/profile`;
       switch (action.type) {
         case "profiles": {
-          const res = await fetchWithHandler<{ data: Profile[] }>(route);
+          const res = await fetchWithHandler<{ data: Profile[] }>("/profiles");
           const { data } = res;
           return data;
         }
-        case "get": {
+        case "profile": {
           const res = await fetchWithHandler<{ data: Profile }>(route);
           const { data } = res;
           return data;
@@ -66,7 +57,7 @@ function useProfileQuery(
         }
       }
     },
-    ...queryOptions,
+    queryKey: queryOptions.queryKey ?? QUERY_KEYS.profilesKey,
   });
 }
 

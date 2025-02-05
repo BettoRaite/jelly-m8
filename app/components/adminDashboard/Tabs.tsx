@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UsersTab } from "./tabs/usersTab/UsersTab";
 import { ProfilesTab } from "./tabs/profilesTab/ProfilesTab";
 
 type Tab = "users" | "profiles";
 const TABS: Tab[] = ["users", "profiles"];
+const KEY = "dashboard-tab";
 
 export function Tabs() {
   const [tab, setTab] = useState<Tab>("users");
+  useEffect(() => {
+    const t = localStorage.getItem(KEY) as Tab;
+    setTab(t ?? "users");
+    console.log(t);
+  }, []);
+
   let selectedTab = <UsersTab />;
   switch (tab) {
     case "profiles": {
@@ -15,8 +22,8 @@ export function Tabs() {
   }
   function handleSelect(tab: Tab) {
     setTab(tab);
+    localStorage.setItem(KEY, tab);
   }
-
   return (
     <>
       <div className="">

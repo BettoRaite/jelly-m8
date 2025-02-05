@@ -1,11 +1,11 @@
-import type { FetchResult } from "vite/runtime";
 import { config } from "./config";
+import type { Methods } from "./types";
 
 export const constructFetchUrl = (route: string) =>
   `${config.server.url}${route}`;
 
 type FetchOptions = {
-  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  method?: Methods;
   body?: FormData | Record<string, unknown>;
   headers?: Record<string, string>;
   credentials?: RequestCredentials;

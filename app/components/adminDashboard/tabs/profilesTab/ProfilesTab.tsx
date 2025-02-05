@@ -3,29 +3,41 @@ import { constructFetchUrl } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "@/components/Loader";
 import { runProfilesFetch } from "@/api/profiles.api";
-import { ProfileCard } from "./ProfileCard";
-import { CreateProfile } from "./CreateProfile";
+import ProfileCard from "./ProfileCard";
+import ProfileForm from "./ProfileForm";
 import useProfileQuery from "@/hooks/useProfileQuery";
+import useUserQuery from "@/hooks/useUserQuery";
+import { useState } from "react";
 
 export function ProfilesTab() {
-  const { data, status } = useProfileQuery({
+  const { data: profiles, status: profilesQueryStatus } = useProfileQuery({
     type: "profiles",
-    queryKey: queryKeys.profilesKey,
   });
-  console.log(data);
-  if (status === "pending") {
+  const { data: users, status: usersQueryStatus } = useUserQuery({
+    type: "users",
+    queryKey: queryKeys.usersKey,
+  });
+
+  if (profilesQueryStatus === "pending") {
     return <Loader />;
   }
-  if (status === "error") {
-    return "Failed to load users";
+  if (profilesQueryStatus === "error") {
+    return "Failed to load profiles";
   }
 
+  if (usersQueryStatus === "pending") {
+    return <Loader />;
+  }
+  if (usersQueryStatus === "error") {
+    return "failed to load users";
+  }
+  console.log("reload");
   return (
-    <div>
-      <CreateProfile />
-      <div className="grid grid-cols-3 items-center gap-4 mt-8 px-10">
-        {data.map((p) => {
-          return <ProfileCard key={p.id} profile={p} />;
+    <div className="md:grid  grid-cols-[auto_1fr] mt-16 px-8">
+      <ProfileForm users={users} formType="create" />
+      <div className="mt-20 md:mt-0 flex justify-center md:justify-start flex-wrap items-start gap-10 px-10 mb-60">
+        {profiles.map((p) => {
+          return <ProfileCard key={p.id} initialProfile={p} />;
         })}
       </div>
     </div>
