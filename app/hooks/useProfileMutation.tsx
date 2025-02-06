@@ -1,6 +1,7 @@
 import { QUERY_KEYS } from "@/lib/config";
 import type {
   CreateProfilePayload,
+  ProfileActivationPayload,
   UpdateProfilePayload,
 } from "@/lib/schemas/profile.schema";
 import type { Methods } from "@/lib/types";
@@ -25,7 +26,13 @@ export type Action =
   | {
       type: "delete";
       userId: number;
+    }
+  | {
+      type: "activate";
+      userId: number;
+      payload: ProfileActivationPayload;
     };
+
 export function useProfileMutation({
   options,
   queryKey,
@@ -37,7 +44,7 @@ export function useProfileMutation({
 
   return useMutation<unknown, Error, Action>({
     mutationFn: async (action) => {
-      const route = `/users/${action.userId}/profile`;
+      let route = `/users/${action.userId}/profile`;
       let method: Methods;
       let body: FormData | Record<string, unknown> | undefined;
 
@@ -52,6 +59,11 @@ export function useProfileMutation({
           break;
         case "delete":
           method = "DELETE";
+          break;
+        case "activate":
+          method = "PATCH";
+          body = action.payload;
+          route += "/activate";
           break;
         default:
           throw new Error("Invalid action type");

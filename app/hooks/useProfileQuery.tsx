@@ -22,7 +22,7 @@ function useProfileQuery(
     userId?: number;
     type: "profiles";
   },
-  queryOptions?: UseQueryOptions
+  queryOptions?: Partial<UseQueryOptions>
 ): UseQueryResult<Profile[]>;
 
 function useProfileQuery(
@@ -30,7 +30,7 @@ function useProfileQuery(
     userId: number;
     type: "profile";
   },
-  queryOptions?: UseQueryOptions
+  queryOptions?: Partial<UseQueryOptions>
 ): UseQueryResult<Profile>;
 
 function useProfileQuery(

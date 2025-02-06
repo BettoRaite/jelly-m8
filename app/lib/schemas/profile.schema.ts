@@ -30,7 +30,7 @@ export const createProfileSchema = z.object({
 export type CreateProfilePayload = z.infer<typeof createProfileSchema>;
 
 export const profileActivationSchema = z.object({
-  activationSecret: z.string().trim().min(3),
+  activationSecret: z.string(),
 });
 
 export type ProfileActivationPayload = z.infer<typeof profileActivationSchema>;

@@ -2,18 +2,25 @@ import { Link } from "react-router";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { joinClasses } from "@/lib/utils/strings";
 
-type Props = { to: string; className?: string };
+type Props = {
+  to: string;
+  className?: string;
+};
+
 export function GoBack({ to, className }: Props) {
   return (
     <Link
       to={to}
       className={joinClasses(
-        "absolute top-4 left-4 z-50 rounded-lg shadow-lg p-4 transition-opacity duration-300",
-        "opacity-40 hover:opacity-100 hover:text-white",
+        "absolute top-4 left-4 z-50 flex items-center gap-2",
+        "rounded-lg shadow-lg p-3 transition-all duration-300",
+        "text-gray-200 opacity-80 hover:opacity-100 hover:text-white",
+        "font-jost font-bold hover:bg-gray-800/50",
         className
       )}
     >
-      <RiArrowGoBackLine className="text-lg" />
+      <RiArrowGoBackLine className="w-5 h-5" />
+      <span>Обратно</span>
     </Link>
   );
 }

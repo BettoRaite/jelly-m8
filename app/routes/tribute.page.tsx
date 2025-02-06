@@ -119,10 +119,10 @@ function Slide2({ profile }: Props) {
   );
 }
 
-export default function ProfilePage({ params }: Route.LoaderArgs) {
+export default function TributePage({ params }: Route.LoaderArgs) {
   const { data: profile, status } = useProfileQuery({
-    type: "get",
-    id: Number.parseInt(params.profileId),
+    type: "profile",
+    userId: params.userId,
   });
   const [slideIndex, setSlideIndex] = useState(0);
   const slides = useMemo(() => {

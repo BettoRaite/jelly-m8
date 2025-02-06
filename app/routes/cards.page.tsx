@@ -94,8 +94,10 @@ export default function Home() {
   const cardsSectionRef = useRef<HTMLElement>(null);
 
   const { data: profiles, status } = useProfileQuery(
-    { type: "profiles", queryKey: queryKeys.profilesKey },
-    { retry: false }
+    { type: "profiles" },
+    {
+      retry: false,
+    }
   );
 
   const handleMoveClick = useCallback(
@@ -115,7 +117,7 @@ export default function Home() {
       section.scrollIntoView({ behavior: "smooth", block: "start" });
       setHasScrolled(target === "down");
       setTimeout(() => {
-        navigate(`tribute/${profile.id}`);
+        navigate(`tribute/${profile.userId}`);
       }, 500);
     }
   };
@@ -146,7 +148,7 @@ export default function Home() {
             className={joinClasses(
               "z-20 flex absolute top-[40%] left-[10%] hover:scale-125 cursor-pointer",
               "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
-              "text-8xl font-bold text-white p-4 rounded-lg font-caveat",
+              "text-8xl font-bold text-white p-4 rounded-lg font-amatic",
               {
                 "top-[23%] left-auto": !profile.isActivated,
               }
@@ -161,7 +163,12 @@ export default function Home() {
           onClick={() => handleMoveClick(-1)}
           disabled={activeIndex === 0}
           ariaLabel="Previous profile"
-          className="z-40 absolute bottom-4 left-4 border-none cursor-pointer hover:text-gray-100 text-gray-500"
+          className={joinClasses(
+            "z-40 absolute bottom-4 left-4 border-none cursor-pointer hover:text-gray-100 text-gray-500",
+            {
+              "opacity-15 pointer-events-none": activeIndex === 0,
+            }
+          )}
           classNameIcon="duration-300"
         />
 
@@ -170,7 +177,13 @@ export default function Home() {
           onClick={() => handleMoveClick(1)}
           disabled={activeIndex === (profiles?.length ?? 1) - 1}
           ariaLabel="Next profile"
-          className="z-40 absolute bottom-4 right-4 border-none cursor-pointer hover:text-gray-100 text-gray-500"
+          className={joinClasses(
+            "z-40 absolute bottom-4 right-4 border-none cursor-pointer hover:text-gray-100 text-gray-500",
+            {
+              "opacity-15 pointer-events-none":
+                activeIndex === (profiles?.length ?? 1) - 1,
+            }
+          )}
           classNameIcon="duration-300"
         />
 
