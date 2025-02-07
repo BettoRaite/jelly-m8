@@ -23,10 +23,13 @@ import { jsonToFormData } from "@/lib/utils/conversion";
 import { FaEdit, FaInfo } from "react-icons/fa";
 import { MdEdit, MdInfo } from "react-icons/md";
 import { BiEdit } from "react-icons/bi";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function UserDashboard() {
+  const { data: user } = useAuth();
   const { data: profiles, status } = useProfileQuery({
     type: "profiles",
+    searchParams: "gender=female",
   });
   const mutation = useComplimentMutation();
   const [profileIndex, setProfileIndex] = useState(0);

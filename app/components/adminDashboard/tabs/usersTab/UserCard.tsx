@@ -57,7 +57,7 @@ export function UserCard({ user }: Props) {
         </h1>
         <p className="text-gray-600 mt-2">
           Access Key:{" "}
-          <span className="font-medium bg-gray-600 hover:bg-white transition-colors duration-300">
+          <span className="font-medium bg-gray-600 active:bg-white transition-colors duration-300">
             {accessSecret}
           </span>
         </p>

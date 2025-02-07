@@ -37,7 +37,6 @@ export default function Home() {
       type: "logout",
     });
   }
-  console.log(user);
   return (
     <div className="relative" style={{ width: "100dvw", height: "100dvh" }}>
       <AnimatedGradientBackground />

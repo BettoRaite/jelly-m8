@@ -15,7 +15,7 @@ function ComplimentCard({ compliment }: { compliment: Compliment }) {
         <img
           src={compliment.author.profileImageUrl || "/default-avatar.png"}
           alt={compliment.author.displayName}
-          className="h-14 w-14 rounded-full object-cover border-2 border-white/80 shadow-md"
+          className="h-14 w-14 md:h-20 md:w-20 rounded-full object-cover border-2 border-white/80 shadow-md"
         />
         <div>
           <h3 className="text-lg font-semibold text-gray-800">

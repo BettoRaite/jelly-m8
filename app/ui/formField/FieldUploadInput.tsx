@@ -13,6 +13,9 @@ type Props = {
   inputProps?: ComponentProps<"input">;
   defaultImage?: string;
 };
+import { useForm, Controller } from "react-hook-form";
+import type { h } from "node_modules/react-router/dist/development/fog-of-war-BhhVTjSZ.mjs";
+
 export default function FieldUploadInput({
   containerClassName,
   type = "default",
@@ -23,13 +26,13 @@ export default function FieldUploadInput({
     formState: { errors },
     register,
     setValue,
+    control,
   } = useFormContext();
   const { fieldName } = useFormFieldContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [imageUrl, setImageUrl] = useState(defaultImage);
-
-  const fileInput = fileInputRef.current;
-  const placeholder = fileInput?.files?.[0]?.name ?? "Выбери своё фото";
+  const defaultPlaceholder = "Выбери своё фото";
+  const [fileName, setFileName] = useState(defaultPlaceholder);
 
   const handleFileInputClick = () => {
     if (fileInputRef.current) {
@@ -37,9 +40,8 @@ export default function FieldUploadInput({
     }
   };
 
-  const handleFileChange = () => {
+  const handleSetImage = () => {
     const file = fileInputRef.current?.files?.[0];
-    setValue(fieldName, fileInputRef.current?.files);
     if (file && type === "display-image") {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -60,15 +62,30 @@ export default function FieldUploadInput({
           />
         </div>
       )}
-      <input
-        className="hidden"
-        {...inputProps}
-        {...register(fieldName)}
-        type="file"
-        id={fieldName}
-        ref={fileInputRef}
-        placeholder={fieldName}
-        onChange={type === "display-image" ? handleFileChange : () => {}}
+      <Controller
+        control={control}
+        name={fieldName}
+        render={({ field: { onChange, onBlur, ref } }) => (
+          <input
+            className="hidden"
+            {...inputProps}
+            type="file"
+            id={fieldName}
+            ref={(e) => {
+              ref(e); // Assign the ref to the field
+              fileInputRef.current = e; // Assign the ref to your custom ref if needed
+            }}
+            placeholder={fieldName}
+            onChange={(e) => {
+              if (type === "display-image") {
+                handleSetImage();
+              }
+              setFileName(e.target?.files?.[0]?.name ?? defaultPlaceholder);
+              onChange(e.target.files); // Pass the file(s) to the form
+            }}
+            onBlur={onBlur}
+          />
+        )}
       />
       <button
         type="button"
@@ -77,7 +94,7 @@ export default function FieldUploadInput({
           errors[fieldName] ? "border-red-500" : "border-gray-200"
         } rounded-md focus:outline-none focus:border-gray-400 transition-colors duration-200`}
       >
-        {placeholder}
+        {fileName}
       </button>
     </div>
   );

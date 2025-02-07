@@ -61,8 +61,16 @@ export default function Cards() {
   const [hasScrolled, setHasScrolled] = useState(false);
   const profileSectionRef = useRef<HTMLElement>(null);
   const cardsSectionRef = useRef<HTMLElement>(null);
-  const { data: profiles, status } = useProfileQuery(
-    { type: "profiles" },
+
+  const {
+    data: profiles,
+    status,
+    refetch,
+  } = useProfileQuery(
+    {
+      type: "profiles",
+      searchParams: "gender=female",
+    },
     {
       retry: false,
     }
@@ -73,7 +81,7 @@ export default function Cards() {
     return (
       <ErrorScreen description="Что-то пошло не так с загрузкой профилей" />
     );
-
+  console.log(profiles);
   const profile: Profile | undefined =
     profiles.length === 0 ? undefined : profiles[activeIndex];
 
@@ -105,7 +113,10 @@ export default function Cards() {
       <ScrollSection ref={cardsSectionRef} hasScrolled={hasScrolled}>
         <AnimatedGradientBackground preset="DEFAULT" />
         {profile && !profile.isActivated && (
-          <ProfileActivationOverlay profile={profile} />
+          <ProfileActivationOverlay
+            profile={profile}
+            onRefetchProfile={refetch}
+          />
         )}
         {/* <div className="absolute z-0 opacity-100 top-0 left-0 h-full w-full bg-[url('../public/hearts-no-bg.png')] bg-repeat bg-center animate-scroll" /> */}
         <GoBack to="/" />

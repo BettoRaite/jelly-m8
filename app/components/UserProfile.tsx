@@ -24,7 +24,6 @@ function UserProfile({ profile, isOwner }: Props) {
   const methods = useForm({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
-      imageFile: profile.profileImageUrl,
       displayName: profile.displayName,
       biography: profile.biography,
     },
@@ -36,7 +35,7 @@ function UserProfile({ profile, isOwner }: Props) {
     setIsEditMode((prev) => !prev);
   };
 
-  const handleSubmit = (payload: UpdateProfilePayload) => {
+  const handleSubmit = (payload: Omit<UpdateProfilePayload, "isActivated">) => {
     mutation.mutate(
       {
         type: "update",

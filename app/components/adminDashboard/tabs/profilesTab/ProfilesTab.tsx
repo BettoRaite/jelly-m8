@@ -1,14 +1,11 @@
-import { queryClient, queryKeys } from "@/lib/config";
-import { constructFetchUrl } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
 import { Loader } from "@/components/Loader";
-import { runProfilesFetch } from "@/api/profiles.api";
-import ProfileCard from "./ProfileCard";
-import ProfileForm from "./ProfileForm";
 import useProfileQuery from "@/hooks/useProfileQuery";
 import useUserQuery from "@/hooks/useUserQuery";
-import { useState } from "react";
+import { queryKeys } from "@/lib/config";
 import { AnimatePresence } from "motion/react";
+import ProfileCard from "./ProfileCard";
+import ProfileForm from "./ProfileForm";
+import ErrorScreen from "@/components/ErrorScreen";
 
 export function ProfilesTab() {
   const { data: profiles, status: profilesQueryStatus } = useProfileQuery({
@@ -23,18 +20,21 @@ export function ProfilesTab() {
     return <Loader />;
   }
   if (profilesQueryStatus === "error") {
-    return "Failed to load profiles";
+    return <ErrorScreen description="Failed to load profiles" />;
   }
 
   if (usersQueryStatus === "pending") {
     return <Loader />;
   }
   if (usersQueryStatus === "error") {
-    return "failed to load users";
+    return <ErrorScreen description="Failed to load users" />;
   }
+  const usersWithoutProfile = users.filter((u) => {
+    return !profiles.find((p) => p.userId === u.id);
+  });
   return (
     <div className="md:grid  grid-cols-[auto_1fr] mt-16 px-8">
-      <ProfileForm users={users} formType="create" />
+      <ProfileForm users={usersWithoutProfile} formType="create" />
       <div className="mt-20 md:mt-0 flex justify-center md:justify-start flex-wrap items-start gap-10 px-10 mb-60">
         <AnimatePresence>
           {profiles.map((p) => {

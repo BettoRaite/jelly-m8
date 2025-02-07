@@ -18,6 +18,9 @@ export const QUERY_KEYS = {
   createProfileKey(userId: number) {
     return [...this.profilesKey, userId.toString()];
   },
+  createProfileKeyWithParams(userId: number) {
+    return [...this.profilesKey, userId.toString()];
+  },
 };
 
 export const config = {

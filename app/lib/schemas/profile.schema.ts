@@ -1,9 +1,20 @@
 import z from "zod";
 import { hasAtLeastOneField } from "../utils/object";
 
+const VALID_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+]);
+
+const IMAGE_TYPE_ERR_MESSAGE = `Только ${Array.from(VALID_IMAGE_TYPES).join(
+  " "
+)} форматы файлов поддерживаются`;
+
 const checkFileType = (file: File) => {
-  console.log(file.type);
-  return ["image/jpeg", "image/jpg", "image/png"].includes(file.type); // MIME type for .xlsx
+  return VALID_IMAGE_TYPES.has(file.type);
 };
 
 export const createProfileSchema = z.object({
@@ -22,7 +33,7 @@ export const createProfileSchema = z.object({
       }
     )
     .refine(checkFileType, {
-      message: "Only .jpg, .jpeg file is supported",
+      message: IMAGE_TYPE_ERR_MESSAGE,
     }),
 });
 
@@ -52,7 +63,7 @@ export const updateProfileSchema = z
         }
       )
       .refine(checkFileType, {
-        message: "Only .jpg, .jpeg file is supported",
+        message: IMAGE_TYPE_ERR_MESSAGE,
       }),
   })
   .partial();

@@ -21,9 +21,10 @@ const TEXTURE = `
 
 type Props = {
   profile: Profile;
+  onRefetchProfile: () => void;
 };
 
-export function ProfileActivationOverlay({ profile }: Props) {
+export function ProfileActivationOverlay({ profile, onRefetchProfile }: Props) {
   const [showForm, setShowForm] = useState(!profile.isActivated);
   const mutation = useProfileMutation();
   const methods = useForm<ProfileActivationPayload>({
@@ -42,11 +43,15 @@ export function ProfileActivationOverlay({ profile }: Props) {
         payload,
         userId: profile.userId,
       },
+
       {
         onError: () => {
           setError("activationSecret", {
             message: "❌",
           });
+        },
+        onSuccess() {
+          onRefetchProfile();
         },
       }
     );

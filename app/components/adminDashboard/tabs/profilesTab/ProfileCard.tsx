@@ -18,7 +18,6 @@ type Props = {
 };
 function ProfileCard({ initialProfile }: Props) {
   const queryClient = useQueryClient();
-  const queryKey = QUERY_KEYS.createProfileKey(initialProfile.userId);
   const {
     data: profile,
     status,
@@ -30,7 +29,6 @@ function ProfileCard({ initialProfile }: Props) {
     },
     {
       initialData: initialProfile,
-      queryKey,
     }
   );
   const profileMutation = useProfileMutation({
