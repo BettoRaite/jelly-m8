@@ -1,16 +1,22 @@
 import { queryKeys } from "@/lib/config";
 import {
   useQuery,
-  type QueryOptions,
+  type UseQueryOptions,
   type UseQueryResult,
 } from "@tanstack/react-query";
 import { fetchWithHandler } from "@/lib/utils";
-import type { Compliment, Profile, User } from "@/lib/types";
+import type { Compliment } from "@/lib/types";
+import type { ApiError } from "@/lib/errors";
 
-type Action = {
-  type: "compliments";
-  profileId: number;
-};
+type Action =
+  | {
+      type: "compliments";
+      profileId: number;
+    }
+  | {
+      type: "user-compliment";
+      profileId: number;
+    };
 
 // Overload signatures for useComplimentQuery
 function useComplimentQuery(
@@ -18,22 +24,39 @@ function useComplimentQuery(
     type: "compliments";
     profileId: number;
   },
-  queryOptions?: QueryOptions
-): UseQueryResult<Compliment[]>;
+  queryOptions?: Partial<UseQueryOptions<Compliment[], ApiError>>
+): UseQueryResult<Compliment[], ApiError>;
+
+function useComplimentQuery(
+  action: {
+    type: "user-compliment";
+    profileId: number;
+  },
+  queryOptions?: Partial<UseQueryOptions<Compliment, ApiError>>
+): UseQueryResult<Compliment, ApiError>;
 
 function useComplimentQuery(
   action: Action,
-  queryOptions: QueryOptions = {}
-): UseQueryResult<Compliment[]> {
-  return useQuery({
-    queryKey: queryKeys.complimentsKey,
+  queryOptions: Partial<
+    UseQueryOptions<Compliment[] | Compliment, ApiError>
+  > = {}
+): UseQueryResult<Compliment[] | Compliment, ApiError> {
+  const { type, profileId } = action;
+
+  return useQuery<Compliment[] | Compliment, ApiError>({
+    queryKey: [queryKeys.complimentsKey, action.type, action.profileId],
     queryFn: async () => {
-      const route = `/profiles/${action.profileId}/compliments`;
-      switch (action.type) {
+      let route = `/profiles/${profileId}/compliments`;
+      switch (type) {
         case "compliments": {
           const { data } = await fetchWithHandler<{ data: Compliment[] }>(
             route
           );
+          return data;
+        }
+        case "user-compliment": {
+          route += "/current";
+          const { data } = await fetchWithHandler<{ data: Compliment }>(route);
           return data;
         }
         default: {
@@ -44,5 +67,4 @@ function useComplimentQuery(
     ...queryOptions,
   });
 }
-
 export default useComplimentQuery;

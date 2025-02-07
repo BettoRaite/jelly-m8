@@ -7,11 +7,17 @@ import {
   type UseMutationOptions,
 } from "@tanstack/react-query";
 
-export type Action = {
-  type: "create";
-  profileId: number;
-  payload: CreateComplimentPayload;
-};
+export type Action =
+  | {
+      type: "create";
+      profileId: number;
+      payload: CreateComplimentPayload;
+    }
+  | {
+      type: "delete";
+      profileId: number;
+      complimentId: number;
+    };
 
 export function useComplimentMutation(
   options?: UseMutationOptions<unknown, Error, Action>
@@ -20,7 +26,7 @@ export function useComplimentMutation(
 
   return useMutation<unknown, Error, Action>({
     mutationFn: async (action) => {
-      const route = `/profiles/${action.profileId}/compliments`;
+      let route = `/profiles/${action.profileId}/compliments`;
       let method: "POST" | "PUT" | "DELETE" | "PATCH";
       let body: FormData | Record<string, unknown> | undefined;
 
@@ -28,6 +34,10 @@ export function useComplimentMutation(
         case "create":
           method = "POST";
           body = action.payload;
+          break;
+        case "delete":
+          method = "DELETE";
+          route += `/${action.complimentId}`;
           break;
         default:
           throw new Error("Invalid action type");

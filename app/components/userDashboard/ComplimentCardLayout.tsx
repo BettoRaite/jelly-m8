@@ -1,12 +1,18 @@
 import useComplimentQuery from "@/hooks/useComplimentQuery";
 import ComplimentCard from "./ComplimentCard";
+import { useAuth } from "@/hooks/useAuth";
 
 type Props = {
   profileId: number;
 };
 
 function ComplimentCardLayout({ profileId }: Props) {
-  const { data: items, status } = useComplimentQuery({
+  const { data: user } = useAuth();
+  const {
+    data: items,
+    status,
+    refetch,
+  } = useComplimentQuery({
     type: "compliments",
     profileId: profileId,
   });
@@ -14,13 +20,37 @@ function ComplimentCardLayout({ profileId }: Props) {
     return "loading";
   }
   if (status === "error") {
-    return "error";
+    return "Error";
+  }
+  // const adminCompliments = [];
+  const userCompliments = [];
+  const compliments = [];
+  for (const c of items) {
+    if (c.userId === user?.id) {
+      userCompliments.push(
+        <ComplimentCard
+          key={c.id}
+          initialCompliment={c}
+          className="border-yellow-400 hover:border-yellow-400"
+          isOwner={true}
+          onRefetchCompliments={refetch}
+        />
+      );
+    } else {
+      compliments.push(
+        <ComplimentCard
+          key={c.id}
+          initialCompliment={c}
+          isOwner={false}
+          onRefetchCompliments={refetch}
+        />
+      );
+    }
   }
   return (
     <div className="mt-12 mb-20 flex flex-col gap-8 w-full">
-      {items?.map((c) => {
-        return <ComplimentCard key={c.id} compliment={c} />;
-      })}
+      {userCompliments}
+      {compliments}
     </div>
   );
 }

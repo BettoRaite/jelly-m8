@@ -24,6 +24,7 @@ import { FaEdit, FaInfo } from "react-icons/fa";
 import { MdEdit, MdInfo } from "react-icons/md";
 import { BiEdit } from "react-icons/bi";
 import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function UserDashboard() {
   const { data: user } = useAuth();
