@@ -4,6 +4,7 @@ import type { FieldValues } from "react-hook-form";
 
 type FormFieldContextModel<T extends FieldValues> = {
   fieldName: Path<T>;
+  translatedFieldName?: string;
 };
 
 export const FormFieldContext = createContext<

@@ -19,46 +19,15 @@ import type { Profile } from "@/lib/types";
 import ReactConfetti from "react-confetti";
 import { forwardRef } from "react";
 import NavButton from "@/ui/NavButton";
+import { SmoothCamera } from "@/components/SmoothCamera";
+import ErrorScreen from "@/components/ErrorScreen";
 const CAM_MOVE_DIST = 1.2;
-
-// Extracted NavButton Component
-// const NavButton = ({
-//   direction,
-//   onClick,
-//   disabled,
-//   ariaLabel,
-// }: {
-//   direction: "left" | "right";
-//   onClick?: () => void;
-//   disabled?: boolean;
-//   ariaLabel?: string;
-// }) => {
-//   const Icon = direction === "left" ? FaChevronLeft : FaChevronRight;
-
-//   return (
-//     <motion.button
-//       whileTap={{ scale: 0.8 }}
-//       onClick={onClick}
-//       className={`z-20 absolute top-[45%] ${
-//         direction === "left" ? "left-4" : "right-4"
-//       }
-//         p-4 bg-gray-200 rounded-full transition-all duration-300 ${
-//           disabled ? "pointer-events-none opacity-20" : ""
-//         }`}
-//       aria-label={ariaLabel}
-//       disabled={disabled}
-//     >
-//       <Icon />
-//     </motion.button>
-//   );
-// };
 
 // Extracted ProfileScene Component
 const ProfileScene = ({ profile }: { profile: Profile }) => (
-  <AppScene cameraPosition={new Vector3(0, 0, 1)}>
-    {profile.isActivated && (
-      <GlowingCard key={profile.id} position={[0, 0, -50]} profile={profile} />
-    )}
+  <AppScene>
+    <SmoothCamera targetPos={new Vector3(0, 0, 1)} />
+    {profile.isActivated && <GlowingCard key={profile.id} profile={profile} />}
   </AppScene>
 );
 
@@ -86,13 +55,12 @@ const ScrollSection = forwardRef(
   )
 );
 
-export default function Home() {
+export default function Cards() {
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
   const [hasScrolled, setHasScrolled] = useState(false);
   const profileSectionRef = useRef<HTMLElement>(null);
   const cardsSectionRef = useRef<HTMLElement>(null);
-
   const { data: profiles, status } = useProfileQuery(
     { type: "profiles" },
     {
@@ -100,15 +68,21 @@ export default function Home() {
     }
   );
 
-  const handleMoveClick = useCallback(
-    (indexDelta: number) => {
-      setActiveIndex((prev) => {
-        const newIndex = prev + indexDelta;
-        return Math.max(0, Math.min(newIndex, (profiles?.length ?? 1) - 1));
-      });
-    },
-    [profiles?.length]
-  );
+  if (status === "pending") return <Loader />;
+  if (status === "error")
+    return (
+      <ErrorScreen description="Что-то пошло не так с загрузкой профилей" />
+    );
+
+  const profile: Profile | undefined =
+    profiles.length === 0 ? undefined : profiles[activeIndex];
+
+  const handleMoveClick = (indexDelta: number) => {
+    setActiveIndex((prev) => {
+      const newIndex = prev + indexDelta;
+      return Math.max(0, Math.min(newIndex, (profiles?.length ?? 1) - 1));
+    });
+  };
 
   const handleScroll = (target: "down" | "up") => {
     const section =
@@ -117,16 +91,10 @@ export default function Home() {
       section.scrollIntoView({ behavior: "smooth", block: "start" });
       setHasScrolled(target === "down");
       setTimeout(() => {
-        navigate(`tribute/${profile.userId}`);
+        navigate(`tribute/${profile?.userId}`);
       }, 500);
     }
   };
-
-  if (status === "pending") return <Loader />;
-  if (status === "error" || profiles.length === 0 || !profiles)
-    return navigate("/");
-
-  const profile = profiles[activeIndex] ?? {};
 
   return (
     <div
@@ -136,12 +104,14 @@ export default function Home() {
     >
       <ScrollSection ref={cardsSectionRef} hasScrolled={hasScrolled}>
         <AnimatedGradientBackground preset="DEFAULT" />
-        {!profile.isActivated && <ProfileActivationOverlay profile={profile} />}
+        {profile && !profile.isActivated && (
+          <ProfileActivationOverlay profile={profile} />
+        )}
         {/* <div className="absolute z-0 opacity-100 top-0 left-0 h-full w-full bg-[url('../public/hearts-no-bg.png')] bg-repeat bg-center animate-scroll" /> */}
         <GoBack to="/" />
         {!hasScrolled && <ParticlesWrapper />}
 
-        <ProfileScene profile={profile} />
+        {profile && <ProfileScene profile={profile} />}
 
         <header className="flex justify-center">
           <h1
@@ -150,11 +120,11 @@ export default function Home() {
               "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
               "text-8xl font-bold text-white p-4 rounded-lg font-amatic",
               {
-                "top-[23%] left-auto": !profile.isActivated,
+                "top-[23%] left-auto": !profile?.isActivated,
               }
             )}
           >
-            {(profile.isActivated && profile.displayName) ?? "..."}
+            {(profile?.isActivated && profile.displayName) ?? "Пусто"}
             <ReactConfetti className="h-full w-full" />
           </h1>
         </header>
@@ -187,7 +157,7 @@ export default function Home() {
           classNameIcon="duration-300"
         />
 
-        {profile.isActivated && (
+        {profile?.isActivated && (
           <div className="flex justify-center w-screen absolute z-20 bottom-0 left-0">
             <motion.button
               whileTap={{ scale: 0.8 }}

@@ -12,10 +12,9 @@ export const createProfileSchema = z.object({
   gender: z.enum(["male", "female"]),
   imageFile: z
     .any()
-    .transform((fileList) => fileList[0])
+    .transform((fileList) => fileList?.[0])
     .refine(
       (file) => {
-        console.log(file);
         return file instanceof File && file.size > 0;
       },
       {
@@ -41,13 +40,11 @@ export const updateProfileSchema = z
     biography: z.string().trim().min(3),
     gender: z.enum(["male", "female"]),
     isActivated: z.boolean(),
-    activationSecret: z.string().trim().min(3),
     imageFile: z
       .any()
       .transform((fileList) => fileList[0])
       .refine(
         (file) => {
-          console.log(file);
           return file instanceof File && file.size > 0;
         },
         {

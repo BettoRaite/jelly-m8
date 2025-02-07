@@ -1,5 +1,6 @@
 import { config } from "./config";
 import type { Methods } from "./types";
+import { ApiError } from "./errors";
 
 export const constructFetchUrl = (route: string) =>
   `${config.server.url}${route}`;
@@ -39,9 +40,13 @@ export async function fetchWithHandler<T>(
   }
 
   const response = await fetch(constructFetchUrl(route), fetchOptions);
-
   if (!response.ok) {
-    throw new Error((await response.text()) || "Failed to fetch");
+    let resText: string | undefined;
+    try {
+      resText = await response.text();
+    } catch {}
+
+    throw new ApiError(response, resText);
   }
 
   return response.json();

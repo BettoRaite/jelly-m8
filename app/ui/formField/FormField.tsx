@@ -13,6 +13,7 @@ import { joinClasses } from "@/lib/utils/strings";
 type Props<T extends FieldValues> = {
   children: ReactNode;
   fieldName: Path<T>;
+  translatedFieldName?: string;
   className?: string;
 };
 
@@ -20,9 +21,10 @@ export function FormField<T extends FieldValues>({
   children,
   fieldName,
   className,
+  translatedFieldName,
 }: Props<T>) {
   return (
-    <FormFieldContext.Provider value={{ fieldName }}>
+    <FormFieldContext.Provider value={{ fieldName, translatedFieldName }}>
       <div
         className={joinClasses(
           "placeholder:text-slate-400 text-slate-700 text-[0.95rem]",

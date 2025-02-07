@@ -41,6 +41,7 @@ function ProfileCard({ initialProfile }: Props) {
         } else {
           queryClient.invalidateQueries({
             queryKey: QUERY_KEYS.profilesKey,
+            exact: false,
           });
         }
       },
@@ -93,7 +94,7 @@ function ProfileCard({ initialProfile }: Props) {
           <img
             src={profile.profileImageUrl}
             alt={profile.displayName}
-            className="w-24 md:w-32 rounded-full"
+            className="w-24 h-24 md:w-32 md:h-32  rounded-full"
           />
           <div className="ml-4">
             <h1 className="text-xl font-semibold text-gray-800 capitalize">

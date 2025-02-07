@@ -9,13 +9,13 @@ export default function FieldTextInput(
     formState: { errors },
     register,
   } = useFormContext();
-  const { fieldName } = useFormFieldContext();
+  const { fieldName, translatedFieldName } = useFormFieldContext();
   return (
     <input
       {...register(fieldName)}
       type="text"
       id={fieldName}
-      placeholder={fieldName}
+      placeholder={translatedFieldName ?? fieldName}
       {...props}
       className={joinClasses(
         "w-full border border-slate-200 bg-transparent rounded-md px-3 py-2 transition",

@@ -8,6 +8,7 @@ import {
 } from "@/lib/schemas/profile.schema";
 import type { Profile, User } from "@/lib/types";
 import { jsonToFormData } from "@/lib/utils/conversion";
+import { joinClasses } from "@/lib/utils/strings";
 import SelectInput from "@/ui/form/SelectInput";
 import { FormField } from "@/ui/formField/FormField";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -82,7 +83,12 @@ function ProfileForm({ formType, users, profile }: Props) {
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(handleCreateProfileSubmit)}
-        className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md flex flex-col gap-4"
+        className={joinClasses(
+          "max-w-md mx-auto p-6 bg-white rounded-lg shadow-md flex flex-col gap-4",
+          {
+            "bg-transparent shadow-none": formType === "edit",
+          }
+        )}
       >
         <h2 className="text-2xl font-semibold mb-4 text-center first-letter:capitalize">
           {formType} profile
@@ -99,7 +105,10 @@ function ProfileForm({ formType, users, profile }: Props) {
 
         <FormField<CreateProfileFormFields> fieldName="imageFile">
           <FormField.Label />
-          <FormField.Upload />
+          <FormField.Upload
+            type={formType === "edit" ? "display-image" : "default"}
+            defaultImage={profile?.profileImageUrl}
+          />
           <FormField.Error />
         </FormField>
 

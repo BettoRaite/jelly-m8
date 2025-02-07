@@ -65,7 +65,7 @@ export default function UserDashboard() {
 
   return (
     <main className="relative flex justify-center items-center flex-col">
-      <GoBack to="/" className="hover:text-gray-700" />
+      <GoBack to="/" className="hover:text-gray-700" theme="dark" />
       <GlassyBackground className="bg-gray-200 h-full" />
       <div className="relative rounded-xl h-[500px] p-4 mt-20 flex justify-center">
         <div className="hidden md:block w-[360px] h-96 bg-gray-300 absolute shadow-lg -left-[110%] -bottom-[5%] -rotate-[20deg] rounded-xl" />

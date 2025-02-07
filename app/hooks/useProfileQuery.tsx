@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-query";
 import { fetchWithHandler } from "@/lib/utils";
 import type { Profile, User } from "@/lib/types";
+import type { ApiError } from "@/lib/errors";
 
 type Action =
   | {
@@ -23,7 +24,7 @@ function useProfileQuery(
     type: "profiles";
   },
   queryOptions?: Partial<UseQueryOptions>
-): UseQueryResult<Profile[]>;
+): UseQueryResult<Profile[], ApiError>;
 
 function useProfileQuery(
   action: {
@@ -31,13 +32,19 @@ function useProfileQuery(
     type: "profile";
   },
   queryOptions?: Partial<UseQueryOptions>
-): UseQueryResult<Profile>;
+): UseQueryResult<Profile, ApiError>;
 
 function useProfileQuery(
   action: Action,
   queryOptions: Partial<UseQueryOptions> = {} as UseQueryOptions
 ): UseQueryResult<Profile[] | Profile> {
-  return useQuery({
+  // Specify ApiError as the error type
+  return useQuery<
+    Profile[] | Profile,
+    ApiError,
+    Profile[] | Profile,
+    readonly string[]
+  >({
     ...queryOptions,
     queryFn: async () => {
       const route = `/users/${action.userId}/profile`;
@@ -57,7 +64,8 @@ function useProfileQuery(
         }
       }
     },
-    queryKey: queryOptions.queryKey ?? QUERY_KEYS.profilesKey,
+    queryKey:
+      queryOptions.queryKey ?? (QUERY_KEYS.profilesKey as readonly string[]),
   });
 }
 

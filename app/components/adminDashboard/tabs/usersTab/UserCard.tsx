@@ -1,13 +1,12 @@
-import type { User } from "@/lib/types";
-import { useMutation } from "@tanstack/react-query";
-import { IoIosRemove } from "react-icons/io";
-import { createMutateUsersFn } from "@/api/users.api";
-import { queryClient, queryKeys } from "@/lib/config";
 import { useUserMutation } from "@/hooks/useUserMutation";
-import { MdKey } from "react-icons/md";
+import type { User } from "@/lib/types";
 import { useState } from "react";
-import { FaLock } from "react-icons/fa";
-import { FaLockOpen } from "react-icons/fa";
+import { FaLock, FaLockOpen } from "react-icons/fa";
+import { IoIosRemove } from "react-icons/io";
+import { MdKey } from "react-icons/md";
+import { motion } from "motion/react";
+import { BiCopy } from "react-icons/bi";
+import toast from "react-hot-toast";
 type Props = {
   user: User;
 };
@@ -15,7 +14,6 @@ type Props = {
 export function UserCard({ user }: Props) {
   const [panelUnlocked, setPanelUnlocked] = useState(false);
   const userDeleteMutation = useUserMutation();
-
   const userInvalidateAccessKeyMutation = useUserMutation();
 
   function handleDeleteUserClick() {
@@ -34,10 +32,25 @@ export function UserCard({ user }: Props) {
   function handleUnlockClick() {
     setPanelUnlocked(!panelUnlocked);
   }
+  const handleCopyToClipboard = (text: string) => {
+    navigator.clipboard
+      .writeText(text)
+      .catch(() => {
+        toast.error("Failed to copy to clipboard");
+      })
+      .then(() => {
+        toast("Copied to clipboard");
+      });
+  };
 
-  const { username, accessSecret, userRole } = user;
+  const { username, accessSecret, userRole, id } = user;
   return (
-    <section className="w-96 flex p-6 items-center bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 gap-4">
+    <motion.section
+      animate={{
+        scale: [0, 1],
+      }}
+      className=" w-96 flex p-6 items-center bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 gap-4"
+    >
       <div className="flex flex-col">
         <h1 className="text-2xl font-semibold text-gray-800 capitalize">
           {username}
@@ -48,11 +61,22 @@ export function UserCard({ user }: Props) {
             {accessSecret}
           </span>
         </p>
+
         <p className="text-gray-600 mt-1">
           Role: <span className="font-medium">{userRole}</span>
         </p>
+        <p className="text-gray-600 mt-1">
+          ID: <span className="font-medium">{id}</span>
+        </p>
       </div>
 
+      <button
+        type="button"
+        className="my-4 flex items-center justify-center bg-gray-400 p-2 rounded-full hover:bg-gray-500 transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-600"
+        onClick={() => handleCopyToClipboard(accessSecret)}
+      >
+        <BiCopy className="text-white" size={24} />
+      </button>
       <div className="h-60 w-[1px] bg-gray-200 shadow-lg" />
 
       <div
@@ -86,6 +110,6 @@ export function UserCard({ user }: Props) {
           <FaLock className="text-gray-600" />
         )}
       </button>
-    </section>
+    </motion.section>
   );
 }

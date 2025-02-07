@@ -35,6 +35,7 @@ export default function FieldSelectInput({
         },
         className
       )}
+      defaultValue={options[0].value}
     >
       <option className="" value="" disabled>
         {ctaText ?? "Select"}

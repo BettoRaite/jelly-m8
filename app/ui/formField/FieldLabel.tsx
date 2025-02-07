@@ -5,7 +5,7 @@ interface Props extends HTMLProps<HTMLLabelElement> {
   content?: string;
 }
 export default function FieldLabel({ content, ...props }: Props) {
-  const { fieldName } = useFormFieldContext();
+  const { fieldName, translatedFieldName } = useFormFieldContext();
   return (
     <label
       {...props}
@@ -15,7 +15,8 @@ export default function FieldLabel({ content, ...props }: Props) {
         props.className
       )}
     >
-      {content ?? splitCamelCaseToLowercase(fieldName)}:
+      {translatedFieldName ?? content ?? splitCamelCaseToLowercase(fieldName)}{" "}
+      {!translatedFieldName && ":"}
     </label>
   );
 }

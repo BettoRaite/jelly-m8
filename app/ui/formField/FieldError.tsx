@@ -11,7 +11,6 @@ export default function FieldError({ className }: FieldErrorProps) {
     formState: { errors },
   } = useFormContext();
   const { fieldName } = useFormFieldContext();
-
   return (
     <>
       {errors[fieldName] && (

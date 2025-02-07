@@ -16,10 +16,10 @@ export default function FieldTextArea(
     formState: { errors },
     register,
   } = useFormContext();
-  const { fieldName } = useFormFieldContext();
+  const { fieldName, translatedFieldName } = useFormFieldContext();
   return (
     <textarea
-      placeholder={fieldName}
+      placeholder={translatedFieldName ?? fieldName}
       id={fieldName}
       {...register(fieldName)}
       {...props}

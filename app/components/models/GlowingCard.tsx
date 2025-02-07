@@ -51,7 +51,7 @@ const CONFIG = {
 
 // Main Scene Component
 type Props = {
-  cardProps: GroupProps;
+  cardProps?: GroupProps;
   profile: Profile;
 };
 export function GlowingCard({ cardProps, profile }: Props) {
@@ -189,7 +189,7 @@ export function GlowingCard({ cardProps, profile }: Props) {
         cardRef.current?.remove(profileMesh);
       }
     };
-  }, [profile, textures]);
+  }, [profile, textures, gl]);
 
   // Do card rotation, update texture
   useFrame(({ clock }) => {

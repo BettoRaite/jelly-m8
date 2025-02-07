@@ -1,5 +1,4 @@
 import { SmoothCamera } from "@/components/SmoothCamera";
-import { Environment } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useState, type ReactNode } from "react";
 import type { Vector3 } from "three";
@@ -10,24 +9,18 @@ import { ContactShadows } from "@react-three/drei";
 
 type Props = {
   children: ReactNode;
-  cameraPosition: Vector3;
 };
 
-export function AppScene({ children, cameraPosition }: Props) {
-  const [scene, setScene] = useState<THREE.Scene | null>(null);
-  const bloomRef = useRef<typeof Bloom | null>(null);
+export function AppScene({ children }: Props) {
   return (
     <Canvas
-      camera={{}}
       shadows
       onCreated={({ gl, scene }) => {
         gl.setPixelRatio(2);
         gl.shadowMap.type = THREE.PCFSoftShadowMap;
         gl.toneMapping = THREE.ACESFilmicToneMapping;
-        setScene(scene);
       }}
     >
-      <SmoothCamera targetPos={cameraPosition} />
       {/* <ambientLight intensity={1} /> */}
       {/* <pointLight
         color="#FFB6C1" // Set the light color to pink

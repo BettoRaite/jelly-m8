@@ -13,7 +13,7 @@ export default [
     route("login", "./routes/login.page.tsx"),
     route("dashboard", "./routes/adminDashboard.page.tsx"),
     route("cards/tribute/:userId", "./routes/tribute.page.tsx"),
-    route("profile", "./routes/profile.page.tsx"),
+    route("profile/:userId", "./routes/profile.page.tsx"),
     route("user-dashboard", "./routes/userDashboard.page.tsx"),
   ]),
 ] satisfies RouteConfig;

@@ -31,7 +31,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="bg-gray-200 pb-20">
-      <GoBack to="/" />
+      <GoBack to="/" className="bg-gray-400 top-10" />
       <header className="bg-blue-600 text-white p-4">
         <h1 className="text-2xl font-bold text-center">Admin Dashboard</h1>
       </header>
