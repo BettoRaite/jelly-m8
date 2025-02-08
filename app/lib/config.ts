@@ -15,16 +15,6 @@ export const QUERY_KEYS = {
   USERS: "users",
   PROFILES: "profiles",
   COMPLIMENTS: "compliments",
-  createProfileKey(userId: number) {
-    return [this.PROFILES, userId.toString()];
-  },
-  createProfileKeyWithParams(userId: number, params: Record<string, any>) {
-    return [this.PROFILES, userId.toString(), params];
-  },
-
-  createUserKey(userId: number) {
-    return [this.USERS, userId.toString()];
-  },
 };
 
 export const config = {

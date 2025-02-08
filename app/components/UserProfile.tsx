@@ -20,7 +20,6 @@ type Props = {
 };
 
 function UserProfile({ profile, isOwner }: Props) {
-  const queryClient = useQueryClient();
   const methods = useForm({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
@@ -36,21 +35,14 @@ function UserProfile({ profile, isOwner }: Props) {
   };
 
   const handleSubmit = (payload: Omit<UpdateProfilePayload, "isActivated">) => {
-    mutation.mutate(
-      {
-        type: "update",
-        userId: profile.userId,
-        payload: payload.imageFile ? jsonToFormData(payload) : payload,
-      },
-      {
-        onSuccess(data, variables, context) {
-          queryClient.invalidateQueries({
-            queryKey: QUERY_KEYS.createProfileKey(profile.userId),
-          });
-          handleEditToggle();
-        },
-      }
-    );
+    mutation.mutate({
+      type: "update",
+      userId: profile.userId,
+      payload: payload.imageFile ? jsonToFormData(payload) : payload,
+    });
+    setTimeout(() => {
+      handleEditToggle();
+    }, 100);
   };
 
   return (

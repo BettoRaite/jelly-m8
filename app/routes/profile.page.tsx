@@ -25,8 +25,7 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
       userId: userId,
     },
     {
-      queryKey: QUERY_KEYS.createProfileKey(userId ?? 0),
-      retry: false,
+      retry: 2,
     }
   );
   // Validate userId
