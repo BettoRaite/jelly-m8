@@ -30,7 +30,7 @@ export function Tabs() {
           {TABS.map((tabValue, index) => (
             <button
               onClick={() => handleSelect(tabValue)}
-              key={index}
+              key={tabValue}
               type="button"
               className={`capitalize py-2 px-4 text-lg font-medium transition-colors duration-300
                   ${

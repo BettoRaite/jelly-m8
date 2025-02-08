@@ -18,6 +18,7 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
     data: profile,
     status: profileStatus,
     error: profileError,
+    refetch,
   } = useProfileQuery(
     {
       type: "profile",
@@ -47,7 +48,9 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
   return (
     <main className="flex justify-center items-center min-h-dvh p-4">
       <GoBack theme="dark" to="/" />
-      {!profile && isOwner && <CreateProfileForm userId={userId} />}
+      {!profile && isOwner && (
+        <CreateProfileForm userId={userId} onProfileRefetch={refetch} />
+      )}
       {!profile && !isOwner && (
         <h1 className="text-xl font-comfortaa font-bold">
           Упс... кажись пусто 👀

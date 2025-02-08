@@ -7,7 +7,6 @@ export const useAuth = () => {
   return useUserQuery(
     {
       type: "current_user",
-      queryKey: QUERY_KEYS.authKey,
     },
     {
       retry: false,
@@ -15,8 +14,5 @@ export const useAuth = () => {
   );
 };
 
-export const getAuth = () => {
-  return (
-    (queryClient.getQueryData(QUERY_KEYS.authKey) as User | undefined) ?? {}
-  );
-};
+export const getAuth = (): User | undefined =>
+  queryClient.getQueryData([QUERY_KEYS.AUTH]);

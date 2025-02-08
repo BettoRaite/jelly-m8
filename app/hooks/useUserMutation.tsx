@@ -5,41 +5,37 @@ import {
 } from "@tanstack/react-query";
 import { fetchWithHandler } from "@/lib/utils";
 import type { CreateUserPayload } from "@/lib/schemas/user.schema";
-import { queryKeys } from "@/lib/config";
-
+import { QUERY_KEYS } from "@/lib/config";
 // types/userActions.ts
 export type UserAction =
   | {
       type: "create";
-      id?: number;
+      userId?: number;
       payload: CreateUserPayload;
     }
   | {
-      id?: number;
-      type: "read";
-    }
-  | {
       type: "update";
-      id: number | string;
+      userId: number;
       payload: Partial<CreateUserPayload>;
     }
   | {
       type: "delete";
-      id: number | string;
+      userId: number;
     }
   | {
       type: "invalidate-access-key";
-      id: number | string;
+      userId: number;
     };
 
 export function useUserMutation(
-  options?: UseMutationOptions<void, Error, UserAction>
+  options?: UseMutationOptions<unknown, Error, UserAction>
 ) {
+  console.log(options);
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, UserAction>({
+  return useMutation<unknown, Error, UserAction>({
     mutationFn: async (action) => {
-      const route = `/users/${action?.id ?? ""}`;
+      const route = `/users/${action?.userId ?? ""}`;
       switch (action.type) {
         case "create": {
           await fetchWithHandler(route, {
@@ -71,8 +67,20 @@ export function useUserMutation(
           throw new Error("Invalid action type");
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.usersKey });
+    onSuccess: (_, action) => {
+      switch (action.type) {
+        case "create":
+        case "delete":
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.USERS],
+          });
+          break;
+        case "update":
+        case "invalidate-access-key":
+          queryClient.invalidateQueries({
+            queryKey: [QUERY_KEYS.USERS, action.userId],
+          });
+      }
     },
     ...options,
   });

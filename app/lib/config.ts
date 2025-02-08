@@ -11,15 +11,19 @@ export const queryKeys = {
 };
 
 export const QUERY_KEYS = {
-  authKey: ["auth"],
-  usersKey: ["users"],
-  profilesKey: ["profiles"],
-  complimentsKey: ["compliments"],
+  AUTH: "auth",
+  USERS: "users",
+  PROFILES: "profiles",
+  COMPLIMENTS: "compliments",
   createProfileKey(userId: number) {
-    return [...this.profilesKey, userId.toString()];
+    return [this.PROFILES, userId.toString()];
   },
-  createProfileKeyWithParams(userId: number) {
-    return [...this.profilesKey, userId.toString()];
+  createProfileKeyWithParams(userId: number, params: Record<string, any>) {
+    return [this.PROFILES, userId.toString(), params];
+  },
+
+  createUserKey(userId: number) {
+    return [this.USERS, userId.toString()];
   },
 };
 

@@ -1,7 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { useFormFieldContext } from "./FormFieldContext";
 import type { HTMLProps } from "react";
-import { joinClasses } from "@/lib/utils/strings";
+import { capitalizeFirstChar, joinClasses } from "@/lib/utils/strings";
 export default function FieldTextInput(
   props: Omit<HTMLProps<HTMLInputElement>, "type" | "id"> = {}
 ) {
@@ -15,7 +15,7 @@ export default function FieldTextInput(
       {...register(fieldName)}
       type="text"
       id={fieldName}
-      placeholder={translatedFieldName ?? fieldName}
+      placeholder={capitalizeFirstChar(translatedFieldName ?? fieldName)}
       {...props}
       className={joinClasses(
         "w-full border border-slate-200 bg-transparent rounded-md px-3 py-2 transition",

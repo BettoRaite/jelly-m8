@@ -17,7 +17,6 @@ type Props = {
   initialProfile: Profile;
 };
 function ProfileCard({ initialProfile }: Props) {
-  const queryClient = useQueryClient();
   const {
     data: profile,
     status,
@@ -29,35 +28,21 @@ function ProfileCard({ initialProfile }: Props) {
     },
     {
       initialData: initialProfile,
+      enabled: false,
     }
   );
-  const profileMutation = useProfileMutation({
-    options: {
-      onSuccess: (_, { type }) => {
-        if (type === "update") {
-          refetch();
-        } else {
-          queryClient.invalidateQueries({
-            queryKey: QUERY_KEYS.profilesKey,
-            exact: false,
-          });
-        }
-      },
-    },
-  });
+  const profileMutation = useProfileMutation();
 
   const [isEditing, setIsEditing] = useState(false);
 
   if (status === "pending") {
-    return "...loading";
+    return "loading";
   }
   if (status === "error") {
     return "error";
   }
-  function handleDeleteUserClick() {
-    if (!profile) {
-      return;
-    }
+  function handleDeleteProfileClick() {
+    if (!profile) return;
     profileMutation.mutate({
       type: "delete",
       userId: profile.userId,
@@ -65,16 +50,19 @@ function ProfileCard({ initialProfile }: Props) {
   }
 
   function handleActivation() {
-    if (!profile) {
-      return;
-    }
-    profileMutation.mutate({
-      type: "update",
-      userId: profile.userId,
-      payload: {
-        isActivated: !profile.isActivated,
+    if (!profile) return;
+    profileMutation.mutate(
+      {
+        type: "update",
+        userId: profile.userId,
+        payload: {
+          isActivated: !profile.isActivated,
+        },
       },
-    });
+      {
+        onSuccess: () => refetch(),
+      }
+    );
   }
   return (
     <motion.section
@@ -111,7 +99,7 @@ function ProfileCard({ initialProfile }: Props) {
           />
           <IconButton
             icon={<IoIosRemove />}
-            onClick={handleDeleteUserClick}
+            onClick={handleDeleteProfileClick}
             color="danger"
             aria-label="Delete profile"
           />
@@ -126,7 +114,14 @@ function ProfileCard({ initialProfile }: Props) {
         </div>
       </div>
 
-      {isEditing && <ProfileForm profile={profile} formType="edit" />}
+      {isEditing && (
+        <ProfileForm
+          profile={profile}
+          formType="edit"
+          onRefetch={refetch}
+          onClose={() => setIsEditing(!isEditing)}
+        />
+      )}
     </motion.section>
   );
 }

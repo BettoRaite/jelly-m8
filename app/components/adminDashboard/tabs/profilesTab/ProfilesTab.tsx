@@ -16,19 +16,13 @@ export function ProfilesTab() {
     queryKey: queryKeys.usersKey,
   });
 
-  if (profilesQueryStatus === "pending") {
+  if (profilesQueryStatus === "pending" || usersQueryStatus === "pending") {
     return <Loader />;
   }
-  if (profilesQueryStatus === "error") {
+  if (profilesQueryStatus === "error" || usersQueryStatus === "error") {
     return <ErrorScreen description="Failed to load profiles" />;
   }
 
-  if (usersQueryStatus === "pending") {
-    return <Loader />;
-  }
-  if (usersQueryStatus === "error") {
-    return <ErrorScreen description="Failed to load users" />;
-  }
   const usersWithoutProfile = users.filter((u) => {
     return !profiles.find((p) => p.userId === u.id);
   });

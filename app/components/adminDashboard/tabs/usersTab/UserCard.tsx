@@ -7,31 +7,62 @@ import { MdKey } from "react-icons/md";
 import { motion } from "motion/react";
 import { BiCopy } from "react-icons/bi";
 import toast from "react-hot-toast";
+import useUserQuery from "@/hooks/useUserQuery";
+import ItemLoader from "@/components/ItemLoader";
+import FailedToLoad from "@/components/FailedToLoad";
 type Props = {
-  user: User;
+  initialUser: User;
 };
 
-export function UserCard({ user }: Props) {
+export function UserCard({ initialUser }: Props) {
+  const {
+    data: user,
+    status,
+    refetch,
+  } = useUserQuery(
+    {
+      type: "user",
+      userId: initialUser.id,
+    },
+    {
+      initialData: initialUser,
+      enabled: false,
+    }
+  );
   const [panelUnlocked, setPanelUnlocked] = useState(false);
-  const userDeleteMutation = useUserMutation();
-  const userInvalidateAccessKeyMutation = useUserMutation();
+  const userMutation = useUserMutation();
+
+  if (status === "pending") {
+    return <ItemLoader />;
+  }
+
+  if (status === "error") {
+    return <FailedToLoad description="Failed to load uer" />;
+  }
 
   function handleDeleteUserClick() {
-    userDeleteMutation.mutate({
+    userMutation.mutate({
       type: "delete",
-      id: user.id,
+      userId: user?.id as number,
     });
   }
+
   function handleInvalidateAccessKeyClick() {
-    userInvalidateAccessKeyMutation.mutate({
-      type: "invalidate-access-key",
-      id: user.id,
-    });
+    userMutation.mutate(
+      {
+        type: "invalidate-access-key",
+        userId: user?.id as number,
+      },
+      {
+        onSuccess: () => refetch(),
+      }
+    );
   }
 
   function handleUnlockClick() {
     setPanelUnlocked(!panelUnlocked);
   }
+
   const handleCopyToClipboard = (text: string) => {
     navigator.clipboard
       .writeText(text)

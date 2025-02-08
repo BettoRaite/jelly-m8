@@ -1,62 +1,47 @@
 import { useProfileMutation } from "@/hooks/useProfileMutation";
-import useUserQuery from "@/hooks/useUserQuery";
 import { QUERY_KEYS } from "@/lib/config";
 import {
   createProfileSchema,
-  updateProfileSchema,
   type CreateProfilePayload,
 } from "@/lib/schemas/profile.schema";
-import type { Profile, User } from "@/lib/types";
 import { jsonToFormData } from "@/lib/utils/conversion";
-import SelectInput from "@/ui/form/SelectInput";
 import { FormField } from "@/ui/formField/FormField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-
-interface CreateProfileFormFields extends CreateProfilePayload {
-  userId: number;
-}
 type Props = {
   userId: number;
+  onProfileRefetch: () => void;
 };
-function CreateProfileForm({ userId }: Props) {
-  const queryClient = useQueryClient();
-  const methods = useForm<CreateProfileFormFields>({
+function CreateProfileForm({ userId, onProfileRefetch }: Props) {
+  const methods = useForm<CreateProfilePayload>({
     resolver: zodResolver(createProfileSchema),
   });
-  const { handleSubmit } = methods;
   const profileMutation = useProfileMutation({
     options: {
-      onSuccess: (_, { type }) => {
-        queryClient.invalidateQueries({
-          queryKey: QUERY_KEYS.createProfileKey(userId),
-        });
+      onSuccess: () => {
+        onProfileRefetch();
       },
     },
   });
-
-  function handleCreateProfileSubmit(payload: CreateProfileFormFields) {
+  function handleCreateProfileSubmit(payload: CreateProfilePayload) {
     profileMutation.mutate({
       userId,
       payload: jsonToFormData(payload as CreateProfilePayload),
       type: "create",
     });
-    // reset();
   }
-
   return (
     <FormProvider {...methods}>
       <form
-        onSubmit={handleSubmit(handleCreateProfileSubmit)}
+        onSubmit={methods.handleSubmit(handleCreateProfileSubmit)}
         className="max-w-md mx-auto p-6 bg-white rounded-lg w-96 flex flex-col gap-4"
       >
         <h2 className="text-3xl font-semibold mb-4 text-center first-letter:capitalize">
           Создай свой профиль
         </h2>
 
-        <FormField<CreateProfileFormFields>
+        <FormField<CreateProfilePayload>
           fieldName="imageFile"
           translatedFieldName="Фото"
         >
@@ -64,7 +49,7 @@ function CreateProfileForm({ userId }: Props) {
           <FormField.Error />
         </FormField>
 
-        <FormField<CreateProfileFormFields>
+        <FormField<CreateProfilePayload>
           fieldName="displayName"
           translatedFieldName="Имя"
         >
@@ -73,7 +58,7 @@ function CreateProfileForm({ userId }: Props) {
           <FormField.Error />
         </FormField>
 
-        <FormField<CreateProfileFormFields>
+        <FormField<CreateProfilePayload>
           fieldName="biography"
           translatedFieldName="Био"
         >
@@ -82,7 +67,7 @@ function CreateProfileForm({ userId }: Props) {
           <FormField.Error />
         </FormField>
 
-        <FormField<CreateProfileFormFields>
+        <FormField<CreateProfilePayload>
           fieldName="gender"
           translatedFieldName="Пол"
           className="hidden"

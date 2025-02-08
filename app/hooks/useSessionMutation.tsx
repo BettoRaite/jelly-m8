@@ -43,7 +43,7 @@ export function useSessionMutation({
     },
     onSuccess: () => {
       queryClient.resetQueries({
-        queryKey: QUERY_KEYS.authKey,
+        queryKey: QUERY_KEYS.AUTH,
       });
     },
     ...options,

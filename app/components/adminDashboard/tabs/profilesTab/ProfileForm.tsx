@@ -5,6 +5,7 @@ import {
   createProfileSchema,
   updateProfileSchema,
   type CreateProfilePayload,
+  type UpdateProfilePayload,
 } from "@/lib/schemas/profile.schema";
 import type { Profile, User } from "@/lib/types";
 import { jsonToFormData } from "@/lib/utils/conversion";
@@ -19,20 +20,30 @@ import { FormProvider, useForm } from "react-hook-form";
 interface CreateProfileFormFields extends CreateProfilePayload {
   userId: number;
 }
-type Props =
-  | {
-      formType: "create";
-      users: User[];
-      profile?: Profile;
-    }
-  | {
-      formType: "edit";
-      users?: User[];
-      profile: Profile;
-    };
-function ProfileForm({ formType, users, profile }: Props) {
+
+type BaseProps = {
+  onRefetch?: () => void;
+  onClose?: () => void;
+  users?: User[];
+};
+
+type CreateProps = BaseProps & {
+  formType: "create";
+  users: User[];
+  profile?: Profile;
+};
+
+type EditProps = BaseProps & {
+  formType: "edit";
+  profile: Profile;
+  onRefetch: () => void;
+  onClose: () => void;
+};
+
+type Props = CreateProps | EditProps;
+
+function ProfileForm({ formType, users, profile, onRefetch, onClose }: Props) {
   const isCreateForm = formType === "create";
-  const queryClient = useQueryClient();
   const methods = useForm<CreateProfileFormFields>({
     resolver: zodResolver(
       isCreateForm ? createProfileSchema : updateProfileSchema
@@ -40,49 +51,48 @@ function ProfileForm({ formType, users, profile }: Props) {
     reValidateMode: "onChange",
     defaultValues: isCreateForm ? {} : profile,
   });
-  const { handleSubmit, reset } = methods;
   const [newProfileUserId, setNewProfileUserId] = useState(1);
-  const profileMutation = useProfileMutation({
-    options: {
-      onSuccess: (_, { type }) => {
-        if (type === "update" && formType === "edit") {
-          queryClient.invalidateQueries({
-            queryKey: QUERY_KEYS.createProfileKey(profile.userId),
-          });
-        } else {
-          queryClient.invalidateQueries({
-            queryKey: QUERY_KEYS.profilesKey,
-          });
-        }
-      },
-    },
-  });
+  const profileMutation = useProfileMutation();
 
   function handleCreateProfileSubmit(payload: CreateProfileFormFields) {
     if (formType === "edit") {
-      return profileMutation.mutate({
-        userId: profile.userId,
-        payload: payload.imageFile ? jsonToFormData(payload) : payload,
-        type: "update",
-      });
+      return profileMutation.mutate(
+        {
+          userId: profile.userId,
+          payload: payload.imageFile
+            ? jsonToFormData(
+                payload as Omit<UpdateProfilePayload, "isActivated">
+              )
+            : payload,
+          type: "update",
+        },
+        {
+          onSuccess: () => {
+            onRefetch();
+            onClose();
+          },
+        }
+      );
     }
     profileMutation.mutate({
       userId: newProfileUserId,
       payload: jsonToFormData(payload as CreateProfilePayload),
       type: "create",
     });
-    // reset();
+    // methods.reset();
   }
+
   const options = isCreateForm
     ? users.map((u) => ({
         label: u.username,
         value: u.id,
       }))
     : [];
+
   return (
     <FormProvider {...methods}>
       <form
-        onSubmit={handleSubmit(handleCreateProfileSubmit)}
+        onSubmit={methods.handleSubmit(handleCreateProfileSubmit)}
         className={joinClasses(
           "max-w-md mx-auto p-6 bg-white rounded-lg shadow-md flex flex-col gap-4",
           {
