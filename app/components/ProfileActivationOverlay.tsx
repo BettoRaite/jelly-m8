@@ -108,7 +108,7 @@ export function ProfileActivationOverlay({ profile, onRefetchProfile }: Props) {
               <FormField.TextInput
                 placeholder="Секрет"
                 className={joinClasses(
-                  "placeholder:text-gray-300 text-purple-400 bg-transparent",
+                  "placeholder:text-gray-300 focus:text-white text-gray-300 bg-transparent",
                   "font-bold font-comfortaa text-lg px-4 py-4",
                   "hover:border-purple-500 focus:border-purple-500 rounded-xl",
                   {
