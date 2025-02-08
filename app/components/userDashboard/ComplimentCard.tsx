@@ -18,8 +18,9 @@ function ComplimentCard({
 }: Props) {
   const { data: compliment, status } = useComplimentQuery(
     {
-      type: "user-compliment",
+      type: "compliment",
       profileId: initialCompliment.profileId,
+      complimentId: initialCompliment.id,
     },
     {
       initialData: initialCompliment,
@@ -38,8 +39,8 @@ function ComplimentCard({
     complimentMutation.mutate(
       {
         type: "delete",
-        profileId: compliment.profileId,
-        complimentId: compliment.id,
+        profileId: initialCompliment.profileId,
+        complimentId: initialCompliment.id,
       },
       {
         onSuccess: () => {
@@ -53,6 +54,10 @@ function ComplimentCard({
       animate={{
         scale: [0, 1],
         opacity: [0, 1],
+      }}
+      exit={{
+        scale: [1, 0],
+        opacity: [1, 0],
       }}
       className={joinClasses(
         "group relative flex flex-col gap-4 rounded-xl p-4",

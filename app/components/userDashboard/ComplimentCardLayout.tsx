@@ -1,6 +1,7 @@
 import useComplimentQuery from "@/hooks/useComplimentQuery";
 import ComplimentCard from "./ComplimentCard";
 import { useAuth } from "@/hooks/useAuth";
+import { AnimatePresence } from "motion/react";
 
 type Props = {
   profileId: number;
@@ -49,8 +50,10 @@ function ComplimentCardLayout({ profileId }: Props) {
   }
   return (
     <div className="mt-12 mb-20 flex flex-col gap-8 w-full">
-      {userCompliments}
-      {compliments}
+      <AnimatePresence>
+        {userCompliments}
+        {compliments}
+      </AnimatePresence>
     </div>
   );
 }

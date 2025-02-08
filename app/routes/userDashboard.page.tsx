@@ -1,33 +1,27 @@
+import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
+import ErrorScreen from "@/components/ErrorScreen";
 import { GoBack } from "@/components/GoBack";
+import { HeartLoader } from "@/components/HeartLoader";
+import ComplimentCardLayout from "@/components/userDashboard/ComplimentCardLayout";
+import { getAuth, useAuth } from "@/hooks/useAuth";
+import { useComplimentMutation } from "@/hooks/useComplimentMutation";
 import useProfileQuery from "@/hooks/useProfileQuery";
+import useUserQuery from "@/hooks/useUserQuery";
 import {
   createComplimentSchema,
   type CreateComplimentPayload,
 } from "@/lib/schemas/compliment.schema";
-import SelectInput from "@/ui/form/SelectInput";
-import { FormField } from "@/ui/formField/FormField";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FormProvider, useForm } from "react-hook-form";
-import * as motion from "motion/react-client";
-import { useEffect, useState } from "react";
 import type { Profile } from "@/lib/types";
-import { AnimatePresence } from "motion/react";
-import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
+import { FormField } from "@/ui/formField/FormField";
 import NavButton from "@/ui/NavButton";
-import CozyBackground from "@/components/Backgrounds/CozyBackground";
-import { HeartLoader } from "@/components/HeartLoader";
-import ComplimentCardLayout from "@/components/userDashboard/ComplimentCardLayout";
-import useComplimentQuery from "@/hooks/useComplimentQuery";
-import { useComplimentMutation } from "@/hooks/useComplimentMutation";
-import { jsonToFormData } from "@/lib/utils/conversion";
-import { FaEdit, FaInfo } from "react-icons/fa";
-import { MdEdit, MdInfo } from "react-icons/md";
-import { BiEdit } from "react-icons/bi";
-import { useAuth } from "@/hooks/useAuth";
-import { useQueryClient } from "@tanstack/react-query";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AnimatePresence } from "motion/react";
+import * as motion from "motion/react-client";
+import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { MdEdit } from "react-icons/md";
 
 export default function UserDashboard() {
-  const { data: user } = useAuth();
   const { data: profiles, status } = useProfileQuery({
     type: "profiles",
     searchParams: "gender=female",
@@ -42,7 +36,7 @@ export default function UserDashboard() {
     return <HeartLoader />;
   }
   if (status === "error") {
-    return "error";
+    return <ErrorScreen description="Не получилось загрузить профили" />;
   }
   if (profiles.length === 0) {
     return "no profiles";
@@ -165,7 +159,10 @@ export default function UserDashboard() {
         </p>
       </div>
       <section className="w-[50%]">
-        <ComplimentCardLayout profileId={currentProfile.id} />
+        <ComplimentCardLayout
+          key={currentProfile.id}
+          profileId={currentProfile.id}
+        />
       </section>
     </main>
   );

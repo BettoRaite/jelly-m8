@@ -1,34 +1,28 @@
 import { AppScene } from "@/components/AppScene";
 import AnimatedGradientBackground from "@/components/Backgrounds/AnimatedGradientBackground";
 import { Loader } from "@/components/Loader";
-import { HomeStage } from "@/components/models/HomeStage";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { HiOutlineSquare2Stack } from "react-icons/hi2";
-import type { IconType } from "react-icons/lib";
+import { IoMdLogIn } from "react-icons/io";
+import { MdDashboard, MdOutlineLogout } from "react-icons/md";
 import { Link } from "react-router";
 import { Vector3 } from "three";
-import {
-  MdDashboard,
-  MdLogin,
-  MdLogout,
-  MdOutlineLogout,
-  MdSpaceDashboard,
-} from "react-icons/md";
-import { IoMdLogIn } from "react-icons/io";
 
-import { FaRegComments } from "react-icons/fa";
-import { PerspectiveCamera, OrbitControls } from "@react-three/drei";
-import { RiProfileFill } from "react-icons/ri";
+import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
 import { useSessionMutation } from "@/hooks/useSessionMutation";
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { FaRegComments } from "react-icons/fa";
+import { joinClasses } from "@/lib/utils/strings";
+import { HeartLoader } from "@/components/HeartLoader";
 
 export default function Home() {
   const { data: user, status } = useAuth();
   const session = useSessionMutation();
   const [isHovered, setIsHovered] = useState(false);
   if (status === "pending") {
-    return <Loader />;
+    return <HeartLoader className="bg-black" />;
   }
   const { userRole: role } = user ?? {};
 
@@ -37,9 +31,37 @@ export default function Home() {
       type: "logout",
     });
   }
+
+  const links = [
+    {
+      isShown: true,
+      icon: <HiOutlineSquare2Stack className="text-3xl text-cyan-50" />,
+      to: "/cards",
+    },
+    {
+      isShown: !!user,
+      icon: <FaRegComments className="text-3xl text-cyan-50" />,
+      to: "/user-dashboard",
+    },
+    {
+      isShown: role === "admin",
+      icon: <MdDashboard className="text-3xl text-cyan-50" />,
+      to: "/dashboard",
+    },
+    {
+      isShown: !!user,
+      icon: <FaUser className="text-3xl text-cyan-50" />,
+      to: `/profile/${user?.id}`,
+    },
+  ];
+
   return (
-    <div className="relative" style={{ width: "100dvw", height: "100dvh" }}>
+    <div
+      className="relative bg-black"
+      style={{ width: "100dvw", height: "100dvh" }}
+    >
       <AnimatedGradientBackground />
+      <GlassyBackground className="w-full h-full z-0" />
       <AppScene>
         <OrbitControls />
         <PerspectiveCamera
@@ -47,52 +69,56 @@ export default function Home() {
           makeDefault
           fov={45}
         />
-        <ambientLight color="0x999999" position={[0, 0, 0]} scale={10} />
-        <HomeStage />
+        <directionalLight position={[0, 0, 5]} color={"white"} />
+        {/* <HomeStage /> */}
       </AppScene>
       <div className="flex w-full absolute bottom-0 gap-4 justify-center mb-8">
-        <Link
-          className=" rounded-lg p-2 shadow-lg hover:scale-125 duration-500"
-          to={"/cards"}
+        <div
+          className={joinClasses(
+            "relative flex gap-4 justify-center p-2 rounded-xl shadow-lg",
+            "border border-gray-100 border-opacity-25 bg-opacity-10 bg-white"
+          )}
         >
-          <HiOutlineSquare2Stack className="text-3xl text-cyan-50" />
-        </Link>
-        {user && (
-          <Link
-            className=" rounded-lg p-2 shadow-lg hover:scale-125 duration-500"
-            to={"/user-dashboard"}
-          >
-            <FaRegComments className="text-3xl text-cyan-50" />
-          </Link>
-        )}
-        {role === "admin" && (
-          <Link
-            className=" rounded-lg p-2 shadow-lg hover:scale-125 duration-500"
-            to={"/dashboard"}
-          >
-            <MdDashboard className="text-3xl text-cyan-50" />
-          </Link>
-        )}
-        {user && (
-          <Link
-            className=" rounded-lg p-2 shadow-lg hover:scale-125 duration-500"
-            to={`/profile/${user.id}`}
-          >
-            <FaUser className="text-3xl text-cyan-50" />
-          </Link>
-        )}
+          {links.map((link, index) => {
+            return (
+              link.isShown && (
+                <Link
+                  key={link.to}
+                  className={joinClasses(
+                    "rounded-full p-2 shadow-xl hover:scale-125 duration-500",
+                    "bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))]",
+                    "from-[#9d174d] via-[#d946ef] to-[#f0abfc]"
+                  )}
+                  to={link.to}
+                >
+                  {link.icon}
+                </Link>
+              )
+            );
+          })}
+        </div>
       </div>
+
       {user ? (
         <button
           type="button"
           onClick={handleLogout}
-          className="absolute top-4 right-4"
+          className={joinClasses(
+            "text-lg font-bold hover:scale-75 transition-transform duration-500 absolute top-4 right-4",
+            "bg-gradient-to-l from-blue-500 via-teal-500 to-green-500 text-transparent bg-clip-text"
+          )}
         >
-          <MdOutlineLogout className="text-3xl text-cyan-50" />
+          Выйти
         </button>
       ) : (
-        <Link to={"/login"} className="absolute top-4 right-4">
-          <IoMdLogIn className="text-3xl text-cyan-50" />
+        <Link
+          to={"/login"}
+          className={joinClasses(
+            "text-xl font-bold hover:scale-125 transition-transform duration-500 absolute top-4 right-4",
+            "bg-gradient-to-l from-blue-500 via-teal-500 to-green-500 text-transparent bg-clip-text"
+          )}
+        >
+          Логин
         </Link>
       )}
     </div>

@@ -8,16 +8,11 @@ import { fetchWithHandler } from "@/lib/utils";
 import type { User } from "@/lib/types";
 import type { ApiError } from "@/lib/errors";
 
-type UserQueryAction =
-  | { type: "current_user" }
-  | { type: "users" }
-  | { type: "user"; userId: number };
+type UserQueryAction = { type: "users" } | { type: "user"; userId: number };
 
 type UserQueryResult<T extends UserQueryAction> = T extends {
-  type: "current_user";
+  type: "users";
 }
-  ? User
-  : T extends { type: "users" }
   ? User[]
   : T extends { type: "user" }
   ? User
@@ -29,14 +24,12 @@ function useUserQuery<T extends UserQueryAction>(
 ): UseQueryResult<UserQueryResult<T>, ApiError> {
   const queryKey = (() => {
     switch (action.type) {
-      case "current_user":
-        return [QUERY_KEYS.AUTH];
       case "users":
         return [QUERY_KEYS.USERS];
       case "user":
         return [QUERY_KEYS.USERS, action.userId];
       default:
-        throw new Error(`Invalid action type: ${(action as never).type}`);
+        throw new Error(`Invalid action type: ${action as never}`);
     }
   })();
 
@@ -45,10 +38,6 @@ function useUserQuery<T extends UserQueryAction>(
     queryKey,
     queryFn: async () => {
       switch (action.type) {
-        case "current_user": {
-          const { data } = await fetchWithHandler<{ data: User }>("/auth");
-          return data as UserQueryResult<T>;
-        }
         case "users": {
           const { data } = await fetchWithHandler<{ data: User[] }>("/users");
           return data as UserQueryResult<T>;
@@ -60,7 +49,7 @@ function useUserQuery<T extends UserQueryAction>(
           return data as UserQueryResult<T>;
         }
         default:
-          throw new Error(`Invalid action type: ${(action as never).type}`);
+          throw new Error(`Invalid action type: ${action as never}`);
       }
     },
   });

@@ -66,12 +66,6 @@ export function HomeStage(props: GroupProps = {}) {
   return (
     <group ref={groupRef}>
       <primitive object={stage} scale={1} />
-      <primitive object={model} scale={0.02} position={[0, 0.4, -1.4]} />
-      <primitive
-        object={model.clone(true)}
-        scale={0.02}
-        position={[0.1, 1.0, -1.4]}
-      />
     </group>
   );
 }

@@ -39,11 +39,11 @@ export function useSessionMutation({
         default:
           throw new Error("Invalid action type");
       }
-      const response = await fetchWithHandler(route, { method, body });
+      await fetchWithHandler(route, { method, body });
     },
     onSuccess: () => {
-      queryClient.resetQueries({
-        queryKey: QUERY_KEYS.AUTH,
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.AUTH],
       });
     },
     ...options,
