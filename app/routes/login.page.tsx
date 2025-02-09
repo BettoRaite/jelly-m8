@@ -8,6 +8,7 @@ import {
   type UserLoginPayload,
 } from "@/lib/schemas/login.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSessionMutation } from "@/hooks/useSessionMutation";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -18,37 +19,12 @@ export default function Login() {
   } = useForm<UserLoginPayload>({
     resolver: zodResolver(userLoginSchema),
   });
-
-  const mutation = useMutation({
-    mutationFn: async (data: UserLoginPayload) => {
-      console.log(data);
-      const response = await fetch(constructFetchUrl("/auth/login"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to login user");
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.authKey,
-      });
-      navigate("/");
-    },
-    onError: (error) => {
-      // Handle error (e.g., show an error message)
-      console.error("Login error:", error.message);
-    },
-  });
-
-  const onSubmit = (data: UserLoginPayload) => {
-    mutation.mutate(data); // Trigger the mutation with the credentials
+  const mutation = useSessionMutation();
+  const onSubmit = (payload: UserLoginPayload) => {
+    mutation.mutate({
+      type: "login",
+      payload,
+    }); // Trigger the mutation with the credentials
   };
 
   return (

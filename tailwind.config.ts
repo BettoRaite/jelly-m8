@@ -33,6 +33,7 @@ export default {
         moveVertical: "moveVertical 30s ease infinite",
         moveHorizontal: "moveHorizontal 40s ease infinite",
         "scale-up-down": "scale-up-down 2s infinite",
+        animateBG: "animateBackground 10s linear infinite",
       },
       keyframes: {
         "scale-up-down": {
@@ -53,6 +54,12 @@ export default {
           "0%": { transform: "translateX(-50%) translateY(-10%)" },
           "50%": { transform: "translateX(50%) translateY(10%)" },
           "100%": { transform: "translateX(-50%) translateY(-10%)" },
+        },
+        animateBackground: {
+          "0%, 100%": { backgroundPosition: "left top" },
+          "25%": { backgroundPosition: "right bottom" },
+          "50%": { backgroundPosition: "left bottom" },
+          "75%": { backgroundPosition: "right top" },
         },
       },
     },

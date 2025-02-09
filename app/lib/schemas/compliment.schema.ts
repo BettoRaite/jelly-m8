@@ -7,7 +7,6 @@ export const createComplimentSchema = z.object({
 
 export const updateComplimentSchema = z
   .object({
-    title: z.string().min(3),
     content: z.string().min(3),
   })
   .partial()

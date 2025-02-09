@@ -3,7 +3,7 @@ import useProfileQuery from "@/hooks/useProfileQuery";
 import { HeartLoader } from "@/components/HeartLoader";
 import { useMemo, useState } from "react";
 import { joinClasses } from "@/lib/utils/strings";
-import { motion, AnimatePresence } from "motion/react"; // Use `framer-motion` directly
+import { motion, AnimatePresence } from "motion/react";
 import classNames from "classnames";
 import type { HTMLProps } from "react";
 import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
@@ -43,10 +43,10 @@ const animationConfig: AnimationInstance[] = [
 function Slide1({ profile }: Props) {
   return (
     <motion.section
-      exit={{ opacity: 0, scale: 0.1 }} // Exit animation
-      initial={{ opacity: 0 }} // Initial animation
-      animate={{ opacity: 1 }} // Animate in
-      transition={{ duration: 0.5 }} // Transition duration
+      exit={{ opacity: 0, scale: 0.1 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
       className="flex items-center h-screen w-screen overflow-hidden"
     >
       <div className="flex w-dvw justify-center">
@@ -118,6 +118,30 @@ function Slide2({ profile }: Props) {
     </motion.section>
   );
 }
+const imgUrl =
+  "https://plus.unsplash.com/premium_photo-1671616724629-c2fa8455c28f?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fGxvdmV8ZW58MHx8MHx8fDA%3D";
+function Slide3({ profile }: Props) {
+  return (
+    <motion.section
+      exit={{ opacity: 0 }} // Exit animation
+      initial={{ opacity: 0 }} // Initial animation
+      animate={{ opacity: 1 }} // Animate in
+      transition={{ duration: 0.5 }} // Transition duration
+      className="flex items-center justify-center h-screen w-screen overflow-hidden bg-black"
+    >
+      <h1
+        className={
+          "text-8xl bg-clip-text animate-animateBG bg-repeat font-bold text-transparent"
+        }
+        style={{
+          backgroundImage: `url(${profile.profileImageUrl})`,
+        }}
+      >
+        {profile?.displayName}
+      </h1>
+    </motion.section>
+  );
+}
 
 export default function TributePage({ params }: Route.LoaderArgs) {
   const { data: profile, status } = useProfileQuery({
@@ -130,6 +154,10 @@ export default function TributePage({ params }: Route.LoaderArgs) {
       return [];
     }
     return [
+      <Slide3
+        key="slide3" // Unique key for AnimatePresence
+        profile={profile}
+      />,
       <Slide1
         key="slide1" // Unique key for AnimatePresence
         profile={profile}
@@ -158,7 +186,12 @@ export default function TributePage({ params }: Route.LoaderArgs) {
           setSlideIndex(slideIndex + 1);
         }}
         direction="right"
-        className="right-4 absolute z-10 bottom-4 bg-transparent border border-gray-200"
+        className={joinClasses(
+          "right-4 absolute z-10 bottom-4 bg-transparent border border-gray-200",
+          {
+            "text-white bg-gray-200": slideIndex === 0,
+          }
+        )}
       />
       {slideIndex !== 0 && (
         <NavButton

@@ -19,6 +19,7 @@ import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { Toaster } from "react-hot-toast";
 import { MdEdit } from "react-icons/md";
 
 export default function UserDashboard() {
@@ -65,91 +66,92 @@ export default function UserDashboard() {
     <main className="relative flex justify-center items-center flex-col">
       <GoBack to="/" className="hover:text-gray-700" theme="dark" />
       <GlassyBackground className="bg-gray-200 h-full" />
-      <div className="relative rounded-xl h-[500px] p-4 mt-20 flex justify-center">
-        <div className="hidden md:block w-[360px] h-96 bg-gray-300 absolute shadow-lg -left-[110%] -bottom-[5%] -rotate-[20deg] rounded-xl" />
-        <div className="hidden md:block w-[360px] h-96 bg-gray-300 absolute shadow-lg -right-[110%] -bottom-[5%] rotate-[20deg] rounded-xl" />
+
+      <div className="relative rounded-xl p-4 mt-20 flex flex-col items-center">
+        {/* Profile Card Section */}
         <AnimatePresence>
-          <div className="h-auto w-[320px]">
+          <motion.div
+            key={currentProfile.id}
+            className="h-auto w-[70%] max-w-[600px] relative"
+          >
             <motion.img
-              animate={{ scale: [0.5, 1.0] }}
-              key={currentProfile.id}
-              className="object-cover rounded-lg"
+              animate={{ scale: [0, 1] }}
+              className="object-cover rounded-xl w-full h-[400px] shadow-2xl"
               src={currentProfile.profileImageUrl}
               alt={currentProfile?.displayName}
             />
-            <h1 className="text-center text-6xl font-bold mt-4 text-pink-400">
+
+            {/* Profile Name */}
+            <h1 className="text-center text-6xl font-bold mt-8 text-pink-500">
               {currentProfile.displayName}
             </h1>
-            <div className="flex justify-between">
-              <NavButton
-                direction="left"
-                onClick={() => handleShiftTo("prev")}
-              />
-              <NavButton
-                direction="right"
-                onClick={() => handleShiftTo("next")}
-              />
-            </div>
-            {/* <SelectInput
-              options={profiles.map((p) => {
-                return {
-                  value: p.id,
-                  label: p.displayName,
-                };
-              })}
-              onChange={(id) => setProfileId(id as number)}
-              ctaText="Кто получит комплимент?"
-              className="mt-4"
-            /> */}
-          </div>
+
+            <NavButton
+              direction="left"
+              onClick={() => handleShiftTo("prev")}
+              className="ml-4 absolute top-[50%] -left-40"
+            />
+            <NavButton
+              direction="right"
+              onClick={() => handleShiftTo("next")}
+              className="mr-4 absolute top-[50%] -right-40"
+            />
+          </motion.div>
         </AnimatePresence>
+
+        {/* Compliment Form Section */}
+        <section className="mt-16 w-[70%] max-w-[600px]">
+          <FormProvider {...methods}>
+            <form
+              onSubmit={methods.handleSubmit(handleCreateCompliment)}
+              className="bg-white rounded-2xl shadow-xl p-8"
+            >
+              <h2 className="text-2xl font-bold text-gray-700 mb-6 flex items-center gap-2">
+                Удиви девушку, напиши комплимент
+                <MdEdit className="text-pink-400" />
+              </h2>
+
+              <div className="space-y-6">
+                {/* Theme Select Field */}
+                <FormField<CreateComplimentPayload> fieldName="title">
+                  <FormField.Label
+                    content="Teма"
+                    className="text-[1rem] font-medium text-gray-600"
+                  />
+                  <FormField.Select
+                    options={[
+                      {
+                        value: "Если бы мы встречались",
+                        label: "Если бы мы встречались",
+                      },
+                    ]}
+                    className="w-full p-3 border border-gray-200 rounded-xl focus:border-pink-300 focus:ring-pink-300"
+                  />
+                </FormField>
+
+                {/* Compliment Text Area */}
+                <FormField<CreateComplimentPayload> fieldName="content">
+                  <FormField.TextArea
+                    placeholder="Напиши что-нибудь..."
+                    className="min-h-[150px] w-full p-4 border border-gray-200 rounded-xl focus:border-pink-300 focus:ring-pink-300"
+                  />
+                </FormField>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-4 bg-gray-300 p-2 rounded-xl"
+                >
+                  <span className="font-bold bg-gradient-to-l from-indigo-500 via-red-500 to-blue-500 text-transparent bg-clip-text ">
+                    Отправить
+                  </span>
+                </button>
+              </div>
+            </form>
+          </FormProvider>
+        </section>
       </div>
 
-      <section className="mt-16 w-[50%]">
-        <FormProvider {...methods}>
-          <motion.form
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            onSubmit={methods.handleSubmit(handleCreateCompliment)}
-            className="bg-white rounded-2xl shadow-xl p-8"
-          >
-            <h2 className="text-2xl font-bold text-gray-700 mb-6 flex items-center gap-2">
-              Удиви девушку, напиши комплимент
-              <MdEdit />
-            </h2>
-
-            <div className="space-y-6">
-              <FormField<CreateComplimentPayload> fieldName="title">
-                <FormField.Label content="Teма" className="text-[1rem]" />
-                <FormField.Select
-                  options={[
-                    {
-                      value: "Если бы мы встречались",
-                      label: "Если бы мы встречались",
-                    },
-                  ]}
-                  className="w-full f"
-                />
-              </FormField>
-
-              <FormField<CreateComplimentPayload> fieldName="content">
-                <FormField.TextArea
-                  placeholder="Напиши что-нибудь..."
-                  className="min-h-[150px] w-full p-4 border border-gray-200 rounded-xl focus:border-pink-300"
-                />
-              </FormField>
-
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-pink-400 to-blue-500 text-white py-4 px-8 rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2"
-              >
-                <MdEdit />
-                Отправить
-              </button>
-            </div>
-          </motion.form>
-        </FormProvider>
-      </section>
       <div className="mt-20">
         <h2 className="text-4xl font-bold text-gray-800 text-center w-full font-amatic bg-pink-300">
           Ищешь вдохновение?
@@ -164,6 +166,7 @@ export default function UserDashboard() {
           profileId={currentProfile.id}
         />
       </section>
+      <Toaster />
     </main>
   );
 }
