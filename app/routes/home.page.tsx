@@ -1,57 +1,60 @@
 import { AppScene } from "@/components/AppScene";
 import AnimatedGradientBackground from "@/components/Backgrounds/AnimatedGradientBackground";
-import { Loader } from "@/components/Loader";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { HiOutlineSquare2Stack } from "react-icons/hi2";
-import { IoMdLogIn } from "react-icons/io";
-import { MdDashboard, MdOutlineLogout } from "react-icons/md";
+import { MdDashboard } from "react-icons/md";
 import { Link } from "react-router";
 import { Vector3 } from "three";
-
 import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
+import { HeartLoader } from "@/components/HeartLoader";
 import { useSessionMutation } from "@/hooks/useSessionMutation";
+import { joinClasses } from "@/lib/utils/strings";
+import Button from "@/ui/Button";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { FaRegComments } from "react-icons/fa";
-import { joinClasses } from "@/lib/utils/strings";
-import { HeartLoader } from "@/components/HeartLoader";
 
 export default function Home() {
-  const { data: user, status } = useAuth();
+  const { data: user, status, refetch } = useAuth();
   const session = useSessionMutation();
   const [isHovered, setIsHovered] = useState(false);
   if (status === "pending") {
     return <HeartLoader className="bg-black" />;
   }
   const { userRole: role } = user ?? {};
-
-  function handleLogout() {
-    session.mutate({
-      type: "logout",
-    });
+  console.log(user);
+  async function handleLogout() {
+    try {
+      await session.mutateAsync({
+        type: "logout",
+      });
+      refetch();
+    } catch (err) {}
   }
 
   const links = [
     {
       isShown: true,
-      icon: <HiOutlineSquare2Stack className="text-3xl text-cyan-50" />,
+      icon: (
+        <HiOutlineSquare2Stack className="text-xl md:text-3xl text-cyan-50" />
+      ),
       to: "/cards",
     },
     {
       isShown: !!user,
-      icon: <FaRegComments className="text-3xl text-cyan-50" />,
+      icon: <FaRegComments className="text-xl md:text-3xl text-cyan-50" />,
       to: "/user-dashboard",
     },
     {
       isShown: role === "admin",
-      icon: <MdDashboard className="text-3xl text-cyan-50" />,
+      icon: <MdDashboard className="text-xl md:text-3xl text-cyan-50" />,
       to: "/dashboard",
     },
     {
-      isShown: !!user,
-      icon: <FaUser className="text-3xl text-cyan-50" />,
-      to: `/profile/${user?.id}`,
+      isShown: true,
+      icon: <FaUser className="text-xl md:text-3xl text-cyan-50" />,
+      to: user ? `/profile/${user?.id}` : "/login",
     },
   ];
 
@@ -85,7 +88,7 @@ export default function Home() {
                 <Link
                   key={link.to}
                   className={joinClasses(
-                    "rounded-full p-2 shadow-xl hover:scale-125 duration-500",
+                    "rounded-full p-2 shadow-xl hover:scale-125 duration-500 border border-white border-opacity-30",
                     "bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))]",
                     "from-[#9d174d] via-[#d946ef] to-[#f0abfc]"
                   )}
@@ -99,27 +102,16 @@ export default function Home() {
         </div>
       </div>
 
-      {user ? (
-        <button
+      {user && (
+        <Button
           type="button"
           onClick={handleLogout}
           className={joinClasses(
-            "text-lg font-bold hover:scale-75 transition-transform duration-500 absolute top-4 right-4",
-            "bg-gradient-to-l from-blue-500 via-teal-500 to-green-500 text-transparent bg-clip-text"
+            " absolute top-4 right-4 text-white font-bold opacity-60 hover:opacity-100"
           )}
         >
           Выйти
-        </button>
-      ) : (
-        <Link
-          to={"/login"}
-          className={joinClasses(
-            "text-xl font-bold hover:scale-125 transition-transform duration-500 absolute top-4 right-4",
-            "bg-white bg-opacity-20"
-          )}
-        >
-          Логин
-        </Link>
+        </Button>
       )}
     </div>
   );

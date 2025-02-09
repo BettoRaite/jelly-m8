@@ -43,7 +43,7 @@ export function useSessionMutation({
       await fetchWithHandler(route, { method, body });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      queryClient.resetQueries({
         queryKey: [QUERY_KEYS.AUTH],
       });
     },

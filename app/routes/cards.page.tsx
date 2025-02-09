@@ -111,7 +111,7 @@ export default function Cards() {
       style={{ width: "100dvw", height: "100dvh" }}
     >
       <ScrollSection ref={cardsSectionRef} hasScrolled={hasScrolled}>
-        <AnimatedGradientBackground preset="DEFAULT" />
+        <AnimatedGradientBackground />
         {profile && !profile.isActivated && (
           <ProfileActivationOverlay
             profile={profile}
@@ -119,7 +119,7 @@ export default function Cards() {
           />
         )}
         {/* <div className="absolute z-0 opacity-100 top-0 left-0 h-full w-full bg-[url('../public/hearts-no-bg.png')] bg-repeat bg-center animate-scroll" /> */}
-        <GoBack to="/" />
+        <GoBack to="/" className="opacity-20 hover:opacity-80" />
         {!hasScrolled && <ParticlesWrapper />}
 
         {profile && <ProfileScene profile={profile} />}

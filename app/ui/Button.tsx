@@ -7,27 +7,28 @@ type ButtonProps = ComponentProps<"button"> & {
   isLoading?: boolean;
 };
 
+const variantClasses = {
+  solid: "bg-blue-600 text-white hover:bg-blue-700",
+  outline:
+    "border border-white border-opacity-20 bg-white bg-opacity-20 hover:border-opacity-70",
+  ghost: "text-blue-600 hover:bg-blue-50",
+};
+
 function Button({
-  variant = "solid",
+  variant = "outline",
   isLoading = false,
   className,
   children,
   ...props
 }: ButtonProps) {
-  const variantClasses = {
-    solid: "bg-blue-600 text-white hover:bg-blue-700",
-    outline: "border-2 border-blue-600 text-blue-600 hover:bg-blue-50",
-    ghost: "text-blue-600 hover:bg-blue-50",
-  };
-
   return (
     <button
       {...props}
       disabled={isLoading || props.disabled}
       className={joinClasses(
-        "px-4 py-2 rounded-md font-medium transition-colors duration-200 flex items-center justify-center gap-2",
-        variantClasses[variant],
-        className
+        className,
+        "px-2 py-2 md:px-4 md:py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2",
+        variantClasses[variant]
       )}
     >
       {isLoading && <FiLoader className="animate-spin" />}

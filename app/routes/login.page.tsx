@@ -7,6 +7,7 @@ import {
   type UserLoginPayload,
 } from "@/lib/schemas/login.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "motion/react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
@@ -42,7 +43,10 @@ export default function Login() {
     <main className="flex justify-center items-center h-screen bg-transparent">
       <AnimatedGradientBackground />
       <GoBack to="/" />
-      <div
+      <motion.div
+        animate={{
+          scale: [0, 1],
+        }}
         className="bg-white bg-opacity-20 border border-white border-opacity-20
         p-8 rounded-lg shadow-md w-11/12 max-w-96 relative z-10"
       >
@@ -58,7 +62,7 @@ export default function Login() {
                 required: "Access Key is required",
               })}
               className={`w-full p-2 rounded focus:outline-none
-                bg-white bg-opacity-20 text-gray-300 placeholder:text-black placeholder:text-opacity-20 font-bold  ${
+                bg-white bg-opacity-20 text-white placeholder:text-black placeholder:text-opacity-20 font-bold  ${
                   errors.accessSecret ? "border-red-500" : ""
                 }`}
             />
@@ -84,7 +88,7 @@ export default function Login() {
             </div>
           )}
         </form>
-      </div>
+      </motion.div>
     </main>
   );
 }

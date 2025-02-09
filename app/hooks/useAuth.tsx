@@ -1,11 +1,18 @@
 import { queryClient } from "@/lib/config";
 import type { User } from "@/lib/types";
 import { QUERY_KEYS } from "@/lib/config";
-import { useQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  type UseQueryOptions,
+  type UseQueryResult,
+} from "@tanstack/react-query";
 import { fetchWithHandler } from "@/lib/utils";
+import type { ApiError } from "@/lib/errors";
 
-export const useAuth = () => {
-  return useQuery({
+export const useAuth = (
+  options: Partial<UseQueryOptions<User | undefined, ApiError>> = {}
+) => {
+  return useQuery<User | undefined, ApiError>({
     queryFn: async () => {
       const { data } = await fetchWithHandler<{
         data?: User;
@@ -14,6 +21,7 @@ export const useAuth = () => {
     },
     queryKey: [QUERY_KEYS.AUTH],
     retry: false,
+    ...options,
   });
 };
 
