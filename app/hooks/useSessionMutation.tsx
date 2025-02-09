@@ -1,4 +1,5 @@
 import { QUERY_KEYS } from "@/lib/config";
+import type { ApiError } from "@/lib/errors";
 import type { UserLoginPayload } from "@/lib/schemas/login.schema";
 import type { Methods } from "@/lib/types";
 import { fetchWithHandler } from "@/lib/utils";
@@ -25,7 +26,7 @@ export function useSessionMutation({
   queryKey?: string[];
 } = {}) {
   const queryClient = useQueryClient();
-  return useMutation<unknown, Error, Action>({
+  return useMutation<unknown, ApiError, Action>({
     mutationFn: async (action) => {
       const route = `/auth/${action.type}`;
       const method: Methods = "POST";

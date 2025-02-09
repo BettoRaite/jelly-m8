@@ -115,7 +115,7 @@ export default function Home() {
           to={"/login"}
           className={joinClasses(
             "text-xl font-bold hover:scale-125 transition-transform duration-500 absolute top-4 right-4",
-            "bg-gradient-to-l from-blue-500 via-teal-500 to-green-500 text-transparent bg-clip-text"
+            "bg-white bg-opacity-20"
           )}
         >
           Логин
