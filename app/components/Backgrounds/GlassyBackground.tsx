@@ -12,10 +12,10 @@ export default function GlassyBackground({ className }: Props) {
   return (
     <div
       className={joinClasses(
-        "absolute -z-50 left-0 right-0 top-0 bottom-0 bg-black bg-clip-padding backdrop-filter backdrop-blur",
-        "bg-opacity-30 backdrop-saturate-100 backdrop-contrast-100",
+        className,
         glassyTexture,
-        className
+        "absolute  left-0 right-0 top-0 bottom-0 bg-black bg-clip-padding backdrop-filter backdrop-blur",
+        "bg-opacity-30 backdrop-saturate-100 backdrop-contrast-100"
       )}
     />
   );

@@ -44,7 +44,7 @@ export default function Home() {
     {
       isShown: !!user,
       icon: <FaRegComments className="text-xl md:text-3xl text-cyan-50" />,
-      to: "/user-dashboard",
+      to: "/profiles-gallery",
     },
     {
       isShown: role === "admin",
@@ -54,7 +54,7 @@ export default function Home() {
     {
       isShown: true,
       icon: <FaUser className="text-xl md:text-3xl text-cyan-50" />,
-      to: user ? `/profile/${user?.id}` : "/login",
+      to: user ? `/profiles/${user?.id}` : "/login",
     },
   ];
 

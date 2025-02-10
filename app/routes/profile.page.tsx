@@ -6,7 +6,6 @@ import { QUERY_KEYS } from "@/lib/config";
 import { useNavigate } from "react-router";
 import type { Route } from "./+types/profile.page";
 import { GoBack } from "@/components/GoBack";
-import { motion } from "motion/react";
 import UserProfile from "@/components/UserProfile";
 import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
 
@@ -45,7 +44,7 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
   }
   const isOwner = user?.id === userId;
   return (
-    <main className="flex justify-center items-center min-h-dvh p-4">
+    <main className="flex justify-center items-center min-h-dvh p-4 bg-transparent">
       <GoBack theme="dark" to="/" />
       {!profile && isOwner && (
         <CreateProfileForm userId={userId} onProfileRefetch={refetch} />
@@ -56,7 +55,7 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
         </h1>
       )}
       {profile && <UserProfile profile={profile} isOwner={isOwner} />}
-      <GlassyBackground className="bg-gray-200" />
+      <GlassyBackground className="bg-gray-200 -z-10" />
     </main>
   );
 }

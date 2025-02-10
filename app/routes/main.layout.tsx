@@ -1,14 +1,13 @@
-import { Outlet } from "react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/config";
-import { FiInfo } from "react-icons/fi";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Outlet } from "react-router";
 
 export default function Layout() {
   return (
-    <div>
+    <>
       <QueryClientProvider client={queryClient}>
         <Outlet />
       </QueryClientProvider>
-    </div>
+    </>
   );
 }

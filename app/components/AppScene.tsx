@@ -9,11 +9,13 @@ import { ContactShadows } from "@react-three/drei";
 
 type Props = {
   children: ReactNode;
+  className?: string;
 };
 
-export function AppScene({ children }: Props) {
+export function AppScene({ children, className }: Props) {
   return (
     <Canvas
+      className={className}
       shadows
       onCreated={({ gl, scene }) => {
         gl.setPixelRatio(2);

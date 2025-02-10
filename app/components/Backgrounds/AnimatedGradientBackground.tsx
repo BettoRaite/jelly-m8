@@ -1,6 +1,6 @@
 function AnimatedGradientBackground() {
   return (
-    <div className="bg-gray-500 bg-clip-padding backdrop-filter  backdrop-blur bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100 gradient-bg absolute w-screen h-screen -z-100 overflow-hidden bg-gradient-to-br from-[rgb(108,0,162)] to-[rgb(0,17,82)]">
+    <div className="bg-gray-500 bg-clip-padding backdrop-filter  backdrop-blur bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100 gradient-bg absolute left-0 right-0 bottom-0 top-0 -z-100 overflow-hidden bg-gradient-to-br from-[rgb(108,0,162)] to-[rgb(0,17,82)]">
       <svg className="fixed top-0 left-0 w-0 h-0">
         <filter id="goo">
           <feGaussianBlur in="SourceGraphic" stdDeviation="40" />
