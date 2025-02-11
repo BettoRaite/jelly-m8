@@ -80,7 +80,7 @@ function ProfileCard({ initialProfile }: Props) {
           <img
             src={profile.profileImageUrl}
             alt={profile.displayName}
-            className="w-24 h-24 md:w-32 md:h-32  rounded-full"
+            className="w-24 h-24 md:w-32 md:h-32 object-cover  rounded-full"
           />
           <div className="ml-4">
             <h1 className="text-xl font-semibold text-gray-800 capitalize">

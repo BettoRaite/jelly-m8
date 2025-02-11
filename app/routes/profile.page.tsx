@@ -44,8 +44,8 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
   }
   const isOwner = user?.id === userId;
   return (
-    <main className="flex justify-center items-center min-h-dvh p-4 bg-transparent">
-      <GoBack theme="dark" to="/" />
+    <main className="flex justify-center min-h-dvh p-4 bg-gray-200">
+      <GoBack to="/" />
       {!profile && isOwner && (
         <CreateProfileForm userId={userId} onProfileRefetch={refetch} />
       )}
@@ -55,7 +55,6 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
         </h1>
       )}
       {profile && <UserProfile profile={profile} isOwner={isOwner} />}
-      <GlassyBackground className="bg-gray-200 -z-10" />
     </main>
   );
 }

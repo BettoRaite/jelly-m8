@@ -84,7 +84,7 @@ function ComplimentCard({
     <FormProvider {...methods}>
       <motion.article
         animate={{
-          scale: [0, 1],
+          scale: [0.6, 1],
           opacity: [0, 1],
         }}
         exit={{

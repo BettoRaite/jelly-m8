@@ -58,7 +58,7 @@ export default function FieldUploadInput({
           <img
             src={imageUrl}
             alt=""
-            className="w-24 h-24 border border-gray-300 rounded-full mb-2"
+            className="w-24 h-24 border border-gray-300 rounded-full mb-2 object-cover"
           />
         </div>
       )}

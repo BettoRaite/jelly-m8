@@ -44,7 +44,7 @@ export default function Home() {
     {
       isShown: !!user,
       icon: <FaRegComments className="text-xl md:text-3xl text-cyan-50" />,
-      to: "/profiles-gallery",
+      to: "/discovery",
     },
     {
       isShown: role === "admin",
@@ -88,7 +88,7 @@ export default function Home() {
                 <Link
                   key={link.to}
                   className={joinClasses(
-                    "rounded-full p-2 shadow-xl hover:scale-125 duration-500 border border-white border-opacity-30",
+                    "rounded-full p-2 shadow-xl hover:scale-125 duration-500",
                     "bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))]",
                     "from-[#9d174d] via-[#d946ef] to-[#f0abfc]"
                   )}

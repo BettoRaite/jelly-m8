@@ -3,7 +3,7 @@ import type { ComponentProps } from "react";
 import { FiLoader } from "react-icons/fi";
 
 type ButtonProps = ComponentProps<"button"> & {
-  variant?: "solid" | "outline" | "ghost";
+  variant?: keyof typeof variantClasses;
   isLoading?: boolean;
 };
 
@@ -12,6 +12,7 @@ const variantClasses = {
   outline:
     "border border-white border-opacity-20 bg-white bg-opacity-20 hover:border-opacity-70",
   ghost: "text-blue-600 hover:bg-blue-50",
+  none: "",
 };
 
 function Button({

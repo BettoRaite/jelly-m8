@@ -15,7 +15,7 @@ export default [
     route("cards/tribute/:userId", "./routes/tribute.page.tsx"),
     route("profiles/:userId", "./routes/profile.page.tsx"),
     layout("./routes/userDashboard/layout.tsx", [
-      route("profiles-gallery", "./routes/userDashboard/discovery.page.tsx"),
+      route("discovery", "./routes/userDashboard/discovery.page.tsx"),
       route(
         "compliments-feed",
         "./routes/userDashboard/complimentsFeed.page.tsx"

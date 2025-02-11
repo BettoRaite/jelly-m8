@@ -79,7 +79,7 @@ function ProfileForm({ formType, users, profile, onRefetch, onClose }: Props) {
       payload: jsonToFormData(payload as CreateProfilePayload),
       type: "create",
     });
-    // methods.reset();
+    methods.reset();
   }
 
   const options = isCreateForm
@@ -116,7 +116,7 @@ function ProfileForm({ formType, users, profile, onRefetch, onClose }: Props) {
         <FormField<CreateProfileFormFields> fieldName="imageFile">
           <FormField.Label />
           <FormField.Upload
-            type={formType === "edit" ? "display-image" : "default"}
+            type={"display-image"}
             defaultImage={profile?.profileImageUrl}
           />
           <FormField.Error />

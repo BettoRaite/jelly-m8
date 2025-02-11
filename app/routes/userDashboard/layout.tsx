@@ -12,19 +12,19 @@ export default function Layout() {
   };
 
   return (
-    <div className="bg-transparent min-h-screen">
+    <div className="bg-transparent">
       <div className="left-0 right-0 absolute flex justify-center top-10 z-50">
-        <nav>
+        <nav className="font-comfortaa text-sm">
           <ul
             className="flex flex-row gap-4 shadow-lg p-4 rounded-xl
-            relative bg-white backdrop-blur-sm bg-opacity-20 border-white border"
+            relative bg-white backdrop-blur-sm bg-opacity-20 border-gray-300 border"
           >
             <li>
               <Link
-                to={"/profiles-gallery"}
+                to={"/discovery"}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 ${
-                  isActive("/profiles-gallery")
-                    ? "bg-blue-500 text-white"
+                  isActive("/discovery")
+                    ? "bg-gradient-to-tr from-purple-400 to-purple-600 text-white font-bold"
                     : "text-gray-700 hover:bg-blue-50"
                 }`}
               >
@@ -41,7 +41,13 @@ export default function Layout() {
                     : "text-gray-700 hover:bg-pink-50"
                 }`}
               >
-                <FaHeart className="w-5 h-5" />
+                <FaHeart
+                  className={`w-5 h-5 text-pink-500 ${
+                    isActive("/compliments-feed")
+                      ? "text-white"
+                      : "text-pink-500"
+                  }`}
+                />
                 <span>Комплименты</span>
               </Link>
             </li>

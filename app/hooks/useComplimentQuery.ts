@@ -7,11 +7,12 @@ import {
 import { fetchWithHandler } from "@/lib/utils";
 import type { Compliment } from "@/lib/types";
 import type { ApiError } from "@/lib/errors";
+import { constructQueryString } from "@/lib/utils/strings";
 
 type Action =
   | {
       type: "compliments";
-      profileId: number;
+      searchPattern?: string;
     }
   | {
       type: "compliment";
@@ -29,16 +30,20 @@ function useComplimentQuery<T extends Action>(
   action: T,
   options: Partial<UseQueryOptions<ComplimentQueryResult<T>, ApiError>> = {}
 ): UseQueryResult<ComplimentQueryResult<T>, ApiError> {
-  let baseRoute = `/profiles/${action.profileId}/compliments`;
+  let baseRoute = "/compliments";
   let queryKey: unknown[];
 
   switch (action.type) {
     case "compliments": {
-      queryKey = [QUERY_KEYS.COMPLIMENTS, action.profileId];
+      queryKey = [QUERY_KEYS.COMPLIMENTS];
+      if (action.searchPattern) {
+        queryKey.push(action.searchPattern);
+        baseRoute += constructQueryString(action.searchPattern);
+      }
       break;
     }
     case "compliment": {
-      baseRoute += `/${action.complimentId}`;
+      baseRoute = `/profiles/${action.profileId}/compliments/${action.complimentId}`;
       queryKey = [
         QUERY_KEYS.COMPLIMENTS,
         action.profileId,
