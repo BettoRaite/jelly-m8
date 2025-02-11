@@ -1,16 +1,48 @@
 import { GoBack } from "@/components/GoBack";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { Outlet } from "react-router";
 import { FaImages, FaHeart } from "react-icons/fa"; // Importing icons from react-icons
 import { BiSearch } from "react-icons/bi";
+import { getAuth, useAuth } from "@/hooks/useAuth";
+import useProfileQuery from "@/hooks/useProfileQuery";
+import { HeartLoader } from "@/components/HeartLoader";
+import ErrorScreen from "@/components/ErrorScreen";
+import { useEffect } from "react";
 
 export default function Layout() {
-  const location = useLocation();
+  const { data: user } = useAuth();
+  const {
+    data: profile,
+    status,
+    error,
+  } = useProfileQuery(
+    {
+      type: "profile",
+      userId: user?.id as number,
+    },
+    {
+      enabled: Boolean(user),
+      retry: false,
+    }
+  );
 
+  const location = useLocation();
   const isActive = (path: string) => {
     return location.pathname === path;
   };
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (error?.status === 404) {
+      navigate(`/profiles/${user?.id}`);
+    }
+  }, [navigate, error, user]);
 
+  if (status === "pending") {
+    return <HeartLoader />;
+  }
+  if (status === "error") {
+    return <ErrorScreen description="Ошибка при загрузке вашего профиля" />;
+  }
   return (
     <div className="bg-transparent">
       <div className="left-0 right-0 absolute flex justify-center top-10 z-50">

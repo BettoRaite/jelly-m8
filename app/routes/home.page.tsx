@@ -23,7 +23,6 @@ export default function Home() {
     return <HeartLoader className="bg-black" />;
   }
   const { userRole: role } = user ?? {};
-  console.log(user);
   async function handleLogout() {
     try {
       await session.mutateAsync({
