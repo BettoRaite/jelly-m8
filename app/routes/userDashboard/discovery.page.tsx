@@ -16,9 +16,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Page() {
-  const { data: profiles, status } = useProfileQuery({
+  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    data: profiles,
+    status,
+    refetch,
+  } = useProfileQuery({
     type: "profiles",
-    searchParams: "gender=female",
+    searchParams: `gender=female|displayNam=${searchQuery}`,
   });
   const [activeIndex, setActiveIndex] = useState(0);
   const [showComplimentForm, setShowComplimentForm] = useState(false);
@@ -51,6 +56,12 @@ export default function Page() {
     });
   }
   const currentProfile = profiles.at(activeIndex) as Profile;
+  function onSearch(q: string) {
+    setSearchQuery(q);
+    setTimeout(() => {
+      refetch();
+    }, 100);
+  }
   return (
     <main className="pt-52 relative min-h-screen bg-white">
       <GoBack to="/" />
@@ -64,7 +75,7 @@ export default function Page() {
         </span>
       </h1>
       <div className="flex justify-center">
-        <SearchBar onSearch={(s: string) => {}} />
+        <SearchBar onSearch={onSearch} />
       </div>
       <div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8 max-w-7xl mx-auto

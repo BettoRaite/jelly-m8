@@ -43,8 +43,10 @@ export const constructQueryString = (
 
   const queryParams = str.split("|").map((pair) => {
     const [param, value] = pair.split("=");
-
-    if (!param?.trim() || !value?.trim()) {
+    if (!value.trim()) {
+      return "";
+    }
+    if (!param?.trim()) {
       throw new Error(
         `Invalid input string: "${str}". Expected format: param=value|param=value.`
       );
@@ -53,5 +55,6 @@ export const constructQueryString = (
     return `${param.trim()}=${value.trim()}`;
   });
 
-  return `?${queryParams.join("&")}`;
+  const queryString = `?${queryParams.join("&")}`;
+  return queryString;
 };

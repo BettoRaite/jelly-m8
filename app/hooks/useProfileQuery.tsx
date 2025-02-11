@@ -38,7 +38,7 @@ function useProfileQuery(
       case "profiles": {
         const qKey = [QUERY_KEYS.PROFILES];
         const qStr = constructQueryString(action.searchParams ?? "");
-        if (qKey) qKey.push(qStr);
+        if (action.searchParams) qKey.push(action.searchParams);
         return qKey;
       }
       case "profile":
