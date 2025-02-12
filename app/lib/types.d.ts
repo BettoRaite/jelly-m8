@@ -32,6 +32,7 @@ export interface Compliment {
   title: string;
   content: string; // text
   author: Profile;
+  likes: number;
 }
 
 export type Methods = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";

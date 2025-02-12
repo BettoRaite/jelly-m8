@@ -57,7 +57,7 @@ export default function Layout() {
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 ${
                   isActive("/discovery")
                     ? "bg-gradient-to-tr from-purple-400 to-purple-600 text-white font-bold"
-                    : "text-gray-700 hover:bg-blue-50"
+                    : "text-gray-700 hover:bg-blue-500 hover:text-white duration-300"
                 }`}
               >
                 <BiSearch className="w-5 h-5" />

@@ -63,7 +63,7 @@ export function useComplimentMutation(
         case "create":
         case "delete":
           queryClient.invalidateQueries({
-            queryKey: [QUERY_KEYS.COMPLIMENTS, action.profileId],
+            queryKey: [QUERY_KEYS.COMPLIMENTS],
           });
           break;
         case "update":

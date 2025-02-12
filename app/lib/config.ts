@@ -15,6 +15,7 @@ export const QUERY_KEYS = {
   USERS: "users",
   PROFILES: "profiles",
   COMPLIMENTS: "compliments",
+  LIKES: "likes",
 };
 
 export const config = {

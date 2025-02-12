@@ -1,5 +1,8 @@
+import { useComplimentManager } from "@/hooks/useComplimentManager";
 import { useComplimentMutation } from "@/hooks/useComplimentMutation";
 import useComplimentQuery from "@/hooks/useComplimentQuery";
+import { useLikeMutation } from "@/hooks/useLikeMutation";
+import useLikeQuery from "@/hooks/useLikeQuery";
 import {
   updateComplimentSchema,
   type UpdateComplimentPayload,
@@ -12,7 +15,8 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { BiSave } from "react-icons/bi";
+import { BiHeart, BiSave } from "react-icons/bi";
+import { IoMdHeart } from "react-icons/io";
 import { MdDelete, MdEdit } from "react-icons/md";
 type Props = {
   initialCompliment: Compliment;
@@ -26,62 +30,28 @@ function ComplimentCard({
   isOwner,
   onRefetchCompliments,
 }: Props) {
-  const { data: compliment, status } = useComplimentQuery(
-    {
-      type: "compliment",
-      profileId: initialCompliment.profileId,
-      complimentId: initialCompliment.id,
+  const {
+    states: {
+      compliment,
+      complimentQueryLoadStatus,
+      hasLiked,
+      likeQueryLoadStatus,
+      isEditing,
+      formMethods,
+      isDeleting,
+      isUpdating,
+      isLiking,
     },
-    {
-      initialData: initialCompliment,
-    }
-  );
-  const [isEditing, setIsEditing] = useState(false);
-  const methods = useForm({
-    resolver: zodResolver(updateComplimentSchema),
-    defaultValues: {
-      content: compliment?.content,
-    },
-  });
-  const complimentMutation = useComplimentMutation();
-  if (status === "pending") {
-    return "...";
+    actions: { toggleLike, handleDelete, handleUpdate, setIsEditing },
+  } = useComplimentManager(initialCompliment);
+  if (complimentQueryLoadStatus === "pending") {
+    return "....";
   }
-  if (status === "error") {
-    return "...";
-  }
-  function handleDelete() {
-    if (!compliment) return;
-    complimentMutation.mutate(
-      {
-        type: "delete",
-        profileId: initialCompliment.profileId,
-        complimentId: initialCompliment.id,
-      },
-      {
-        onSuccess: () => {
-          onRefetchCompliments();
-        },
-      }
-    );
-  }
-
-  async function handleUpdate(payload: UpdateComplimentPayload) {
-    if (!compliment) return;
-    try {
-      await complimentMutation.mutateAsync({
-        type: "update",
-        profileId: initialCompliment.profileId,
-        complimentId: initialCompliment.id,
-        payload,
-      });
-      setIsEditing(!isEditing);
-    } catch (err) {
-      toast.error("Ошибка...", { position: "bottom-center" });
-    }
+  if (complimentQueryLoadStatus === "error") {
+    return "err";
   }
   return (
-    <FormProvider {...methods}>
+    <FormProvider {...formMethods}>
       <motion.article
         animate={{
           scale: [0.6, 1],
@@ -123,26 +93,26 @@ function ComplimentCard({
         </div>
         <div className="flex items-center gap-4">
           <img
-            src={compliment.author.profileImageUrl || "/default-avatar.png"}
-            alt={compliment.author.displayName}
+            src={compliment?.author.profileImageUrl || "/default-avatar.png"}
+            alt={compliment?.author.displayName}
             className="h-14 w-14 md:h-20 md:w-20 rounded-full object-cover border-2 border-white/80 shadow-md"
           />
           <div>
             <h3 className="text-lg font-semibold text-gray-800">
-              {compliment.author.displayName}
+              {compliment?.author.displayName}
             </h3>
             <p className="text-sm text-gray-500">
-              @{compliment.author.displayName}
+              @{compliment?.author.displayName}
             </p>
           </div>
         </div>
 
         <form
-          onSubmit={methods.handleSubmit(handleUpdate)}
+          onSubmit={formMethods.handleSubmit(handleUpdate)}
           className="space-y-2 relative"
         >
           <h2 className="text-xl font-bold text-gray-700">
-            {compliment.title}
+            {compliment?.title}
           </h2>
 
           {isEditing ? (
@@ -154,7 +124,7 @@ function ComplimentCard({
             </FormField>
           ) : (
             <p className="text-gray-700 leading-relaxed">
-              {compliment.content}
+              {compliment?.content}
             </p>
           )}
 
@@ -171,6 +141,21 @@ function ComplimentCard({
           )}
         </form>
 
+        {!isEditing && (
+          <button
+            onClick={toggleLike}
+            className=" flex items-center  space-x-2 p-2 rounded-lg hover:bg-gray-100
+           transition-colors absolute right-2 bottom-2 text-gray-600"
+            type="button"
+          >
+            {hasLiked ? (
+              <IoMdHeart className="h-6 w-6 text-red-500" />
+            ) : (
+              <BiHeart className="h-6 w-6" />
+            )}
+            <span className="font-bold">{compliment?.likes}</span>
+          </button>
+        )}
         <div className="mt-4 flex items-center gap-6 text-sm text-gray-500">
           <div className="flex items-center gap-2">
             {/* <span>{new Date(compliment.createdAt).toLocaleDateString()}</span> */}
@@ -182,3 +167,94 @@ function ComplimentCard({
 }
 
 export default ComplimentCard;
+
+/*
+
+const {
+  data: compliment,
+  status,
+  refetch: refetchCompliment,
+} = useComplimentQuery(
+  {
+    type: "compliment",
+    profileId: initialCompliment.profileId,
+    complimentId: initialCompliment.id,
+  },
+  {
+    initialData: initialCompliment,
+  }
+);
+const {
+  data: hasLiked,
+  status: likeLoadStatus,
+  refetch: refetchLike,
+} = useLikeQuery({
+  type: "has_liked",
+  complimentId: initialCompliment.id,
+});
+const likeMutation = useLikeMutation();
+const [isEditing, setIsEditing] = useState(false);
+const [liked, setLiked] = useState(false);
+const methods = useForm({
+  resolver: zodResolver(updateComplimentSchema),
+  defaultValues: {
+    content: compliment?.content,
+  },
+});
+const complimentMutation = useComplimentMutation();
+if (status === "pending") {
+  return "...";
+}
+if (status === "error") {
+  return "...";
+}
+function handleDelete() {
+  if (!compliment) return;
+  complimentMutation.mutate(
+    {
+      type: "delete",
+      profileId: initialCompliment.profileId,
+      complimentId: initialCompliment.id,
+    },
+    {
+      onSuccess: () => {
+        onRefetchCompliments();
+      },
+    }
+  );
+}
+if (hasLiked !== liked && likeLoadStatus === "success") {
+  console.log("set");
+  setLiked(hasLiked);
+}
+async function handleUpdate(payload: UpdateComplimentPayload) {
+  if (!compliment) return;
+  try {
+    await complimentMutation.mutateAsync({
+      type: "update",
+      profileId: initialCompliment.profileId,
+      complimentId: initialCompliment.id,
+      payload,
+    });
+    setIsEditing(!isEditing);
+  } catch (err) {
+    toast.error("Ошибка...", { position: "bottom-center" });
+  }
+}
+async function toggleLike() {
+  likeMutation.mutate(
+    {
+      type: hasLiked ? "delete" : "create",
+      complimentId: initialCompliment.id,
+    },
+    {
+      onSuccess: () => {
+        setLiked(true);
+        refetchLike();
+        refetchCompliment();
+      },
+    }
+  );
+}
+
+*/

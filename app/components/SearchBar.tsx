@@ -41,7 +41,7 @@ function SearchBar({ onSearch, className, classNameContainer }: Props) {
         type="button"
         onClick={handleSearch}
         variant="outline"
-        className="bg-opacity-20 text-gray-700 border border-gray-500 hover:border-opacity-30 active:border-gray-100
+        className="bg-opacity-20 text-gray-600 border border-gray-500 hover:border-opacity-30 active:border-gray-100
         shadow-lg active:text-white active:bg-pink-400 font-bold"
       >
         <BiSearch />
