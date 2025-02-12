@@ -9,7 +9,7 @@ import Button from "@/ui/Button";
 import SearchBar from "@/components/SearchBar";
 import { FiFilter } from "react-icons/fi";
 import { FaFilter, FaSearch } from "react-icons/fa";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { HeartLoader } from "@/components/HeartLoader";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/lib/config";
@@ -18,6 +18,7 @@ import { h1 } from "motion/react-client";
 import { IoIosHeartEmpty } from "react-icons/io";
 import { joinClasses } from "@/lib/utils/strings";
 import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
+import { contain } from "three/src/extras/TextureUtils.js";
 
 export default function Page() {
   const { data: user } = useAuth();
@@ -38,27 +39,40 @@ export default function Page() {
     setSearchQuery(q);
     refetch();
   }
-  const cards = items?.map((c) => {
+  const adminCards = [];
+  const cards = [];
+  for (const c of items ?? []) {
     const isOwned = c.userId !== user?.id;
-    if (filterOwned && isOwned) {
-      return null;
-    }
-    return (
+    const card = (
       <ComplimentCard
         key={c.id}
         initialCompliment={c}
-        className="border-yellow-400 hover:border-yellow-400 max-w-[680px] justify-self"
+        className={joinClasses({
+          "border-yellow-400 hover:border-yellow-400 max-w-[680px] justify-self":
+            !c.isAdmin,
+          "max-w-[680px] justify-self": c.isAdmin,
+        })}
         isOwner={isOwned}
+        theme={c.isAdmin ? "special" : "default"}
         onRefetchCompliments={refetch}
       />
     );
-  });
+    if (filterOwned) {
+      if (isOwned) cards.push(card);
+      break;
+    }
+    if (c.isAdmin) {
+      adminCards.push(card);
+      continue;
+    }
+    cards.push(card);
+  }
   return (
     <main className="pt-60 bg-transparent relative">
       <GoBack to="/" theme="dark" />
       <GlassyBackground className="-z-20 bg-gray-200" />
       <section className="w-[90%] m-auto">
-        <h1 className="text-center mb-40 xl:text-5xl font-comfortaa">
+        <h1 className="text-center mb-40 xl:text-5xl font-caveat text-pink-400">
           Compliments
         </h1>
         <div className="flex flex-col items-center xl:items-start xl:grid xl:grid-cols-[auto_1fr] px-10 gap-20 min-h-screen">
@@ -78,6 +92,7 @@ export default function Page() {
           </div>
           <AnimatePresence>
             <div className="mb-20 flex flex-col gap-8 w-full justify-center">
+              {adminCards}
               {cards}
               <div
                 className={joinClasses("flex justify-center", {

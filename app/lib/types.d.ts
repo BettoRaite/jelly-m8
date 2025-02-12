@@ -33,6 +33,7 @@ export interface Compliment {
   content: string; // text
   author: Profile;
   likes: number;
+  isAdmin: boolean;
 }
 
 export type Methods = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";

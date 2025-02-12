@@ -22,6 +22,7 @@ type Props = {
   initialCompliment: Compliment;
   className?: string;
   isOwner: boolean;
+  theme?: "default" | "special";
   onRefetchCompliments: () => void;
 };
 function ComplimentCard({
@@ -29,6 +30,7 @@ function ComplimentCard({
   className,
   isOwner,
   onRefetchCompliments,
+  theme = "default",
 }: Props) {
   const {
     states: {
@@ -66,15 +68,26 @@ function ComplimentCard({
           "bg-white/80 backdrop-blur-sm transition-all hover:bg-white/90",
           "shadow-lg shadow-gray-200/40 hover:shadow-gray-200/60",
           "border border-gray-100/70 hover:border-gray-100/90",
-          className
+          "relative overflow-hidden",
+          className,
+          {
+            "shadow-lg shadow-purple-400 text-gray-100": theme === "special",
+          }
         )}
       >
+        {theme === "special" && (
+          <img
+            src="./public/pattern.jpg"
+            alt=""
+            className="absolute top-0 bottom-0 left-0 right-0 object-cover -z-10 opacity-100"
+          />
+        )}
         <div className="absolute top-3 right-3 flex gap-4">
           <button
             type="button"
             className={joinClasses(
-              "border border-gray-400 rounded-full hover:text-blue-400 text-gray-500",
-              " p-2 opacity-30 hover:opacity-100 transition duration-300"
+              "rounded-full hover:text-blue-400 text-gray-500",
+              " p-2 opacity-30 bg-gray-200 bg-opacity-100 hover:opacity-100 hover:border-opacity-0 transition duration-300"
             )}
             onClick={() => setIsEditing(!isEditing)}
           >
@@ -83,8 +96,8 @@ function ComplimentCard({
           <button
             type="button"
             className={joinClasses(
-              "border border-gray-400 rounded-full hover:text-red-400 text-gray-500",
-              " p-2 opacity-30 hover:opacity-100 transition duration-300"
+              "rounded-full hover:text-red-400 text-gray-500",
+              " p-2 opacity-30 bg-gray-200 bg-opacity-100 hover:opacity-100 hover:border-opacity-0 transition duration-300"
             )}
             onClick={handleDelete}
           >
@@ -142,19 +155,31 @@ function ComplimentCard({
         </form>
 
         {!isEditing && (
-          <button
+          <motion.button
             onClick={toggleLike}
-            className=" flex items-center  space-x-2 p-2 rounded-lg hover:bg-gray-100
-           transition-colors absolute right-2 bottom-2 text-gray-600"
+            transition={{
+              duration: 0.05,
+            }}
+            whileHover={{
+              scale: 1.2,
+            }}
+            whileTap={{
+              scale: 0.3,
+            }}
+            className={` flex items-center  space-x-2 p-2 rounded-lg hover:scale-105
+            duration-200 hover:border-pink-400 hover:border
+           transition-all absolute right-2 bottom-2 text-pink-500 text-opacity-90 ${
+             !hasLiked && " border border-gray-100"
+           }`}
             type="button"
           >
             {hasLiked ? (
-              <IoMdHeart className="h-6 w-6 text-red-500" />
+              <IoMdHeart className="h-6 w-6 " />
             ) : (
               <BiHeart className="h-6 w-6" />
             )}
             <span className="font-bold">{compliment?.likes}</span>
-          </button>
+          </motion.button>
         )}
         <div className="mt-4 flex items-center gap-6 text-sm text-gray-500">
           <div className="flex items-center gap-2">
