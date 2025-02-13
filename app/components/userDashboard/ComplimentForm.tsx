@@ -28,7 +28,7 @@ function ComplimentForm({ profileId }: Props) {
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit(handleCreateCompliment)}
-        className="relative border border-gray-700 font-comfortaa bg-white bg-opacity-50 shadow-xl
+        className="relative border border-white font-comfortaa  bg-opacity-20
         p-8 w-11/12 max-w-[400px] flex flex-col gap-4 rounded-xl"
       >
         <div className="space-y-6">
@@ -41,21 +41,17 @@ function ComplimentForm({ profileId }: Props) {
                   label: "Если бы мы встречались то...",
                 },
               ]}
-              className="bg-white bg-opacity-30 text-white border-white border-opacity-20 font-comfortaa"
             />
           </FormField>
 
           {/* Compliment Text Area */}
           <FormField<CreateComplimentPayload> fieldName="content">
-            <FormField.TextArea
-              placeholder="Напиши что-нибудь..."
-              className="min-h-[150px] bg-white bg-opacity-20 text-white focus:border-opacity-100 border-opacity-20 hover:border-opacity-20"
-            />
+            <FormField.TextArea placeholder="Напиши что-нибудь..." />
           </FormField>
 
           {/* Submit Button */}
         </div>
-        <Button className="font-jost text-white font-bold">Отправить</Button>
+        <Button className="">Отправить</Button>
       </form>
     </FormProvider>
   );

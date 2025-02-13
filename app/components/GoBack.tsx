@@ -3,15 +3,15 @@ import { RiArrowGoBackLine } from "react-icons/ri";
 import { joinClasses } from "@/lib/utils/strings";
 
 type Props = {
-  to: string;
+  to?: string | number;
   className?: string;
   theme?: "light" | "dark";
 };
 
-export function GoBack({ to, className, theme = "light" }: Props) {
+export function GoBack({ to = -1, className, theme = "light" }: Props) {
   return (
     <Link
-      to={to}
+      to={to as unknown as string}
       className={joinClasses(
         className,
         "absolute top-4 left-4 z-50 flex items-center gap-2",

@@ -72,21 +72,21 @@ export const useComplimentManager = (initialCompliment: Compliment) => {
       });
 
       // Refresh both queries after successful mutation
-      await Promise.all([
-        queryClient.invalidateQueries(),
-        queryClient.invalidateQueries([
-          "like",
-          { complimentId: commonQueryParams.complimentId },
-        ]),
-      ]);
+      await queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.COMPLIMENTS],
+      });
     } catch (error) {
       // Rollback on error
       queryClient.setQueryData(
-        ["like", { complimentId: commonQueryParams.complimentId }],
+        [QUERY_KEYS.LIKES, initialCompliment.id],
         previousHasLiked
       );
       queryClient.setQueryData(
-        ["compliment", commonQueryParams],
+        [
+          QUERY_KEYS.COMPLIMENTS,
+          initialCompliment.profileId,
+          initialCompliment.id,
+        ],
         previousCompliment
       );
       throw error;

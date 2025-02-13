@@ -7,9 +7,15 @@ import { Link } from "react-router";
 function ProfileCard({ profile }: { profile: Profile }) {
   return (
     <motion.div
-      initial={true}
+      initial={{ scale: 0, opacity: 0 }}
       animate={{
-        scale: [0, 1],
+        scale: 1,
+        opacity: 1,
+        transition: {
+          type: "spring",
+          stiffness: 350,
+          damping: 20,
+        },
       }}
       className="relative bg-white dark:bg-gray-800 rounded-xl
     shadow-lg transition-shadow duration-200 p-6

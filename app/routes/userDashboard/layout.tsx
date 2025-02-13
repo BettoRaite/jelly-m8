@@ -11,11 +11,7 @@ import { useEffect } from "react";
 
 export default function Layout() {
   const { data: user } = useAuth();
-  const {
-    data: profile,
-    status,
-    error,
-  } = useProfileQuery(
+  const { status, error } = useProfileQuery(
     {
       type: "profile",
       userId: user?.id as number,
@@ -25,12 +21,9 @@ export default function Layout() {
       retry: false,
     }
   );
-
   const location = useLocation();
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
   const navigate = useNavigate();
+
   useEffect(() => {
     if (error?.status === 404) {
       navigate(`/profiles/${user?.id}`);
@@ -43,12 +36,15 @@ export default function Layout() {
   if (status === "error") {
     return <ErrorScreen description="Ошибка при загрузке вашего профиля" />;
   }
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
   return (
     <div className="bg-transparent">
-      <div className="left-0 right-0 absolute flex justify-center top-10 z-50">
+      <div className="left-0 right-0 absolute flex justify-center top-20 sm:top-10 z-50">
         <nav className="font-comfortaa text-sm">
           <ul
-            className="flex flex-row gap-4 shadow-lg p-4 rounded-xl
+            className="flex flex-row gap-4 shadow-lg p-2 sm:p-4 text-xs sm:text-sm rounded-xl
             relative bg-white backdrop-blur-sm bg-opacity-20 border-gray-300 border"
           >
             <li>

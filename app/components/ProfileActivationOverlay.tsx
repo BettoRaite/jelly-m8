@@ -83,7 +83,7 @@ export function ProfileActivationOverlay({ profile, onRefetchProfile }: Props) {
         className={joinClasses(
           "z-20 flex absolute top-[20%] left-[10%] hover:scale-125 cursor-pointer",
           "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
-          "font-bold text-7xl text-white p-4 rounded-lg",
+          "font-bold text-7xl text-white p-4 rounded-lg font-caveat",
           {
             "top-[23%] left-auto": !profile.isActivated,
           }
@@ -109,8 +109,8 @@ export function ProfileActivationOverlay({ profile, onRefetchProfile }: Props) {
                 placeholder="Секрет"
                 className={joinClasses(
                   "placeholder:text-gray-300 focus:text-white text-gray-300 bg-transparent",
-                  "font-bold font-comfortaa text-lg px-4 py-4",
-                  "hover:border-purple-500 focus:border-purple-500 rounded-xl",
+                  "font-bold font-comfortaa text-lg px-4 py-4 border-opacity-10",
+                  "hover:border-opacity-20 hover:shadow-lg focus:scale-110 focus:border-opacity-20 focus:border-purple-600 rounded-xl",
                   {
                     "border-red-600": errors.activationSecret,
                     "border-purple-500": !errors.activationSecret,

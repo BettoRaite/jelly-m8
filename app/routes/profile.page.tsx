@@ -44,17 +44,17 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
   }
   const isOwner = user?.id === userId;
   return (
-    <main className="flex justify-center min-h-dvh p-4 bg-gray-200">
-      <GoBack to="/" />
+    <div className="flex justify-center min-h-dvh p-4 bg-gray-200">
+      <GoBack />
       {!profile && isOwner && (
         <CreateProfileForm userId={userId} onProfileRefetch={refetch} />
       )}
       {!profile && !isOwner && (
-        <h1 className="text-xl font-comfortaa font-bold">
+        <p className="text-xl font-comfortaa font-bold">
           Упс... кажись пусто 👀
-        </h1>
+        </p>
       )}
       {profile && <UserProfile profile={profile} isOwner={isOwner} />}
-    </main>
+    </div>
   );
 }
