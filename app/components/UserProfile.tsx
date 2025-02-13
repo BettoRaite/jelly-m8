@@ -5,7 +5,7 @@ import {
 } from "@/lib/schemas/profile.schema";
 import type { Profile } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { FormField } from "@/ui/formField/FormField";
@@ -18,6 +18,7 @@ import ComplimentForm from "./userDashboard/ComplimentForm";
 import GlassyBackground from "./Backgrounds/GlassyBackground";
 import Button from "@/ui/Button";
 import { joinClasses } from "@/lib/utils/strings";
+import { div } from "motion/react-client";
 type Props = {
   profile: Profile;
   isOwner: boolean;
@@ -64,11 +65,11 @@ function UserProfile({ profile, isOwner }: Props) {
           },
         }}
         className={joinClasses(
-          "relative bg-white border border-white max-h-11/12 shadow-lg",
-          "rounded-2xl shadow-xl shadow-purple-100/50 w-full max-w-[450px] mx-auto"
+          "mt-20 sm:mt-0 relative bg-white rounded-xl w-full max-w-[400px] overflow-hidden",
+          "border border-purple-600"
         )}
       >
-        <div className="relative h-64 max-h-64 w-full bg-transparent z-10">
+        <div className="relative h-64 max-h-64 w-full bg-transparent z-10 shadow-lg">
           <img
             src={profile.profileImageUrl}
             alt={`${profile.displayName}'s cover`}
@@ -77,14 +78,13 @@ function UserProfile({ profile, isOwner }: Props) {
           <img
             src={profile.profileImageUrl}
             alt={`${profile.displayName}'s cover`}
-            className="object-cover w-full h-full absolute top-0 -z-20 rounded-xl"
+            className="object-cover w-full h-full absolute top-0 -z-20 rounded-t-xl"
           />
           <GlassyBackground
-            className="-z-10 w-full h-full hover rounded-xl"
+            className="-z-10 w-full h-full hover rounded-t-xl"
             intensity="medium"
           />
         </div>
-
         {/* Profile Section */}
         <motion.div
           className="flex items-start px-6 pb-2 -mt-12 relative z-10 bg"
@@ -95,43 +95,50 @@ function UserProfile({ profile, isOwner }: Props) {
             whileHover={{ scale: 1.1 }}
             src={profile.profileImageUrl}
             alt={profile.displayName}
-            className="w-24 h-24 rounded-2xl border-4 border-white shadow-lg object-cover"
+            className="w-24 h-24 rounded-2xl border-4 border-purple-600 shadow-lg object-cover"
           />
-          <div className="ml-2 mt-14 self-end">
-            <h2
-              className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text
-              text-transparent "
-            >
-              {/* {profile.displayName} */}
+          <div className="ml-2 mt-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-200">
+              {profile.displayName}
+            </h2>
+            <h2 className="mt-4 sm:mt-3 text-2xl sm:text-lg font-bold text-slate-300 lowercase">
+              @{profile.displayName}
             </h2>
           </div>
         </motion.div>
-        {!isComplimenting && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
+        <div className="flex justify-center">
+          <Button
+            onClick={() => setIsComplimenting(true)}
+            className="mt-2 ml-6 mb-4 text-sm
+                  font-jost font-bold bg-gradient-to-br from-pink-500 to-pink-600
+                  text-white rounded-2xl hover:scale-105 transition duration-300
+                  shadow-lg hover:shadow-xl opacity-100"
           >
-            {/* <Button
-              onClick={() => setIsComplimenting(false)}
-              className="mx-auto mt-2 text-sm
-              font-jost font-bold bg-gradient-to-br from-pink-500 to-pink-600
-              text-white rounded-2xl hover:scale-105 transition duration-300
-              shadow-lg hover:shadow-xl opacity-100"
-            >
-              ✨ Написать комлимент
-            </Button> */}
-          </motion.div>
-        )}
-        <div
-          className="mt-4 flex items-center flex-col h-40 p-4
-          rounded-xl mx-10 shadow-lg"
-        >
-          <p className="font-caveat text-xl text-slate-600">
+            ✨ Написать комлимент
+          </Button>
+        </div>
+        <div className="mt-2 bg-gray-100 h-40 mx-4 rounded-lg p-2">
+          <p className="ml-2 font-caveat text-xl text-slate-500">
             {profile.biography}
           </p>
         </div>
       </motion.main>
+      <AnimatePresence>
+        {isComplimenting && (
+          <motion.div
+            animate={{
+              opacity: [0, 1],
+            }}
+            className="absolute z-20 bg-black bg-opacity-50 top-0 bottom-0 left-0 right-0 flex justify-center items-center"
+          >
+            <ComplimentForm
+              key={profile.id}
+              profile={profile}
+              onClose={() => setIsComplimenting(false)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </FormProvider>
   );
 }

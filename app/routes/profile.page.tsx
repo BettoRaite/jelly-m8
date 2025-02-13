@@ -44,7 +44,7 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
   }
   const isOwner = user?.id === userId;
   return (
-    <div className="flex justify-center min-h-dvh p-4 bg-gray-200">
+    <div className="flex justify-center min-h-dvh p-4 bg-white bg-opacity-50">
       <GoBack />
       {!profile && isOwner && (
         <CreateProfileForm userId={userId} onProfileRefetch={refetch} />
@@ -55,6 +55,13 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
         </p>
       )}
       {profile && <UserProfile profile={profile} isOwner={isOwner} />}
+      {/* <img
+        src="../public/tokyopeople.jpg"
+        alt=""
+        className="absolute w-full h-full bottom-0 -z-20 blur-xl"
+      /> */}
+
+      <GlassyBackground className="-z-10" intensity="medium" />
     </div>
   );
 }

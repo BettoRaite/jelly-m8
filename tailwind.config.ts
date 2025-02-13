@@ -7,6 +7,7 @@ export default {
       backgroundImage: {
         "hearts-pattern":
           "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 40 40'%3E%3Cg fill='%23ff0000' fill-opacity='0.4'%3E%3Cpath d='M10 3.22l-.61-.6a5.5 5.5 0 0 0-7.78 7.77L10 18.78l8.39-8.4a5.5 5.5 0 0 0-7.78-7.77l-.61.61z'/%3E%3C/g%3E%3C/svg%3E\")",
+        "pattern-emoji": "url('../public/tokyopeople.jpg')",
       },
       fontFamily: {
         sans: [
@@ -33,7 +34,7 @@ export default {
         moveVertical: "moveVertical 30s ease infinite",
         moveHorizontal: "moveHorizontal 40s ease infinite",
         "scale-up-down": "scale-up-down 2s infinite",
-        animateBG: "animateBackground 10s linear infinite",
+        animateBG: "animateBackground 400s linear infinite",
       },
       keyframes: {
         "scale-up-down": {
