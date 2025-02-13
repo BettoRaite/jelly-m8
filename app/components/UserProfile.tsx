@@ -106,17 +106,19 @@ function UserProfile({ profile, isOwner }: Props) {
             </h2>
           </div>
         </motion.div>
-        <div className="flex justify-center">
-          <Button
-            onClick={() => setIsComplimenting(true)}
-            className="mt-2 ml-6 mb-4 text-sm
-                  font-jost font-bold bg-gradient-to-br from-pink-500 to-pink-600
-                  text-white rounded-2xl hover:scale-105 transition duration-300
-                  shadow-lg hover:shadow-xl opacity-100"
-          >
-            ✨ Написать комлимент
-          </Button>
-        </div>
+        {!isOwner && (
+          <div className="flex justify-center">
+            <Button
+              onClick={() => setIsComplimenting(true)}
+              className="mt-2 ml-6 mb-4 text-sm
+                    font-jost font-bold bg-gradient-to-br from-pink-500 to-pink-600
+                    text-white rounded-2xl hover:scale-105 transition duration-300
+                    shadow-lg hover:shadow-xl opacity-100"
+            >
+              ✨ Написать комлимент
+            </Button>
+          </div>
+        )}
         <div className="mt-2 bg-gray-100 h-40 mx-4 rounded-lg p-2">
           <p className="ml-2 font-caveat text-xl text-slate-500">
             {profile.biography}
