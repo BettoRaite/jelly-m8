@@ -34,6 +34,7 @@ export interface Compliment {
   author: Profile;
   likes: number;
   isAdmin: boolean;
+  createdAt: Date;
 }
 
 export type Methods = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";

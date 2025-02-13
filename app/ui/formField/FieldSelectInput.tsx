@@ -9,12 +9,14 @@ interface FieldSelectInputProps {
   }[]; // Array of options for the select field
   ctaText?: string;
   className?: string;
+  useDefault?: boolean;
 }
 
 export default function FieldSelectInput({
   options,
   ctaText,
   className,
+  useDefault,
 }: FieldSelectInputProps) {
   const {
     formState: { errors },
@@ -35,7 +37,7 @@ export default function FieldSelectInput({
         },
         className
       )}
-      defaultValue={options[0].value}
+      defaultValue={useDefault ? options[0].value : ctaText ?? "Select"}
     >
       <option className="" value="" disabled>
         {ctaText ?? "Select"}

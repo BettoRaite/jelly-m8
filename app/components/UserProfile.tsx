@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { FormField } from "@/ui/formField/FormField";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdMessage } from "react-icons/md";
 import { useProfileMutation } from "@/hooks/useProfileMutation";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/lib/config";
@@ -35,7 +35,6 @@ function UserProfile({ profile, isOwner }: Props) {
   const mutation = useProfileMutation();
   const [isEditMode, setIsEditMode] = useState(false);
   const [isComplimenting, setIsComplimenting] = useState(false);
-
   const handleEditToggle = () => {
     setIsEditMode((prev) => !prev);
   };
@@ -65,7 +64,7 @@ function UserProfile({ profile, isOwner }: Props) {
           },
         }}
         className={joinClasses(
-          "mt-20 sm:mt-0 relative bg-white rounded-xl w-full max-w-[400px] overflow-hidden",
+          "mt-20 sm:mt-0 relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl w-full max-w-[400px] overflow-hidden",
           "border border-purple-600"
         )}
       >
@@ -95,30 +94,28 @@ function UserProfile({ profile, isOwner }: Props) {
             whileHover={{ scale: 1.1 }}
             src={profile.profileImageUrl}
             alt={profile.displayName}
-            className="w-24 h-24 rounded-2xl border-4 border-purple-600 shadow-lg object-cover"
+            className="w-24 h-24 rounded-2xl border-4 border-purple-600 shadow-lg object-cover relative"
           />
-          <div className="ml-2 mt-2">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-200">
-              {profile.displayName}
-            </h2>
-            <h2 className="mt-4 sm:mt-3 text-2xl sm:text-lg font-bold text-slate-300 lowercase">
-              @{profile.displayName}
-            </h2>
+          <div className="ml-2 mt-8">
+            <div className="flex">
+              {!isOwner && (
+                <Button
+                  variant="solid"
+                  onClick={() => setIsComplimenting(true)}
+                  className="text-sm bottom-0
+                          font-jost font-bold  bg-gradient-to-br from-gray-100 to-gray-200
+                          text-white rounded-2xl hover:scale-125 transition duration-300
+                          shadow-lg hover:shadow-xl opacity-100"
+                >
+                  <MdMessage className="text-2xl text-blue-600" />
+                </Button>
+              )}
+            </div>
           </div>
         </motion.div>
-        {!isOwner && (
-          <div className="flex justify-center">
-            <Button
-              onClick={() => setIsComplimenting(true)}
-              className="mt-2 ml-6 mb-4 text-sm
-                    font-jost font-bold bg-gradient-to-br from-pink-500 to-pink-600
-                    text-white rounded-2xl hover:scale-105 transition duration-300
-                    shadow-lg hover:shadow-xl opacity-100"
-            >
-              ✨ Написать комлимент
-            </Button>
-          </div>
-        )}
+        <h2 className="ml-8 text-2xl sm:text-3xl font-bold text-slate-600">
+          {profile.displayName}
+        </h2>
         <div className="mt-2 bg-gray-100 h-40 mx-4 rounded-lg p-2">
           <p className="ml-2 font-caveat text-xl text-slate-500">
             {profile.biography}

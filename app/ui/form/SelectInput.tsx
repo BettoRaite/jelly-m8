@@ -1,16 +1,17 @@
-import React, { useState, useRef, useEffect } from "react";
+import type React from "react";
+import { useState, useRef, useEffect } from "react";
 import { joinClasses } from "@/lib/utils/strings";
+import { BiChevronUp } from "react-icons/bi";
 
 interface SelectInputProps {
-  options: {
-    label: string;
-    value: string | number;
-  }[]; // Array of options for the select field
-  ctaText?: string; // Call-to-action text for the default option
-  onChange?: (value: string | number) => void; // Optional onChange handler
-  value?: string | number; // Optional value for controlled input
-  className?: string; // Optional additional class names
-  error?: boolean; // Optional error state
+  options: { label: string; value: string | number }[];
+  ctaText?: string;
+  onChange?: (value: string | number) => void;
+  value?: string | number;
+  className?: string;
+  classNameContainer?: string;
+  error?: boolean;
+  hideDropdown?: boolean;
 }
 
 export default function SelectInput({
@@ -19,29 +20,51 @@ export default function SelectInput({
   onChange,
   value,
   className = "",
+  classNameContainer,
   error = false,
+  hideDropdown = false,
 }: SelectInputProps) {
-  const [isOpen, setIsOpen] = useState(false); // State to manage dropdown visibility
-  const [selectedLabel, setSelectedLabel] = useState(ctaText); // State to manage selected label
-  const dropdownRef = useRef<HTMLDivElement>(null); // Ref for the dropdown container
+  const [isOpen, setIsOpen] = useState(hideDropdown);
+  const [selectedLabel, setSelectedLabel] = useState(ctaText);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Handle option selection
   const handleSelect = (option: { label: string; value: string | number }) => {
     setSelectedLabel(option.label);
     if (onChange) {
       onChange(option.value);
     }
-    setIsOpen(false); // Close dropdown after selection
+    setIsOpen(hideDropdown); // Close dropdown after selection
   };
 
-  // Close dropdown when clicking outside
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      setIsOpen(!isOpen);
+    } else if (event.key === "Escape") {
+      setIsOpen(false);
+    } else if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setFocusedIndex((prevIndex) =>
+        prevIndex < options.length - 1 ? prevIndex + 1 : 0
+      );
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setFocusedIndex((prevIndex) =>
+        prevIndex > 0 ? prevIndex - 1 : options.length - 1
+      );
+    } else if (event.key === "Tab" && isOpen) {
+      setIsOpen(false);
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        setIsOpen(false);
+        setIsOpen(hideDropdown);
       }
     };
 
@@ -49,56 +72,80 @@ export default function SelectInput({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [hideDropdown]);
+
+  useEffect(() => {
+    if (focusedIndex !== -1 && isOpen) {
+      const optionElement = dropdownRef.current?.querySelector(
+        `li:nth-child(${focusedIndex + 1})`
+      );
+      if (optionElement) {
+        (optionElement as HTMLElement).focus();
+      }
+    }
+  }, [focusedIndex, isOpen]);
 
   return (
-    <div className="relative w-full" ref={dropdownRef}>
+    <div className={`${classNameContainer} relative w-full`} ref={dropdownRef}>
       {/* Custom Button */}
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={joinClasses(
-          "placeholder:text-slate-400 text-slate-700 text-sm",
-          "w-full border border-slate-200 bg-transparent rounded-md px-3 py-2 transition",
-          "duration-300 ease focus:outline-none focus:border-slate-400",
-          "hover:border-slate-300 shadow-sm focus:shadow",
-          "flex items-center justify-between",
-          {
-            "border-red-500": error,
-          },
-          className
-        )}
-      >
-        <span>{selectedLabel}</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className={`h-5 w-5 transform transition-transform ${
-            isOpen ? "rotate-180" : ""
-          }`}
-          viewBox="0 0 20 20"
-          fill="currentColor"
+      {!hideDropdown && (
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          onKeyDown={handleKeyDown}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          className={joinClasses(
+            className,
+            "placeholder:text-slate-400 text-slate-700 text-sm",
+            "w-full border border-slate-200 bg-transparent rounded-md px-3 py-2 transition",
+            "duration-300 ease focus:outline-none focus:border-slate-400",
+            "hover:border-slate-300 shadow-sm focus:shadow",
+            "flex items-center justify-between",
+            {
+              "border-red-500": error,
+            }
+          )}
         >
-          <path
-            fillRule="evenodd"
-            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-            clipRule="evenodd"
+          <span>{selectedLabel}</span>
+          <BiChevronUp
+            className={joinClasses("text-lg duration-300 transition-all", {
+              "rotate-180": isOpen,
+            })}
           />
-        </svg>
-      </button>
+        </button>
+      )}
 
       {/* Dropdown Options */}
       {isOpen && (
-        <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg border border-slate-200">
+        <div
+          className={joinClasses(
+            "absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg border border-slate-200",
+            {
+              "h-30 overflow-y-scroll": hideDropdown,
+            }
+          )}
+        >
           <ul className="py-1">
-            {options.map((option) => (
+            {options.map((option, index) => (
               <li
                 key={option.value}
                 onClick={() => handleSelect(option)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    handleSelect(option);
+                  }
+                }}
+                tabIndex={focusedIndex}
+                aria-selected={value === option.value}
                 className={joinClasses(
-                  "px-3 py-2 text-sm text-slate-700 cursor-pointer",
-                  "hover:bg-slate-100 transition-colors duration-200",
+                  "px-3 py-2 text-sm cursor-pointer",
+                  "transition-colors duration-200",
                   {
+                    "hover:bg-slate-100 ": !hideDropdown,
                     "bg-slate-100": value === option.value,
+                    "bg-blue-500 hover:bg-blue-500 text-white":
+                      selectedLabel === option.label && hideDropdown,
                   }
                 )}
               >
