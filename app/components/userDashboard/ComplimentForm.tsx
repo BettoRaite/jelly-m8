@@ -16,6 +16,7 @@ import { MdClose, MdSend } from "react-icons/md";
 import SelectInput from "@/ui/form/SelectInput";
 import { joinClasses } from "@/lib/utils/strings";
 import toast from "react-hot-toast";
+import { getAuth } from "@/hooks/useAuth";
 
 type Props = {
   profile: Profile;
@@ -41,9 +42,13 @@ const QUESTIONS = [
   },
 ];
 function ComplimentForm({ profile, onClose }: Props) {
-  const { data: compliments } = useComplimentQuery({
-    type: "compliments",
-  });
+  const user = getAuth();
+  const { data: compliments, status: complimentsLoadStatus } =
+    useComplimentQuery({
+      type: "profile/compliments",
+      profileId: profile.id,
+      searchPattern: `userId=${user?.id}|asc=createdAt`,
+    });
   const timeoutRef = useRef(null);
   const [hasMessaged, setHasMessaged] = useState(false);
   const [message, setMessage] = useState("");
@@ -116,30 +121,36 @@ function ComplimentForm({ profile, onClose }: Props) {
               Тема
             </p>
             <ul className="bg-white rounded-xl shadow-inner w-full max-w-md p-6 overflow-y-auto custom-scrollbar">
-              {QUESTIONS.map((question) => (
-                <li
-                  key={question.id}
-                  className="group mb-4 last:mb-0 p-4 rounded-lg hover:bg-blue-50 transition-colors duration-200"
-                >
-                  <label className="flex items-center space-x-4 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="question"
-                      value={question.id}
-                      onChange={() => setMessage(question.content)}
-                      className="form-radio h-5 w-5 text-blue-600 border-2 border-gray-300 group-hover:border-blue-500 transition-colors duration-200"
-                    />
-                    <span className="text-gray-800 text-sm sm:text-[1rem] md:text-lg font-bold group-hover:text-blue-600 transition-colors duration-200">
-                      {question.content}
-                    </span>
-                  </label>
-                </li>
-              ))}
+              {QUESTIONS.map((question) => {
+                const isPrevQuestion = compliments?.find(
+                  (c) => c.title === question.content
+                );
+                if (isPrevQuestion) return null;
+                return (
+                  <li
+                    key={question.id}
+                    className="group mb-4 last:mb-0 p-4 rounded-lg hover:bg-blue-50 transition-colors duration-200"
+                  >
+                    <label className="flex items-center space-x-4 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="question"
+                        value={question.id}
+                        onChange={() => setMessage(question.content)}
+                        className="form-radio h-5 w-5 text-blue-600 border-2 border-gray-300 group-hover:border-blue-500 transition-colors duration-200"
+                      />
+                      <span className="text-gray-800 text-sm sm:text-[1rem] md:text-lg font-bold group-hover:text-blue-600 transition-colors duration-200">
+                        {question.content}
+                      </span>
+                    </label>
+                  </li>
+                );
+              })}
             </ul>
             <Button
               variant="solid"
               className={`mt-4 ${!message && "opacity-60"}`}
-              disabled={!message}
+              disabled={!message || complimentsLoadStatus !== "success"}
               onClick={() => setShowQuestions(false)}
             >
               Начать
@@ -224,7 +235,11 @@ function ComplimentForm({ profile, onClose }: Props) {
               type="submit"
               variant="solid"
               className="mb-1 px-3 py-3 rounded-xl"
-              disabled={mutation.isPending || hasComplimented}
+              disabled={
+                mutation.isPending ||
+                hasComplimented ||
+                complimentsLoadStatus !== "success"
+              }
             >
               <MdSend size={18} />
             </Button>

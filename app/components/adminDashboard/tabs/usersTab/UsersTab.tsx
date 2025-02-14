@@ -21,10 +21,10 @@ export function UsersTab() {
   }
 
   return (
-    <div className="grid grid-cols-[auto_1fr] mt-16 px-8">
+    <div className="flex flex-col lg:grid lg:grid-cols-[auto_1fr] mt-16 md:px-8 px-4">
       <CreateUser />
       {status !== "error" ? (
-        <div className="flex justify-start flex-wrap items-start gap-10 px-10 mb-60">
+        <div className="mt-10 flex justify-center lg:justify-start  flex-wrap items-start gap-10 md:px-10 mb-60">
           {users?.map((u) => {
             if (auth?.id === u.id) {
               return null;

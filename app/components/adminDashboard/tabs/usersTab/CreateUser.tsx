@@ -44,7 +44,7 @@ export function CreateUser() {
 
   return (
     <FormProvider {...methods}>
-      <section className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md h-96 w-96">
+      <section className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md h-96 w-max-96 w-full">
         <h2 className="text-2xl font-semibold mb-4 text-center">Create User</h2>
         <form
           onSubmit={handleSubmit(handleCreateUserSubmit)}

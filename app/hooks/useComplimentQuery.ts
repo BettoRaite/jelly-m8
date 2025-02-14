@@ -15,12 +15,20 @@ type Action =
       searchPattern?: string;
     }
   | {
+      type: "profile/compliments";
+      profileId: number;
+      searchPattern?: string;
+    }
+  | {
       type: "compliment";
       profileId: number;
       complimentId: number;
+      searchPattern?: string;
     };
 
 type ComplimentQueryResult<T extends Action> = T["type"] extends "compliments"
+  ? Compliment[]
+  : T["type"] extends "profile/compliments"
   ? Compliment[]
   : T["type"] extends "compliment"
   ? Compliment
@@ -36,10 +44,12 @@ function useComplimentQuery<T extends Action>(
   switch (action.type) {
     case "compliments": {
       queryKey = [QUERY_KEYS.COMPLIMENTS];
-      if (action.searchPattern) {
-        queryKey.push(action.searchPattern);
-        baseRoute += constructQueryString(action.searchPattern);
-      }
+
+      break;
+    }
+    case "profile/compliments": {
+      baseRoute = `/profiles/${action.profileId}/compliments`;
+      queryKey = [QUERY_KEYS.COMPLIMENTS, action.profileId];
       break;
     }
     case "compliment": {
@@ -52,9 +62,13 @@ function useComplimentQuery<T extends Action>(
       break;
     }
     default: {
-      const _exhaustiveCheck: never = action;
       throw new TypeError("Invalid useComplimentQuery action type");
     }
+  }
+
+  if (action.searchPattern) {
+    queryKey.push(action.searchPattern);
+    baseRoute += constructQueryString(action.searchPattern);
   }
 
   return useQuery<ComplimentQueryResult<T>, ApiError>({

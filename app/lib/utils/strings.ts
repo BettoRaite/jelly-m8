@@ -1,3 +1,4 @@
+import SearchBar from "@/components/SearchBar";
 import classnames from "classnames";
 import { param } from "motion/react-client";
 export const joinClasses = classnames;
@@ -57,4 +58,39 @@ export const constructQueryString = (
 
   const queryString = `?${queryParams.join("&")}`;
   return queryString;
+};
+export const constructSearchPattern = <T>(
+  searchPatternConfig: Record<keyof T | string, unknown>
+) => {
+  const entries = Object.entries(searchPatternConfig);
+  const len = entries.length;
+  if (len === 0) {
+    return;
+  }
+  let searchPattern = "";
+  for (let i = 0; i < len; ++i) {
+    const [key, value] = entries[i];
+    if (value) {
+      searchPattern += `${key}=${value}${i === len - 1 ? "" : "|"}`;
+    }
+  }
+  return searchPattern;
+};
+const DIRECTIONS = ["desc", "asc"];
+export const constructSortConfig = <T>(
+  sort: Record<keyof T | string, "desc" | "asc" | unknown>
+): {
+  desc?: string;
+  asc?: string;
+} => {
+  const config: Record<"desc" | "asc" | string, string> = {};
+  for (const [key, value] of Object.entries(sort)) {
+    if (typeof value !== "string") continue;
+    const direction = value.trim();
+    if (!DIRECTIONS.includes(direction)) continue;
+    if (!config[direction]) config[direction] = "";
+    config[direction] += `${config[direction] ? "," : ""}${key}`;
+  }
+  console.log(config);
+  return config;
 };

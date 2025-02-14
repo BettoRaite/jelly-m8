@@ -30,7 +30,6 @@ export type UserAction =
 export function useUserMutation(
   options?: UseMutationOptions<unknown, Error, UserAction>
 ) {
-  console.log(options);
   const queryClient = useQueryClient();
 
   return useMutation<unknown, Error, UserAction>({

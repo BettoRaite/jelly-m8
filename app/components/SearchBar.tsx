@@ -48,7 +48,7 @@ function SearchBar({
         type="button"
         onClick={handleSearch}
         variant="outline"
-        className="bg-opacity-20 text-gray-600 border border-gray-500 hover:border-opacity-30 active:border-gray-100
+        className="bg-opacity-20 text-slate-500 border border-gray-500 hover:border-opacity-30 active:border-gray-100
         shadow-lg active:text-white active:bg-purple-400 font-bold"
       >
         <BiSearch />

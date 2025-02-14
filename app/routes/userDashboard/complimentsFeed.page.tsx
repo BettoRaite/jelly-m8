@@ -4,23 +4,41 @@ import SearchBar from "@/components/SearchBar";
 import ComplimentCard from "@/components/userDashboard/ComplimentCard";
 import { getAuth } from "@/hooks/useAuth";
 import useComplimentQuery from "@/hooks/useComplimentQuery";
-import { joinClasses } from "@/lib/utils/strings";
+import {
+  constructSearchPattern,
+  constructSortConfig,
+  joinClasses,
+} from "@/lib/utils/strings";
 import Button from "@/ui/Button";
 import { AnimatePresence } from "motion/react";
 import { useState } from "react";
 import { FaFilter } from "react-icons/fa";
-
+import { FiChevronsUp } from "react-icons/fi";
+import { HiChevronDown, HiChevronUp } from "react-icons/hi";
+type Filters = {
+  showOnlyOwned: boolean;
+  likes: "desc" | "asc";
+  createdAt: "desc" | "asc";
+};
+const INITIAL_FILTERS: Filters = {
+  showOnlyOwned: false,
+  createdAt: "desc",
+  likes: "desc",
+};
 export default function Page() {
   const user = getAuth();
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterOwned, setFilterOwned] = useState(false);
+  const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
   const {
     data: items,
     status,
     refetch,
   } = useComplimentQuery({
     type: "compliments",
-    searchPattern: searchQuery ? `title=${searchQuery}` : "",
+    searchPattern: constructSearchPattern({
+      title: searchQuery,
+      ...constructSortConfig(filters),
+    }),
   });
   if (status === "error") {
     return "err";
@@ -32,7 +50,7 @@ export default function Page() {
   const cards = (items ?? [])
     .map((c) => {
       const isOwned = c.userId === user?.id;
-      if (filterOwned && !isOwned) {
+      if (filters.showOnlyOwned && !isOwned) {
         return null;
       }
 
@@ -52,6 +70,17 @@ export default function Page() {
       );
     })
     .filter(Boolean);
+  function createApplyFiltersHandler(filtersToApply: Partial<Filters>) {
+    return () =>
+      setFilters({
+        ...filters,
+        ...filtersToApply,
+      });
+  }
+
+  function handleRemoveFiltersClick() {
+    setFilters({} as Filters);
+  }
   return (
     <main className="pt-60 bg-transparent relative">
       <GoBack to="/" theme="dark" />
@@ -68,11 +97,72 @@ export default function Page() {
             </p>
             <SearchBar onSearch={onSearch} className="w-full" />
             <Button
-              onClick={() => setFilterOwned(!filterOwned)}
+              onClick={createApplyFiltersHandler({
+                showOnlyOwned: !filters.showOnlyOwned,
+              })}
               variant="outline"
-              className="mt-4 border bg-gray-300 hover:scale-105 font-bold text-gray-600"
+              className="mt-4 border bg-slate-300 hover:scale-105 font-bold text-slate-600"
             >
-              Показать только мои{filterOwned ? " ✅" : " ❌"}
+              Показать только мои{filters.showOnlyOwned ? " ✅" : " ❌"}
+            </Button>
+            <div className="flex gap-4">
+              <Button
+                onClick={createApplyFiltersHandler({
+                  likes: filters.likes === "desc" ? "asc" : "desc",
+                })}
+                variant="solid"
+                className={joinClasses(
+                  "mt-4 border hover:scale-105 font-bold  transition-transform duration-300",
+                  {
+                    "bg-blue-500 text-white": filters.likes,
+                    "bg-slate-200 text-slate-950 text-opacity-40 hover:bg-slate-400":
+                      !filters.likes,
+                  }
+                )}
+                aria-pressed={filters.likes !== INITIAL_FILTERS.likes}
+              >
+                ❤ Лайки
+                <span
+                  className={joinClasses("transform duration-200 text-lg", {
+                    "rotate-180": filters.likes === "asc",
+                  })}
+                >
+                  <HiChevronUp />
+                </span>
+              </Button>
+              <Button
+                onClick={createApplyFiltersHandler({
+                  createdAt: filters.createdAt === "desc" ? "asc" : "desc",
+                })}
+                variant="solid"
+                className={joinClasses(
+                  "mt-4 border hover:scale-105 font-bold  transition-transform duration-300",
+                  {
+                    "bg-blue-500 text-white": filters.createdAt,
+                    "bg-slate-200 text-slate-950 text-opacity-40 hover:bg-slate-400":
+                      !filters.createdAt,
+                  }
+                )}
+                aria-pressed={filters.createdAt !== INITIAL_FILTERS.createdAt}
+              >
+                ⌛ Время
+                <span
+                  className={joinClasses("transform duration-200 text-lg", {
+                    "rotate-180": filters.createdAt === "asc",
+                  })}
+                >
+                  <HiChevronUp />
+                </span>
+              </Button>
+            </div>
+            <Button
+              onClick={handleRemoveFiltersClick}
+              variant="solid"
+              className={joinClasses(
+                "mt-4 border hover:scale-105 font-bold bg-slate-200 text-slate-800 text-opacity-60 transition-transform duration-300"
+              )}
+            >
+              Убрать фильтры
             </Button>
           </div>
           <AnimatePresence>

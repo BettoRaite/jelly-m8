@@ -80,7 +80,7 @@ export function UserCard({ initialUser }: Props) {
       animate={{
         scale: [0, 1],
       }}
-      className=" w-96 flex p-6 items-center bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 gap-4"
+      className="w-96 flex flex-col md:flex-row p-6 items-center bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 gap-4"
     >
       <div className="flex flex-col">
         <h1 className="text-2xl font-semibold text-gray-800 capitalize">
@@ -108,10 +108,10 @@ export function UserCard({ initialUser }: Props) {
       >
         <BiCopy className="text-white" size={24} />
       </button>
-      <div className="h-60 w-[1px] bg-gray-200 shadow-lg" />
+      <div className="h-60 w-[1px] bg-gray-200 shadow-lg hidden md:block" />
 
       <div
-        className={`flex flex-col gap-4 ${
+        className={`flex flex-row md:flex-col gap-4 ${
           !panelUnlocked && "pointer-events-none bg-gray-200"
         } p-4 rounded-lg transition duration-300`}
       >
