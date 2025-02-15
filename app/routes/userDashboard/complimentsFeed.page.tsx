@@ -23,8 +23,8 @@ type Filters = {
 };
 const INITIAL_FILTERS: Filters = {
   showOnlyOwned: false,
-  createdAt: "desc",
   likes: "desc",
+  createdAt: "desc",
 };
 export default function Page() {
   const { data: user } = useAuth();
