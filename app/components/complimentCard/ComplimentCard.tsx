@@ -12,17 +12,19 @@ import { BiHeart, BiSave } from "react-icons/bi";
 import { IoMdHeart } from "react-icons/io";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { Link } from "react-router";
+import UserAvatar from "./UserAvatar";
+
 type Props = {
   initialCompliment: Compliment;
   className?: string;
   isOwner: boolean;
-  theme?: "default" | "special";
+  variant?: "default" | "special";
 };
 function ComplimentCard({
   initialCompliment,
   className,
   isOwner,
-  theme = "default",
+  variant = "default",
 }: Props) {
   const {
     states: {
@@ -78,7 +80,11 @@ function ComplimentCard({
           className
         )}
       >
-        {theme === "special" && (
+        <UserAvatar
+          profile={initialCompliment.recipient}
+          theme={variant === "default" ? "dark" : "white"}
+        />
+        {variant === "special" && (
           <>
             <img
               src="./public/pattern.jpg"
@@ -114,55 +120,15 @@ function ComplimentCard({
             </button>
           </div>
         )}
-        <div className={joinClasses("flex items-center gap-4")}>
-          <img
-            src={compliment?.author.profileImageUrl || "/default-avatar.png"}
-            alt={compliment?.author.displayName}
-            className={joinClasses(
-              "h-14 w-14 md:h-20 md:w-20 rounded-full object-cover border-2 border-white/80 shadow-md"
-            )}
-          />
-          <div>
-            <h3
-              className={joinClasses("text-lg font-semibold text-slate-700", {
-                "text-white": initialCompliment.isAdmin,
-              })}
-            >
-              {compliment?.author.displayName}
-            </h3>
-            <p
-              className={joinClasses("text-sm text-gray-500", {
-                "text-slate-300": initialCompliment.isAdmin,
-              })}
-            >
-              @{compliment?.author.displayName}
-            </p>
-          </div>
-        </div>
-
         <form
           onSubmit={formMethods.handleSubmit(handleUpdate)}
           className={joinClasses("space-y-2 relative")}
         >
-          <Link
-            className="font-bold text-pink-500"
-            to={`/users/${initialCompliment.recipient.userId}/profile`}
-          >
-            ~ @
-            <span className="lowercase">
-              {compliment?.recipient.displayName}
-            </span>
-          </Link>
-          <div
-            className={joinClasses({
-              "text-slate-100": initialCompliment.isAdmin,
-              "text-slate-600": !initialCompliment.isAdmin,
-            })}
-          >
+          <div>
             <h2
-              className={joinClasses("font-bold", {
-                "text-slate-100": initialCompliment.isAdmin,
-                "text-slate-500": !initialCompliment.isAdmin,
+              className={joinClasses("font-bold text-[1.1rem]", {
+                "text-slate-100": variant === "special",
+                "text-gray-500": variant === "default",
               })}
             >
               {compliment?.title}
@@ -183,8 +149,8 @@ function ComplimentCard({
           ) : (
             <div className={joinClasses("rounded-xl max-h-40 overflow-y-auto")}>
               <p
-                className={joinClasses(" leading-relaxed break-all", {
-                  "text-slate-200 font-bold text-sm": initialCompliment.isAdmin,
+                className={joinClasses(" leading-relaxed break-all text-sm", {
+                  "text-slate-200 font-bold ": initialCompliment.isAdmin,
                   "text-slate-500": !initialCompliment.isAdmin,
                 })}
                 style={{ whiteSpace: "pre-line" }}
@@ -193,38 +159,28 @@ function ComplimentCard({
               </p>
             </div>
           )}
-
-          {/* <div
-            className={joinClasses({
-              "text-slate-100": initialCompliment.isAdmin,
-              "text-slate-600": !initialCompliment.isAdmin,
-            })}
-          >
-            <span className="font-thin">to:</span>
-            <Link
-              className="font-bold ml-1 text-pink-500"
-              to={`/users/${initialCompliment.recipient.userId}/profile`}
-            >
-              @
-              <span className="first-letter:capitalize">
-                {compliment?.recipient.displayName}
-              </span>
-            </Link>
-          </div> */}
-
           {isEditing && (
             <button
               type="submit"
               className={joinClasses(
                 "border border-gray-400 rounded-full hover:text-blue-400 text-gray-500",
-                "p-2 opacity-30 hover:opacity-100 transition duration-300 absolute -bottom-10 right-0"
+                "p-2 opacity-30 hover:opacity-100 transition duration-300 absolute top-4 right-2"
               )}
             >
               <BiSave />
             </button>
           )}
         </form>
-
+        <UserAvatar
+          profile={initialCompliment.author}
+          theme={variant === "default" ? "dark" : "white"}
+          className="justify-end px-2 gap-2"
+          avatarSize={55}
+          textStyles={{
+            displayName: "text-[1rem]",
+            username: "text-[0.9rem]",
+          }}
+        />
         {!isEditing && (
           <motion.button
             onClick={toggleLike}
@@ -254,9 +210,10 @@ function ComplimentCard({
           </motion.button>
         )}
         <div
-          className={joinClasses(
-            "mt-4 flex items-center gap-6 text-xs text-slate-400 text-opacity-80"
-          )}
+          className={joinClasses("mt-4 flex items-center gap-6 text-xs ", {
+            "text-slate-400 text-opacity-80": !initialCompliment.isAdmin,
+            "text-slate-200": initialCompliment.isAdmin,
+          })}
         >
           {formatDate(compliment?.createdAt)}
         </div>

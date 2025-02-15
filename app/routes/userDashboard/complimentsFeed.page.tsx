@@ -3,7 +3,7 @@ import ErrorScreen from "@/components/ErrorScreen";
 import { GoBack } from "@/components/GoBack";
 import { HeartLoader } from "@/components/HeartLoader";
 import SearchBar from "@/components/SearchBar";
-import ComplimentCard from "@/components/userDashboard/ComplimentCard";
+import ComplimentCard from "@/components/complimentCard/ComplimentCard";
 import { useAuth } from "@/hooks/useAuth";
 import useComplimentQuery from "@/hooks/useComplimentQuery";
 import {
@@ -166,11 +166,11 @@ export default function Page() {
                     initialCompliment={c}
                     className={joinClasses({
                       "border-yellow-400 hover:border-yellow-400 max-w-[680px] justify-self":
-                        isOwned,
+                        isOwned && !c.isAdmin,
                       "max-w-[680px] justify-self": c.isAdmin,
                     })}
                     isOwner={isOwned}
-                    theme={c.isAdmin ? "special" : "default"}
+                    variant={c.isAdmin ? "special" : "default"}
                   />
                 );
               })}
