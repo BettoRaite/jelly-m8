@@ -51,7 +51,7 @@ export default function Home() {
     {
       isShown: true,
       icon: <FaUser className="text-xl md:text-3xl text-cyan-50" />,
-      to: user ? `/profiles/${user?.id}` : "/login",
+      to: user ? `/users/${user?.id}/profile` : "/login",
     },
   ];
 

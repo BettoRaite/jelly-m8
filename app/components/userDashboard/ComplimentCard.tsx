@@ -152,7 +152,7 @@ function ComplimentCard({
             <span className="font-thin">to:</span>
             <Link
               className="font-bold ml-1 text-pink-500"
-              to={`/profiles/${initialCompliment.recipient.userId}`}
+              to={`/users/${initialCompliment.recipient.userId}/profile`}
             >
               @
               <span className="first-letter:capitalize">
