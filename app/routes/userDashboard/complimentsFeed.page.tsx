@@ -143,7 +143,7 @@ export default function Page() {
               onClick={handleRemoveFiltersClick}
               variant="solid"
               className={joinClasses(
-                "mt-4 border hover:scale-105 font-bold bg-slate-200 text-slate-800 text-opacity-60 transition-transform duration-300"
+                "mt-4 border hover:scale-105 font-bold bg-slate-400 hover:text-white hover:bg-red-500 text-slate-800 text-opacity-60 transition-all duration-300"
               )}
             >
               Убрать фильтры
@@ -166,7 +166,7 @@ export default function Page() {
                     initialCompliment={c}
                     className={joinClasses({
                       "border-yellow-400 hover:border-yellow-400 max-w-[680px] justify-self":
-                        !c.isAdmin,
+                        isOwned,
                       "max-w-[680px] justify-self": c.isAdmin,
                     })}
                     isOwner={isOwned}

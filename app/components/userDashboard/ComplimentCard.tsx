@@ -46,6 +46,7 @@ function ComplimentCard({
   if (complimentQueryLoadStatus === "error") {
     return "err";
   }
+
   return (
     <FormProvider {...formMethods}>
       <motion.article
@@ -143,32 +144,23 @@ function ComplimentCard({
           onSubmit={formMethods.handleSubmit(handleUpdate)}
           className={joinClasses("space-y-2 relative")}
         >
+          <Link
+            className="font-bold text-pink-500"
+            to={`/users/${initialCompliment.recipient.userId}/profile`}
+          >
+            ~ @
+            <span className="lowercase">
+              {compliment?.recipient.displayName}
+            </span>
+          </Link>
           <div
             className={joinClasses({
               "text-slate-100": initialCompliment.isAdmin,
               "text-slate-600": !initialCompliment.isAdmin,
             })}
           >
-            <span className="font-thin">to:</span>
-            <Link
-              className="font-bold ml-1 text-pink-500"
-              to={`/users/${initialCompliment.recipient.userId}/profile`}
-            >
-              @
-              <span className="first-letter:capitalize">
-                {compliment?.recipient.displayName}
-              </span>
-            </Link>
-          </div>
-          <div
-            className={joinClasses({
-              "text-slate-100": initialCompliment.isAdmin,
-              "text-slate-600": !initialCompliment.isAdmin,
-            })}
-          >
-            <span className="font-thin">вопрос:</span>
             <h2
-              className={joinClasses("ml-1 font-bold inline", {
+              className={joinClasses("font-bold", {
                 "text-slate-100": initialCompliment.isAdmin,
                 "text-slate-500": !initialCompliment.isAdmin,
               })}
@@ -189,20 +181,36 @@ function ComplimentCard({
               />
             </FormField>
           ) : (
-            <div className="p-2 rounded-b-xl border-t-slate-400 max-h-40 overflow-y-auto">
+            <div className={joinClasses("rounded-xl max-h-40 overflow-y-auto")}>
               <p
-                className={joinClasses(
-                  "text-gray-700 leading-relaxed font-caveat font-bold",
-                  {
-                    "text-slate-200": initialCompliment.isAdmin,
-                  }
-                )}
+                className={joinClasses(" leading-relaxed break-all", {
+                  "text-slate-200 font-bold text-sm": initialCompliment.isAdmin,
+                  "text-slate-500": !initialCompliment.isAdmin,
+                })}
                 style={{ whiteSpace: "pre-line" }}
               >
                 {compliment?.content}
               </p>
             </div>
           )}
+
+          {/* <div
+            className={joinClasses({
+              "text-slate-100": initialCompliment.isAdmin,
+              "text-slate-600": !initialCompliment.isAdmin,
+            })}
+          >
+            <span className="font-thin">to:</span>
+            <Link
+              className="font-bold ml-1 text-pink-500"
+              to={`/users/${initialCompliment.recipient.userId}/profile`}
+            >
+              @
+              <span className="first-letter:capitalize">
+                {compliment?.recipient.displayName}
+              </span>
+            </Link>
+          </div> */}
 
           {isEditing && (
             <button
