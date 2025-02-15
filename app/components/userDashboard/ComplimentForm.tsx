@@ -113,14 +113,12 @@ function ComplimentForm({ profile, onClose }: Props) {
         exit={{ y: 100, opacity: 0, scale: [1, 0.8] }}
         onSubmit={methods.handleSubmit(handleCreateCompliment)}
         className={joinClasses(
-          "fixed bottom-10 bg-gradient-to-br from-gray-100 to-gray-200  border border-gray-200 rounded-xl shadow-xl max-w-96 w-11/12 flex flex-col h-[400px]"
+          "fixed bottom-10 bg-gradient-to-br from-gray-100 to-gray-200  rounded-xl shadow-xl max-w-96 w-11/12 flex flex-col h-[400px]"
         )}
       >
         {showQuestions && (
           <div className="rounded-xl  bg-gradient-to-br from-gray-100 to-gray-200  shadow-lg absolute z-10 w-full h-full flex justify-start items-center flex-col p-6">
-            <p className="text-2xl font-jost font-semibold text-slate-800 mb-6">
-              Тема
-            </p>
+            <p className="text-2xl font-bold text-slate-800 mb-6">Тема</p>
             <ul className="bg-white rounded-xl shadow-inner w-full max-w-md p-6 overflow-y-auto custom-scrollbar">
               {QUESTIONS.map((question) => {
                 const isPrevQuestion = compliments?.find(
@@ -140,7 +138,7 @@ function ComplimentForm({ profile, onClose }: Props) {
                         onChange={() => setMessage(question.content)}
                         className="form-radio h-5 w-5 text-blue-600 border-2 border-gray-300 group-hover:border-blue-500 transition-colors duration-200"
                       />
-                      <span className="text-gray-800 text-sm sm:text-[1rem] md:text-lg font-bold group-hover:text-blue-600 transition-colors duration-200">
+                      <span className="text-slate-700 text-sm sm:text-[1rem] md:text-lg font-bold group-hover:text-blue-600 transition-colors duration-200">
                         {question.content}
                       </span>
                     </label>
@@ -150,7 +148,7 @@ function ComplimentForm({ profile, onClose }: Props) {
             </ul>
             <Button
               variant="solid"
-              className={`mt-4 ${!message && "opacity-60"}`}
+              className={`mt-4 ${!message && "opacity-60"} bg-blue-500`}
               disabled={!message || complimentsLoadStatus !== "success"}
               onClick={() => setShowQuestions(false)}
             >
@@ -215,7 +213,7 @@ function ComplimentForm({ profile, onClose }: Props) {
               }}
               className="flex justify-start"
             >
-              <div className="bg-gray-100 px-4 py-2 rounded-2xl max-w-[80%] relative">
+              <div className="bg-gray-200 px-4 py-2 rounded-2xl max-w-[80%] relative">
                 <p className="text-slate-600">{message}</p>
               </div>
             </motion.div>
@@ -223,19 +221,23 @@ function ComplimentForm({ profile, onClose }: Props) {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 border-t border-gray-100">
-          <div className="flex gap-2 items-end">
+        <div className="p-4 border-t border-gray-100 relative rounded-b-xl overflow-hidden">
+          <div
+            className="absolute bg-blue-500 bg-clip-padding backdrop-filter  backdrop-blur bg-opacity-10
+          backdrop-saturate-100 backdrop-contrast-100 w-full h-full -z-10 top-0 left-0"
+          />
+          <div className="grid grid-cols-[1fr_auto] gap-10">
             <FormField<CreateComplimentPayload> fieldName="content">
               <FormField.TextArea
                 placeholder="Напиши что-нибудь..."
                 rows={3}
-                className="resize-none rounded-2xl bg-gray-50 px-4 py-2"
+                className="resize-none rounded-2xl bg-white px-4 py-2 hover:border-blue-200 focus:border-blue-400"
               />
             </FormField>
             <Button
               type="submit"
               variant="solid"
-              className="mb-1 px-3 py-3 rounded-xl"
+              className="mb-1 px-3 py-3 rounded-xl "
               disabled={
                 mutation.isPending ||
                 hasComplimented ||

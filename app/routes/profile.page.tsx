@@ -44,7 +44,7 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
   }
   const isOwner = user?.id === userId;
   return (
-    <div className="flex justify-center min-h-dvh p-4 bg-white bg-opacity-50">
+    <div className="flex justify-center min-h-dvh p-4 bg-gradient-to-tr to-slate-200 from-slate-400 ">
       <GoBack />
       {!profile && isOwner && (
         <CreateProfileForm userId={userId} onProfileRefetch={refetch} />

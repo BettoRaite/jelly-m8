@@ -1,24 +1,19 @@
-import { FaEdit, FaTimes } from "react-icons/fa"; // Import the icons
+import { useProfileMutation } from "@/hooks/useProfileMutation";
 import {
   updateProfileSchema,
   type UpdateProfilePayload,
 } from "@/lib/schemas/profile.schema";
 import type { Profile } from "@/lib/types";
+import { jsonToFormData } from "@/lib/utils/conversion";
+import { joinClasses } from "@/lib/utils/strings";
+import Button from "@/ui/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { useForm, FormProvider } from "react-hook-form";
-import { FormField } from "@/ui/formField/FormField";
-import { MdEdit, MdMessage } from "react-icons/md";
-import { useProfileMutation } from "@/hooks/useProfileMutation";
-import { useQueryClient } from "@tanstack/react-query";
-import { QUERY_KEYS } from "@/lib/config";
-import { jsonToFormData } from "@/lib/utils/conversion";
-import ComplimentForm from "./userDashboard/ComplimentForm";
+import { FormProvider, useForm } from "react-hook-form";
+import { MdMessage } from "react-icons/md";
 import GlassyBackground from "./Backgrounds/GlassyBackground";
-import Button from "@/ui/Button";
-import { joinClasses } from "@/lib/utils/strings";
-import { div } from "motion/react-client";
+import ComplimentForm from "./userDashboard/ComplimentForm";
 type Props = {
   profile: Profile;
   isOwner: boolean;
@@ -65,7 +60,7 @@ function UserProfile({ profile, isOwner }: Props) {
         }}
         className={joinClasses(
           "mt-20 sm:mt-0 relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl w-full max-w-[400px] overflow-hidden",
-          "border border-purple-600"
+          "border border-white"
         )}
       >
         <div className="relative h-64 max-h-64 w-full bg-transparent z-10 shadow-lg">
@@ -86,7 +81,7 @@ function UserProfile({ profile, isOwner }: Props) {
         </div>
         {/* Profile Section */}
         <motion.div
-          className="flex items-start px-6 pb-2 -mt-12 relative z-10 bg"
+          className="flex items-start px-6 pb-2 -mt-12 relative z-10"
           initial={{ y: 20 }}
           animate={{ y: 0 }}
         >
@@ -94,30 +89,31 @@ function UserProfile({ profile, isOwner }: Props) {
             whileHover={{ scale: 1.1 }}
             src={profile.profileImageUrl}
             alt={profile.displayName}
-            className="w-24 h-24 rounded-2xl border-4 border-purple-600 shadow-lg object-cover relative"
+            className="w-28 h-28 rounded-full border-4 border-purple-600 shadow-lg object-cover relative"
           />
-          <div className="ml-2 mt-8">
+          <div className="ml-auto mr-10 mt-8">
             <div className="flex">
               {!isOwner && (
                 <Button
-                  variant="solid"
+                  variant="outline"
                   onClick={() => setIsComplimenting(true)}
                   className="text-sm bottom-0
                           font-jost font-bold  bg-gradient-to-br from-gray-100 to-gray-200
-                          text-white rounded-2xl hover:scale-125 transition duration-300
-                          shadow-lg hover:shadow-xl opacity-100"
+                          text-white rounded-xl hover:scale-125 transition duration-300
+                          shadow-lg hover:shadow-xl"
                 >
-                  <MdMessage className="text-2xl text-blue-600" />
+                  <MdMessage className="text-2xl text-blue-500" />
                 </Button>
               )}
             </div>
           </div>
         </motion.div>
-        <h2 className="ml-8 text-2xl sm:text-3xl font-bold text-slate-600">
+
+        <h2 className="ml-6 text-2xl sm:text-[2rem] font-bold text-slate-800">
           {profile.displayName}
         </h2>
-        <div className="mt-2 bg-gray-100 h-40 mx-4 rounded-lg p-2">
-          <p className="ml-2 font-caveat text-xl text-slate-500">
+        <div className="mt-6 bg-gray-100 h-40 mx-6 rounded-lg py-2 overflow-y-auto">
+          <p className="ml-2 font-jost text-xl text-slate-500">
             {profile.biography}
           </p>
         </div>
