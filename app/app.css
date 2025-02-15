@@ -12,8 +12,8 @@ body {
 }
 
 @layer utilities {
-  .bg-conic-gradient {
-  }
+  /* .bg-conic-gradient {
+  } */
 
   .bg-conic-gradient::before {
     content: "";
@@ -69,4 +69,23 @@ body {
   75% {
     background-position: right top;
   }
+}
+/* Custom scrollbar for WebKit browsers */
+::-webkit-scrollbar {
+  width: 0.5rem; /* Width of the scrollbar */
+  height: 1rem; /* Height of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(225, 225, 225, 0.1); /* Background of the scrollbar track */
+  border-radius: 1rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(225, 225, 225, 0.4);
+  border-radius: 1rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: gray;
 }

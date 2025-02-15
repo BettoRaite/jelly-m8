@@ -19,15 +19,6 @@ import { useNavigate } from "react-router";
 import { Vector3 } from "three";
 const CAM_MOVE_DIST = 1.2;
 
-// Extracted ProfileScene Component
-const ProfileScene = ({ profile }: { profile: Profile }) => (
-  <AppScene>
-    <SmoothCamera targetPos={new Vector3(0, 0, 1)} />
-    {profile.isActivated && <GlowingCard key={profile.id} profile={profile} />}
-  </AppScene>
-);
-
-// Extracted ScrollSection Component
 const ScrollSection = forwardRef(
   (
     {
@@ -77,7 +68,6 @@ export default function Cards() {
     return (
       <ErrorScreen description="Что-то пошло не так с загрузкой профилей" />
     );
-  console.log(profiles);
   const profile: Profile | undefined =
     profiles.length === 0 ? undefined : profiles[activeIndex];
 
@@ -118,7 +108,14 @@ export default function Cards() {
         <GoBack to="/" className="opacity-20 hover:opacity-80" />
         {!hasScrolled && <ParticlesWrapper />}
 
-        {profile && <ProfileScene profile={profile} />}
+        {profile && (
+          <AppScene>
+            <SmoothCamera targetPos={new Vector3(0, 0, 1)} />
+            {profile.isActivated && (
+              <GlowingCard key={profile.id} profile={profile} />
+            )}
+          </AppScene>
+        )}
 
         <header className="flex justify-center">
           <h1

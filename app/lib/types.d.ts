@@ -32,6 +32,7 @@ export interface Compliment {
   title: string;
   content: string; // text
   author: Profile;
+  recipient: Profile;
   likes: number;
   isAdmin: boolean;
   createdAt: Date;

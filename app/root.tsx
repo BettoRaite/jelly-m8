@@ -31,6 +31,10 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Caveat:wght@400..700&family=Comfortaa:wght@300..700&family=Jost:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Pacifico&family=Triodion&display=swap",
   },
   { rel: "stylesheet", href: stylesheet },
+  {
+    rel: "preload",
+    href: "./public/pattern.jpg",
+  },
 ];
 
 export function meta(_: Route.MetaArgs) {

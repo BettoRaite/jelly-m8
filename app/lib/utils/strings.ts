@@ -91,6 +91,5 @@ export const constructSortConfig = <T>(
     if (!config[direction]) config[direction] = "";
     config[direction] += `${config[direction] ? "," : ""}${key}`;
   }
-  console.log(config);
   return config;
 };

@@ -3,6 +3,7 @@ import { getAuth } from "@/hooks/useAuth";
 import { useComplimentManager } from "@/hooks/useComplimentManager";
 import type { UpdateComplimentPayload } from "@/lib/schemas/compliment.schema";
 import type { Compliment } from "@/lib/types";
+import { formatDate } from "@/lib/utils/format";
 import { joinClasses } from "@/lib/utils/strings";
 import { FormField } from "@/ui/formField/FormField";
 import { motion } from "motion/react";
@@ -16,13 +17,11 @@ type Props = {
   className?: string;
   isOwner: boolean;
   theme?: "default" | "special";
-  onRefetchCompliments: () => void;
 };
 function ComplimentCard({
   initialCompliment,
   className,
   isOwner,
-  onRefetchCompliments,
   theme = "default",
 }: Props) {
   const {
@@ -55,14 +54,19 @@ function ComplimentCard({
           scale: 1,
           opacity: 1,
           transition: {
-            type: "spring",
-            stiffness: 350,
-            damping: 20,
+            type: "tween",
+            duration: 0.25,
+            ease: [0.4, 0, 0.2, 1],
           },
         }}
         exit={{
-          scale: [1, 0],
-          opacity: [1, 0],
+          scale: 0,
+          opacity: 0,
+          transition: {
+            type: "tween",
+            duration: 0.2,
+            ease: [0.4, 0, 0.2, 1],
+          },
         }}
         className={joinClasses(
           "group relative flex flex-col gap-4 rounded-xl p-4",
@@ -119,7 +123,7 @@ function ComplimentCard({
           />
           <div>
             <h3
-              className={joinClasses("text-lg font-semibold text-gray-800", {
+              className={joinClasses("text-lg font-semibold text-slate-700", {
                 "text-white": initialCompliment.isAdmin,
               })}
             >
@@ -139,16 +143,39 @@ function ComplimentCard({
           onSubmit={formMethods.handleSubmit(handleUpdate)}
           className={joinClasses("space-y-2 relative")}
         >
-          <h2
-            className={joinClasses(
-              "text-xl font-bold text-gray-700 font-caveat",
-              {
-                "text-slate-100": initialCompliment.isAdmin,
-              }
-            )}
+          <div
+            className={joinClasses({
+              "text-slate-100": initialCompliment.isAdmin,
+              "text-slate-600": !initialCompliment.isAdmin,
+            })}
           >
-            {compliment?.title}
-          </h2>
+            <span className="font-thin">to:</span>
+            <Link
+              className="font-bold ml-1 text-pink-500"
+              to={`/profiles/${initialCompliment.recipient.userId}`}
+            >
+              @
+              <span className="first-letter:capitalize">
+                {compliment?.recipient.displayName}
+              </span>
+            </Link>
+          </div>
+          <div
+            className={joinClasses({
+              "text-slate-100": initialCompliment.isAdmin,
+              "text-slate-600": !initialCompliment.isAdmin,
+            })}
+          >
+            <span className="font-thin">вопрос:</span>
+            <h2
+              className={joinClasses("ml-1 font-bold inline", {
+                "text-slate-100": initialCompliment.isAdmin,
+                "text-slate-500": !initialCompliment.isAdmin,
+              })}
+            >
+              {compliment?.title}
+            </h2>
+          </div>
 
           {isEditing ? (
             <FormField<UpdateComplimentPayload>
@@ -162,17 +189,19 @@ function ComplimentCard({
               />
             </FormField>
           ) : (
-            <p
-              className={joinClasses(
-                "text-gray-700 leading-relaxed font-caveat font-bold",
-                {
-                  "text-slate-200": initialCompliment.isAdmin,
-                }
-              )}
-              style={{ whiteSpace: "pre-line" }}
-            >
-              {compliment?.content}
-            </p>
+            <div className="p-2 rounded-b-xl border-t-slate-400 max-h-40 overflow-y-auto">
+              <p
+                className={joinClasses(
+                  "text-gray-700 leading-relaxed font-caveat font-bold",
+                  {
+                    "text-slate-200": initialCompliment.isAdmin,
+                  }
+                )}
+                style={{ whiteSpace: "pre-line" }}
+              >
+                {compliment?.content}
+              </p>
+            </div>
           )}
 
           {isEditing && (
@@ -218,12 +247,10 @@ function ComplimentCard({
         )}
         <div
           className={joinClasses(
-            "mt-4 flex items-center gap-6 text-xs text-pink-500"
+            "mt-4 flex items-center gap-6 text-xs text-slate-400 text-opacity-80"
           )}
         >
-          <Link to={`/profiles/${initialCompliment.profileId}`}>
-            Получатель: @вика
-          </Link>
+          {formatDate(compliment?.createdAt)}
         </div>
       </motion.article>
     </FormProvider>

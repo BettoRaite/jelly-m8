@@ -2,13 +2,14 @@ import AnimatedGradientBackground from "@/components/Backgrounds/AnimatedGradien
 import { GoBack } from "@/components/GoBack";
 import { useAuth } from "@/hooks/useAuth";
 import { useSessionMutation } from "@/hooks/useSessionMutation";
+import { ERROR_MESSAGES } from "@/lib/constants";
 import {
   userLoginSchema,
   type UserLoginPayload,
 } from "@/lib/schemas/login.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router"; // Updated import for react-router-dom
@@ -35,10 +36,13 @@ export default function Login() {
       payload,
     });
   };
-  const errorMessage =
-    mutation.error?.status === 403
-      ? "Неправильный код доступа"
-      : "Что-то пошло не так";
+  const errorMessage = useMemo(() => {
+    if (!mutation.error) return null;
+    if (mutation.error.status === 403) return "Неправильный код доступа";
+    if (mutation.error.status === 500) return ERROR_MESSAGES.SERVER_ERROR;
+    return ERROR_MESSAGES.UNEXPECTED_ERROR;
+  }, [mutation.error]);
+  const isLoading = mutation.isPending || isSubmitting;
   return (
     <main className="flex justify-center items-center h-screen bg-transparent">
       <AnimatedGradientBackground />
@@ -65,22 +69,24 @@ export default function Login() {
                 bg-white bg-opacity-20 text-white placeholder:text-black placeholder:text-opacity-20 font-bold  ${
                   errors.accessSecret ? "border-red-500" : ""
                 }`}
+              aria-invalid={!!errors.accessSecret}
+              aria-describedby="accessSecret-error"
             />
             {errors.accessSecret && (
-              <span className="text-red-500 text-sm">
+              <span id="accessSecret-error" className="text-red-500 text-sm">
                 {errors.accessSecret.message}
               </span>
             )}
           </div>
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isLoading}
             className={`w-full p-2 text-white font-semibold rounded-xl font-comfortaa
               bg-gradient-to-tr from-blue-500 via-blue-500 to-blue-800
               hover:scale-110
-              ${isSubmitting && "bg-gray-400"} transition duration-500`}
+              ${isLoading && "bg-gray-400"} transition duration-500`}
           >
-            {isSubmitting ? "Loading..." : "Войти"}
+            {isLoading ? "Loading..." : "Войти"}
           </button>
           {mutation.isError && (
             <div className="mt-4 text-red-500 text-center text-opacity-65">

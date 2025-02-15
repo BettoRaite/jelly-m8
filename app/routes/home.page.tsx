@@ -1,37 +1,35 @@
 import { AppScene } from "@/components/AppScene";
 import AnimatedGradientBackground from "@/components/Backgrounds/AnimatedGradientBackground";
+import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
+import { HeartLoader } from "@/components/HeartLoader";
 import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
-import { FaUser } from "react-icons/fa";
+import { useSessionMutation } from "@/hooks/useSessionMutation";
+import { ERROR_MESSAGES } from "@/lib/constants";
+import { joinClasses } from "@/lib/utils/strings";
+import Button from "@/ui/Button";
+import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { useCallback, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { FaRegComments, FaUser } from "react-icons/fa";
 import { HiOutlineSquare2Stack } from "react-icons/hi2";
 import { MdDashboard } from "react-icons/md";
 import { Link } from "react-router";
 import { Vector3 } from "three";
-import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
-import { HeartLoader } from "@/components/HeartLoader";
-import { useSessionMutation } from "@/hooks/useSessionMutation";
-import { joinClasses } from "@/lib/utils/strings";
-import Button from "@/ui/Button";
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { FaRegComments } from "react-icons/fa";
 
 export default function Home() {
   const { data: user, status, refetch } = useAuth();
   const session = useSessionMutation();
-  const [isHovered, setIsHovered] = useState(false);
-  if (status === "pending") {
-    return <HeartLoader className="bg-black" />;
-  }
-  const { userRole: role } = user ?? {};
-  async function handleLogout() {
+  const handleLogout = useCallback(async () => {
     try {
-      await session.mutateAsync({
-        type: "logout",
-      });
+      await session.mutateAsync({ type: "logout" });
       refetch();
-    } catch (err) {}
-  }
+    } catch (err) {
+      console.error(err);
+      toast(ERROR_MESSAGES.UNEXPECTED_ERROR);
+    }
+  }, [session, refetch]);
 
+  const { userRole: role } = user ?? {};
   const links = [
     {
       isShown: true,
@@ -41,7 +39,7 @@ export default function Home() {
       to: "/cards",
     },
     {
-      isShown: !!user,
+      isShown: true,
       icon: <FaRegComments className="text-xl md:text-3xl text-cyan-50" />,
       to: "/discovery",
     },
@@ -56,6 +54,10 @@ export default function Home() {
       to: user ? `/profiles/${user?.id}` : "/login",
     },
   ];
+
+  if (status === "pending") {
+    return <HeartLoader className="bg-black" />;
+  }
 
   return (
     <div
@@ -112,6 +114,7 @@ export default function Home() {
           Выйти
         </Button>
       )}
+      <Toaster />
     </div>
   );
 }

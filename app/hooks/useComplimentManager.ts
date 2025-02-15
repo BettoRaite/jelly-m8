@@ -13,6 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import useProfileQuery from "./useProfileQuery";
 
 // Custom hook to encapsulate compliment-related logic
 export const useComplimentManager = (initialCompliment: Compliment) => {

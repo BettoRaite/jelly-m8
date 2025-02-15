@@ -42,6 +42,7 @@ const QUESTIONS = [
   },
 ];
 function ComplimentForm({ profile, onClose }: Props) {
+  console.log(profile);
   const user = getAuth();
   const { data: compliments, status: complimentsLoadStatus } =
     useComplimentQuery({
