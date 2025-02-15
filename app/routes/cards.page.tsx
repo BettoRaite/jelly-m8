@@ -15,7 +15,7 @@ import * as motion from "motion/react-client";
 import { forwardRef, useRef, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { BiHeart } from "react-icons/bi";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Vector3 } from "three";
 const CAM_MOVE_DIST = 1.2;
 
@@ -163,18 +163,27 @@ export default function Cards() {
 
         {profile?.isActivated && (
           <div className="flex justify-center w-screen absolute z-20 bottom-0 left-0">
-            <motion.button
-              whileTap={{ scale: 0.8 }}
+            <Link
+              to={`tribute/${profile?.userId}`}
+              viewTransition
               className="p-4 bg-gray-200 rounded-full opacity-60 relative -bottom-4 hover:bottom-4 transition-all duration-500 hover:opacity-100"
-              onClick={() => handleScroll("down")}
-              aria-label="View profile details"
             >
               <BiHeart />
-            </motion.button>
+            </Link>
           </div>
         )}
       </ScrollSection>
+      {/*
 
+  <motion.button
+    whileTap={{ scale: 0.8 }}
+    className="p-4 bg-gray-200 rounded-full opacity-60 relative -bottom-4 hover:bottom-4 transition-all duration-500 hover:opacity-100"
+    onClick={() => handleScroll("down")}
+    aria-label="View profile details"
+  >
+    <BiHeart />
+  </motion.button>
+  */}
       <section ref={profileSectionRef} className="h-dvh w-dvh bg-black">
         {hasScrolled && <ReactConfetti className="h-full w-full" />}
       </section>

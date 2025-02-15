@@ -87,6 +87,7 @@ export default function Home() {
             return (
               link.isShown && (
                 <Link
+                  viewTransition
                   key={link.to}
                   className={joinClasses(
                     "rounded-full p-2 shadow-xl hover:scale-125 duration-500",

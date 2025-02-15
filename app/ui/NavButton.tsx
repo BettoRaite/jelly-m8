@@ -25,9 +25,8 @@ function NavButton({
     <motion.button
       onClick={onClick}
       className={joinClasses(
-        "h-16 w-16",
-        "border border-gray-300 rounded-full transition-transform duration-500 overflow-hidden",
-        className
+        className,
+        "p-4 rounded-full transition-transform duration-500 overflow-hidden"
       )}
       aria-label={ariaLabel}
       disabled={disabled}
@@ -38,7 +37,6 @@ function NavButton({
       >
         <Icon className={classNameIcon ?? ""} />
       </motion.div>
-      <div className="bg-white w-full h-full blur-xl opacity-10 shadow-lg" />
     </motion.button>
   );
 }

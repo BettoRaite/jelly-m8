@@ -89,3 +89,6 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: gray;
 }
+@view-transition {
+  navigation: auto;
+}

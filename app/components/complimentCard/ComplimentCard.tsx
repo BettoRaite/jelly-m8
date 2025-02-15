@@ -87,7 +87,7 @@ function ComplimentCard({
         {variant === "special" && (
           <>
             <img
-              src="./public/pattern.jpg"
+              src="/pattern.jpg"
               alt=""
               className={joinClasses(
                 "absolute w-full h-full top-0 left-0 object-cover -z-10 opacity-100"
@@ -194,7 +194,8 @@ function ComplimentCard({
               "transition-all absolute right-2 bottom-2 text-pink-500 text-opacity-90",
               !hasLiked && "border border-gray-100",
               {
-                "border-none": initialCompliment.isAdmin,
+                "border-none": variant === "special",
+                hidden: !user,
               }
             )}
             type="button"
