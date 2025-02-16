@@ -103,6 +103,7 @@ export function GlowingCard({ cardProps, profile }: Props) {
 
   // Starting card animation only after the card materials has loaded(front and back)
   useEffect(() => {
+    const cardDist = window.innerWidth < 1024 ? -60 : -50;
     if (materials?.front && materials?.back) {
       rotationApi.start({
         rotation: [Math.PI * 2, Math.PI * 2, Math.PI * 2.05], // Rotate 360 degrees around the Y-axis
@@ -110,7 +111,7 @@ export function GlowingCard({ cardProps, profile }: Props) {
       });
 
       positionApi.start({
-        position: [0, 0, -50], // Final position
+        position: [0, 0, cardDist], // Final position
         from: { position: [0, -30, -40] }, // Start from above
         config: {
           duration: 600, // Duration of 1 second

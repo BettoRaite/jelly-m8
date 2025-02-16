@@ -16,8 +16,8 @@ export function GoBack({ to = -1, className, theme = "light" }: Props) {
       className={joinClasses(
         className,
         "absolute top-4 left-4 z-50 flex items-center gap-2",
-        "rounded-lg shadow-lg p-3 transition-all duration-300 opacity-70 hover:opacity-100",
-        "font-jost font-bold hover:border-opacity-100",
+        "rounded-lg shadow-lg transition-all duration-300 opacity-70 hover:opacity-100",
+        "font-jost font-bold hover:border-opacity-100 text-xs p-2 md:text-xs lg:text-lg md:p-3",
         {
           "bg-white bg-opacity-20 border border-white border-opacity-20 text-white hover:border-opacity-60":
             theme === "light",

@@ -84,7 +84,8 @@ export default function Cards() {
       <GoBack to="/" className="opacity-20 hover:opacity-80" />
       {/* <ParticlesWrapper key="particles" /> */}
 
-      <div className="flex items-center gap-2 absolute top-4 right-4 z-40">
+      {/* Search bar */}
+      <div className="w-[50%] flex justify-end items-center gap-2 absolute top-4 right-4 z-40">
         <button
           type="button"
           onClick={() => setOpenSearch(!openSearch)}
@@ -97,12 +98,13 @@ export default function Cards() {
         {openSearch && (
           <SearchBar
             onChange={handleSearch}
-            classNameContainer=""
-            className="bg-opacity-10 bg-white border-none text-white"
+            classNameContainer="w-full max-w-60"
+            className="bg-opacity-10 bg-white border-none text-white w-full"
             showSearchBtn={false}
           />
         )}
       </div>
+
       {/* Card scene */}
       {profile?.isActivated && (
         <AppScene>
@@ -114,9 +116,9 @@ export default function Cards() {
       <header className="flex justify-center">
         <h1
           className={joinClasses(
-            "z-20 flex absolute top-[40%] left-[10%] hover:scale-125 cursor-pointer",
+            "z-20 flex absolute top-[10%] md:top-[40%] md:left-[10%] hover:scale-125 cursor-pointer",
             "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
-            "text-6xl font-bold text-white p-4 rounded-lg font-amatic",
+            "lg:text-8xl md:text-7xl text-6xl font-bold text-white p-4 rounded-lg font-amatic",
             {
               "top-[23%] left-auto": !profile?.isActivated,
             }
@@ -146,9 +148,10 @@ export default function Cards() {
           viewTransition
           className={joinClasses(
             "p-4 bg-gray-200 rounded-full opacity-60 relative -bottom-4 hover:bottom-4",
-            "transition-all duration-500 hover:opacity-100",
+            "transition-all duration-500 hover:opacity-100 hover:shadow-xl hover:shadow-pink-500",
+            "hover:text-pink-500",
             {
-              "opacity-5 pointer": !profile?.isActivated,
+              "opacity-10 pointer-events-none": !profile?.isActivated,
             }
           )}
         >
@@ -170,18 +173,21 @@ export default function Cards() {
         />
       </div>
       {/* --- */}
-      <p className="z-50 absolute bottom-10 left-10 text-3xl text-white font-jost bg-white bg-opacity-10 p-6 rounded-2xl  flex justify-center items-center backdrop-blur-sm shadow-lg">
+      <p
+        className="z-50 absolute bottom-14 md:bottom-10 left-4 md:left-10 text-white font-jost bg-white bg-opacity-10 p-3 md:p-6
+        rounded-2xl  flex justify-center items-center backdrop-blur-sm shadow-lg opacity-50 md:opacity-100"
+      >
         <motion.span
           key={profile?.id}
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 100, damping: 10 }}
-          className="text-3xl font-bold text-white"
+          className="text-xl md:text-3xl font-bold text-white"
         >
           {activeIndex + 1}
         </motion.span>
-        <span className="text-lg text-white opacity-80 mx-1">/</span>
-        <span className="text-xl text-white opacity-80">
+        <span className="md:text-lg text-white opacity-80 mx-1">/</span>
+        <span className="md:text-xl text-white opacity-80">
           {profiles?.length}
         </span>
       </p>
