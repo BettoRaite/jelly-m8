@@ -7,12 +7,14 @@ type Props = {
   onChange?: (query: string) => void;
   className?: string;
   classNameContainer?: string;
+  showSearchBtn?: boolean;
 };
 function SearchBar({
   onSearch,
   onChange,
   className,
   classNameContainer,
+  showSearchBtn = true,
 }: Props) {
   const [query, setQuery] = useState("");
 
@@ -44,16 +46,18 @@ function SearchBar({
           "p-2 px-4 focus:outline-none border rounded-xl focus:border-purple-300 transition duration-300 font-bold text-gray-700"
         )}
       />
-      <Button
-        type="button"
-        onClick={handleSearch}
-        variant="outline"
-        className="bg-opacity-20 text-slate-500 border border-gray-500 hover:border-opacity-30 active:border-gray-100
+      {showSearchBtn && (
+        <Button
+          type="button"
+          onClick={handleSearch}
+          variant="outline"
+          className="bg-opacity-20 text-slate-500 border border-gray-500 hover:border-opacity-30 active:border-gray-100
         shadow-lg active:text-white active:bg-purple-400 font-bold"
-      >
-        <BiSearch />
-        Search
-      </Button>
+        >
+          <BiSearch />
+          Search
+        </Button>
+      )}
     </div>
   );
 }

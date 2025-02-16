@@ -11,6 +11,7 @@ type Props = {
 export function GoBack({ to = -1, className, theme = "light" }: Props) {
   return (
     <Link
+      viewTransition
       to={to as unknown as string}
       className={joinClasses(
         className,
