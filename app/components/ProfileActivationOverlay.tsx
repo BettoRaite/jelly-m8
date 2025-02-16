@@ -6,6 +6,7 @@ import {
 } from "@/lib/schemas/profile.schema";
 import type { Profile } from "@/lib/types";
 import { joinClasses } from "@/lib/utils/strings";
+import Button from "@/ui/Button";
 import { FormField } from "@/ui/formField/FormField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "motion/react";
@@ -77,24 +78,42 @@ export function ProfileActivationOverlay({ profile, onRefetchProfile }: Props) {
 
   return (
     <div
-      className={`flex justify-center items-center absolute w-screen h-screen bg-black z-20 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-20 backdrop-saturate-100 backdrop-contrast-100 ${TEXTURE}`}
+      className={`grid grid-rows-2 justify-center items-center absolute w-screen h-screen bg-black z-20 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-20 backdrop-saturate-100 backdrop-contrast-100 ${TEXTURE}`}
     >
-      <h1
-        className={joinClasses(
-          "z-20 flex absolute top-[20%] left-[10%] hover:scale-125 cursor-pointer",
-          "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
-          "font-bold text-7xl text-white p-4 rounded-lg font-caveat",
-          {
-            "top-[23%] left-auto": !profile.isActivated,
-          }
-        )}
-      >
-        {profile.displayName}
-      </h1>
+      {/* Avatar with name */}
+      <div key={profile.id} className="flex flex-col items-center">
+        <motion.img
+          animate={{
+            scale: [0, 1.5],
+          }}
+          src={profile.profileImageUrl}
+          alt=""
+          className="w-20 h-20 md:w-32 md:h-32 rounded-full object-cover"
+        />
+        <motion.div
+          animate={{
+            scale: [0, 1.5],
+          }}
+          className="relative"
+        >
+          <h1
+            className={joinClasses(
+              "relative -top-2 hover:scale-125 cursor-pointer",
+              "transition-all duration-300 first-letter:uppercase",
+              "font-bold rounded-lg font-caveat",
+              "bg-gradient-to-r from-white to-gray-300 text-transparent bg-clip-text p-2"
+            )}
+          >
+            <span className="text-4xl md:text-6xl">{profile.displayName}</span>
+          </h1>
+        </motion.div>
+      </div>
+      {/* */}
 
+      {/* Input section */}
       <FormProvider {...methods}>
         <form
-          className="flex gap-10 justify-center items-center"
+          className=" flex gap-4 justify-center items-center px-10 self-start"
           onSubmit={(e) => {
             e.stopPropagation();
             methods.handleSubmit(handleUnlockProfile)(e);
@@ -110,7 +129,7 @@ export function ProfileActivationOverlay({ profile, onRefetchProfile }: Props) {
                 className={joinClasses(
                   "placeholder:text-gray-300 focus:text-white text-gray-300 bg-transparent",
                   "font-bold font-comfortaa text-lg px-4 py-4 border-opacity-10",
-                  "hover:border-opacity-20 hover:shadow-lg focus:scale-110 focus:border-opacity-20 focus:border-purple-600 rounded-xl",
+                  "hover:border-opacity-20 shadow-xl focus:scale-110 focus:border-opacity-20 focus:border-purple-600 rounded-xl",
                   {
                     "border-red-600": errors.activationSecret,
                     "border-purple-500": !errors.activationSecret,
@@ -139,14 +158,18 @@ export function ProfileActivationOverlay({ profile, onRefetchProfile }: Props) {
           </FadeInExpand>
 
           <button
-            className="bg-white p-4 rounded-full h-min hover:scale-125 transition-transform duration-500"
+            className="bg-white bg-opacity-10 p-4 rounded-full hover:shadow-sm border border-white
+            border-opacity-10
+            hover:border text-white  hover:border-pink-200 shadow-lg
+            h-min hover:scale-125 transition-all duration-500"
             type="submit"
             aria-label="Submit activation secret"
           >
-            <MdSend className="text-blue-500 shadow-lg" />
+            <MdSend />
           </button>
         </form>
       </FormProvider>
+      {/* */}
     </div>
   );
 }

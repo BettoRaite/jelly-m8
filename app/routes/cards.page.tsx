@@ -2,7 +2,7 @@ import { AppScene } from "@/components/AppScene";
 import AnimatedGradientBackground from "@/components/Backgrounds/AnimatedGradientBackground";
 import ErrorScreen from "@/components/ErrorScreen";
 import { GoBack } from "@/components/GoBack";
-import { Loader } from "@/components/Loader";
+import { HeartLoader } from "@/components/HeartLoader";
 import { GlowingCard } from "@/components/models/GlowingCard";
 import { ParticlesWrapper } from "@/components/ParticlesWrapper";
 import { ProfileActivationOverlay } from "@/components/ProfileActivationOverlay";
@@ -63,7 +63,7 @@ export default function Cards() {
     }
   );
 
-  if (status === "pending") return <Loader />;
+  if (status === "pending") return <HeartLoader />;
   if (status === "error")
     return (
       <ErrorScreen description="Что-то пошло не так с загрузкой профилей" />
@@ -132,46 +132,49 @@ export default function Cards() {
             <ReactConfetti className="h-full w-full" />
           </h1>
         </header>
-        <NavButton
-          direction="left"
-          onClick={() => handleMoveClick(-1)}
-          disabled={activeIndex === 0}
-          ariaLabel="Previous profile"
-          className={joinClasses(
-            "z-40 absolute bottom-4 left-4 border-none cursor-pointer hover:text-gray-100 text-gray-500",
-            {
-              "opacity-15 pointer-events-none": activeIndex === 0,
-            }
-          )}
-          classNameIcon="duration-300"
-        />
 
-        <NavButton
-          direction="right"
-          onClick={() => handleMoveClick(1)}
-          disabled={activeIndex === (profiles?.length ?? 1) - 1}
-          ariaLabel="Next profile"
-          className={joinClasses(
-            "z-40 absolute bottom-4 right-4 border-none cursor-pointer hover:text-gray-100 text-gray-500",
-            {
-              "opacity-15 pointer-events-none":
-                activeIndex === (profiles?.length ?? 1) - 1,
-            }
-          )}
-          classNameIcon="duration-300"
-        />
-
-        {profile?.isActivated && (
-          <div className="flex justify-center w-screen absolute z-20 bottom-0 left-0">
-            <Link
-              to={`tribute/${profile?.userId}`}
-              viewTransition
-              className="p-4 bg-gray-200 rounded-full opacity-60 relative -bottom-4 hover:bottom-4 transition-all duration-500 hover:opacity-100"
-            >
-              <BiHeart />
-            </Link>
-          </div>
-        )}
+        <div className="flex justify-center w-screen absolute z-20 bottom-0 left-0 gap-20">
+          <NavButton
+            direction="left"
+            onClick={() => handleMoveClick(-1)}
+            disabled={activeIndex === 0}
+            ariaLabel="Previous profile"
+            className={joinClasses(
+              "z-40 border-none cursor-pointer hover:text-gray-100 text-gray-500",
+              {
+                "opacity-15 pointer-events-none": activeIndex === 0,
+              }
+            )}
+            classNameIcon="duration-300"
+          />
+          <Link
+            to={`tribute/${profile?.userId}`}
+            viewTransition
+            className={joinClasses(
+              "p-4 bg-gray-200 rounded-full opacity-60 relative -bottom-4 hover:bottom-4",
+              "transition-all duration-500 hover:opacity-100",
+              {
+                "opacity-5 pointer-events-none": !profile?.isActivated,
+              }
+            )}
+          >
+            <BiHeart />
+          </Link>
+          <NavButton
+            direction="right"
+            onClick={() => handleMoveClick(1)}
+            disabled={activeIndex === (profiles?.length ?? 1) - 1}
+            ariaLabel="Next profile"
+            className={joinClasses(
+              "z-40 border-none cursor-pointer hover:text-gray-100 text-gray-500",
+              {
+                "opacity-15 pointer-events-none":
+                  activeIndex === (profiles?.length ?? 1) - 1,
+              }
+            )}
+            classNameIcon="duration-300"
+          />
+        </div>
       </ScrollSection>
       {/*
 
