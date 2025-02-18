@@ -31,17 +31,15 @@ const CONFIG = {
   color2: [0, 150, 255],
   isanimate: false,
   textures: {
-    u_card_template: "./public/cardtemplate.png",
-    cardTemplate: "./public/cardtemplate.png",
-    u_card_template_back:
-      "https://raw.githubusercontent.com/pizza3/asset/master/cardtemplateback4.png",
-    u_skull_render: "./public/heart.png",
-    backPattern: "./public/heart.png",
-    u_noise: "https://raw.githubusercontent.com/pizza3/asset/master/noise2.png",
+    u_card_template: "./cardtemplate.png",
+    cardTemplate: "./cardtemplate.png",
+    u_card_template_back: "./cardtemplateback.png",
+    u_skull_render: "./heart.png",
+    backPattern: "./heart.png",
+    u_noise: "./noise2.png",
     u_color:
       "https://images.unsplash.com/photo-1589307004173-3c95204d00ee?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHBhdHRlcm58ZW58MHx8MHx8fDI%3D",
-    u_back_texture:
-      "https://raw.githubusercontent.com/pizza3/asset/master/color3.jpg",
+    u_back_texture: "./backtexture.jpg",
   },
   dimensions: {
     width: 1301,

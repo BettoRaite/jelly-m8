@@ -6,3 +6,4 @@
 /build/
 PROJ.md
 /public/private/*
+.vercel

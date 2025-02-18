@@ -20,6 +20,6 @@ export const QUERY_KEYS = {
 
 export const config = {
   server: {
-    url: "http://localhost:5000/api/v1",
+    url: "https://jelly-m8-api.onrender.com/api/v1",
   },
 };
