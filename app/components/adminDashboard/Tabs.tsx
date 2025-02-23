@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { UsersTab } from "./tabs/usersTab/UsersTab";
 import { ProfilesTab } from "./tabs/profilesTab/ProfilesTab";
+import { QuestionsTab } from "./tabs/questionsTab/QuestionsTab";
 
-type Tab = "users" | "profiles";
-const TABS: Tab[] = ["users", "profiles"];
+type Tab = "users" | "profiles" | "questions";
+const TABS: Tab[] = ["users", "profiles", "questions"];
 const KEY = "dashboard-tab";
 
 export function Tabs() {
@@ -17,6 +18,11 @@ export function Tabs() {
   switch (tab) {
     case "profiles": {
       selectedTab = <ProfilesTab />;
+      break;
+    }
+    case "questions": {
+      selectedTab = <QuestionsTab />;
+      break;
     }
   }
   function handleSelect(tab: Tab) {

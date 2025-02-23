@@ -151,6 +151,23 @@ function ProfileForm({ formType, users, profile, onRefetch, onClose }: Props) {
           <FormField.Error />
         </FormField>
 
+        <FormField<CreateProfileFormFields> fieldName="occupation">
+          <FormField.Label />
+          <FormField.Select
+            options={[
+              {
+                value: "student",
+                label: "Student",
+              },
+              {
+                value: "teacher",
+                label: "Teacher",
+              },
+            ]}
+          />
+          <FormField.Error />
+        </FormField>
+
         <button
           type="submit"
           className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition duration-200"

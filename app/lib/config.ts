@@ -16,10 +16,11 @@ export const QUERY_KEYS = {
   PROFILES: "profiles",
   COMPLIMENTS: "compliments",
   LIKES: "likes",
+  QUESTIONS: "questions",
 };
 
 export const config = {
   server: {
-    url: "https://jelly-m8-api.onrender.com/api/v1",
+    url: "http://localhost:5000/api/v1",
   },
 };

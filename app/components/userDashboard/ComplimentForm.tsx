@@ -5,7 +5,7 @@ import {
   type CreateComplimentPayload,
   createComplimentSchema,
 } from "@/lib/schemas/compliment.schema";
-import type { Profile } from "@/lib/types";
+import type { Profile, Question } from "@/lib/types";
 import Button from "@/ui/Button";
 import { FormField } from "@/ui/formField/FormField";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,32 +17,21 @@ import SelectInput from "@/ui/form/SelectInput";
 import { joinClasses } from "@/lib/utils/strings";
 import toast from "react-hot-toast";
 import { getAuth } from "@/hooks/useAuth";
+import useQuestionQuery from "@/hooks/useQuestionQuery";
 
 type Props = {
   profile: Profile;
   onClose: () => void;
 };
-const QUESTIONS = [
-  {
-    id: 1,
-    content: "Я тебе нравлюсь? Нравилась и почему?",
-  },
-  {
-    id: 2,
-    content: "В какой момент ты подумал что я самая крутая в группе?",
-  },
-  {
-    id: 3,
-    content:
-      "Если бы ты описал мои самые лучшие качества тремя словами, какими бы они были?",
-  },
-  {
-    id: 4,
-    content: "Если бы мы встречались то...",
-  },
-];
+
+const SPECIAL_QUESTION: Question = {
+  id: Number.MAX_SAFE_INTEGER,
+  userId: 1,
+  isApproved: true,
+  content: "Ты что-то хотел мне сказать?",
+  createdAt: new Date(),
+};
 function ComplimentForm({ profile, onClose }: Props) {
-  console.log(profile);
   const user = getAuth();
   const { data: compliments, status: complimentsLoadStatus } =
     useComplimentQuery({
@@ -50,6 +39,15 @@ function ComplimentForm({ profile, onClose }: Props) {
       profileId: profile.id,
       searchPattern: `userId=${user?.id}|asc=createdAt`,
     });
+  const { data: questions } = useQuestionQuery(
+    {
+      type: "questions",
+    },
+    {
+      initialData: profile.occupation === "teacher" ? [SPECIAL_QUESTION] : [],
+      enabled: profile.occupation !== "teacher",
+    }
+  );
   const timeoutRef = useRef(null);
   const [hasMessaged, setHasMessaged] = useState(false);
   const [message, setMessage] = useState("");
@@ -120,7 +118,7 @@ function ComplimentForm({ profile, onClose }: Props) {
           <div className="rounded-xl  bg-gradient-to-br from-gray-100 to-gray-200  shadow-lg absolute z-10 w-full h-full flex justify-start items-center flex-col p-6">
             <p className="text-2xl font-bold text-slate-800 mb-6">Тема</p>
             <ul className="bg-white rounded-xl shadow-inner w-full max-w-md p-6 overflow-y-auto custom-scrollbar">
-              {QUESTIONS.map((question) => {
+              {questions?.map((question) => {
                 const isPrevQuestion = compliments?.find(
                   (c) => c.title === question.content
                 );
@@ -149,11 +147,28 @@ function ComplimentForm({ profile, onClose }: Props) {
             <Button
               variant="solid"
               className={`mt-4 ${!message && "opacity-60"} bg-blue-500`}
-              disabled={!message || complimentsLoadStatus !== "success"}
+              disabled={
+                !message ||
+                complimentsLoadStatus !== "success" ||
+                compliments.length === 3
+              }
               onClick={() => setShowQuestions(false)}
             >
               Начать
             </Button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <MdClose size={20} />
+            </button>
+            {compliments?.length === 3 && (
+              <span className="text-center mt-4 text-gray-500">
+                Ты написал максимальное количество комлиментов на одного
+                человека
+              </span>
+            )}
           </div>
         )}
 
@@ -215,6 +230,18 @@ function ComplimentForm({ profile, onClose }: Props) {
             >
               <div className="bg-gray-200 px-4 py-2 rounded-2xl max-w-[80%] relative">
                 <p className="text-slate-600">{message}</p>
+              </div>
+            </motion.div>
+          )}
+          {hasMessaged && hasComplimented && (
+            <motion.div
+              animate={{
+                scale: [0, 1],
+              }}
+              className="flex justify-start"
+            >
+              <div className="bg-gray-200 px-4 py-2 rounded-2xl max-w-[80%] relative">
+                <p className="text-slate-600">Спасибки!</p>
               </div>
             </motion.div>
           )}

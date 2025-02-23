@@ -2,7 +2,6 @@ import CreateProfileForm from "@/components/CreateProfileForm";
 import { HeartLoader } from "@/components/HeartLoader";
 import { useAuth } from "@/hooks/useAuth";
 import useProfileQuery from "@/hooks/useProfileQuery";
-import { QUERY_KEYS } from "@/lib/config";
 import { useNavigate } from "react-router";
 import type { Route } from "./+types/profile.page";
 import { GoBack } from "@/components/GoBack";

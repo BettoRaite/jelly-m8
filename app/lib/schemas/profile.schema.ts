@@ -21,6 +21,7 @@ export const createProfileSchema = z.object({
   displayName: z.string().trim().min(3),
   biography: z.string().trim().min(3),
   gender: z.enum(["male", "female"]),
+  occupation: z.enum(["student", "teacher"]),
   imageFile: z
     .any()
     .transform((fileList) => fileList?.[0])

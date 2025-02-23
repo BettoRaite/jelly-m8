@@ -20,7 +20,6 @@ export const createMaterial = (
       value: uniform,
     };
   }
-  console.log(uniforms);
   return new THREE.ShaderMaterial({
     uniforms,
     fragmentShader,

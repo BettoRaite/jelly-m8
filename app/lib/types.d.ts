@@ -22,6 +22,7 @@ export interface Profile {
   isActivated: boolean; // boolean
   activationSecret: string; // varchar(255)
   profileImageUrl: string; // varchar(500)
+  occupation: "teacher" | "student";
 }
 
 // Type for Compliments Table
@@ -35,6 +36,14 @@ export interface Compliment {
   recipient: Profile;
   likes: number;
   isAdmin: boolean;
+  createdAt: Date;
+}
+
+export interface Question {
+  id: number;
+  content: string;
+  userId: number;
+  isApproved: boolean;
   createdAt: Date;
 }
 

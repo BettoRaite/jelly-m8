@@ -20,6 +20,7 @@ import type { Group } from "three";
 import * as THREE from "three";
 import { createMaterial } from "@/lib/helpers/createMaterial";
 import { Texture } from "@react-three/drei";
+import planeShaders from "@/lib/shaders/plane.shader";
 // Configuration
 const CONFIG = {
   exposure: 2.8,
@@ -59,6 +60,7 @@ export function GlowingCard({ cardProps, profile }: Props) {
     THREE.Texture
   > | null>(null);
   const cardRef = useRef<Group | null>(null);
+  const planeShaderRef = useRef<THREE.ShaderMaterial | null>(null);
   const [cardState, setCardState] = useState({
     hovered: false,
     flipped: false,
@@ -124,6 +126,10 @@ export function GlowingCard({ cardProps, profile }: Props) {
   useEffect(() => {
     CONFIG.dimensions.height = window.innerHeight;
     const loadTextures = async () => {
+      if (profile.occupation === "teacher") {
+        CONFIG.textures.u_color =
+          "https://images.unsplash.com/photo-1522441815192-d9f04eb0615c?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjR8fHNreSUyMHN0YXJzfGVufDB8fDB8fHww";
+      }
       const loadedTextures = await loadTexturesAsync<typeof CONFIG.textures>({
         ...CONFIG.textures,
       });
@@ -190,13 +196,60 @@ export function GlowingCard({ cardProps, profile }: Props) {
     };
   }, [profile, textures, gl]);
 
-  // Do card rotation, update texture
+  const effectMaterials = useMemo(() => {
+    if (!textures) {
+      return {};
+    }
+    return {
+      plane: new THREE.ShaderMaterial({
+        vertexShader: planeShaders.vert,
+        fragmentShader: planeShaders.frag,
+        transparent: true,
+        depthWrite: false,
+        uniforms: {
+          u_time: {
+            value: 0,
+          },
+          u_resolution: {
+            value: 1920 / 1080,
+          },
+        },
+      }),
+      sphere: new THREE.ShaderMaterial({
+        vertexShader: planeShaders.vert,
+        fragmentShader: planeShaders.frag,
+        transparent: true,
+        depthWrite: false,
+        uniforms: {
+          u_time: {
+            value: 0,
+          },
+          u_resolution: {
+            value: 1920 / 1080,
+          },
+          u_texture: {
+            value: textures?.u_color,
+          },
+        },
+      }),
+    };
+  }, [textures]);
+
   useFrame(({ clock }) => {
     if (materials?.front) materials.front.uniforms.time.value += 0.01;
     const c = cardRef.current;
     if (c && !(hovered || isAnimating)) {
       c.rotation.y += 0.002;
       c.rotation.x += 0.002;
+    }
+    const { plane, sphere } = effectMaterials;
+    if (plane) {
+      const et = clock.getElapsedTime();
+      plane.uniforms.u_time.value = cardState.flipped ? -et : et;
+    }
+    if (sphere) {
+      const et = clock.getElapsedTime();
+      sphere.uniforms.u_time.value = cardState.flipped ? -et : et;
     }
   });
 
@@ -207,8 +260,8 @@ export function GlowingCard({ cardProps, profile }: Props) {
       onClick={() => setCardState({ ...cardState, flipped: !flipped })}
       onPointerOver={() => setCardState({ ...cardState, hovered: true })}
       onPointerOut={() => setCardState({ ...cardState, hovered: false })}
-      position={positionSpring.position as unknown as Vector3} // Apply animated position
-      rotation={rotationSpring.rotation} // Apply animated rotation
+      position={positionSpring.position as unknown as Vector3}
+      rotation={rotationSpring.rotation}
       rotation-y={!isAnimating && rotationY}
     >
       {materials?.front && (
@@ -222,6 +275,23 @@ export function GlowingCard({ cardProps, profile }: Props) {
           <planeGeometry args={[20, 30]} />
         </mesh>
       )}
+      <mesh
+        rotation={[cardState.flipped ? -Math.PI : 0, 0, -0.3]}
+        position={[0, 0, 0]}
+        renderOrder={1}
+        material={effectMaterials.plane}
+      >
+        <planeGeometry args={[50, 50]} />
+      </mesh>
+
+      <mesh
+        rotation={[cardState.flipped ? -Math.PI : 0, 0, -0.3]}
+        position={[0, 0, 0]}
+        renderOrder={1}
+        material={effectMaterials.sphere}
+      >
+        <sphereGeometry args={[15, 15]} />
+      </mesh>
     </a.group>
   );
 }
