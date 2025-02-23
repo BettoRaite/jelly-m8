@@ -11,7 +11,7 @@ import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
 export default function ProfilePage({ params }: Route.ComponentProps) {
   const userId = Number.parseInt(params.userId);
   const navigate = useNavigate();
-  const { data: user } = useAuth();
+  const { data: user, status } = useAuth();
   const {
     data: profile,
     status: profileStatus,
@@ -24,6 +24,7 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
     },
     {
       retry: 2,
+      enabled: status !== "pending",
     }
   );
   // Validate userId
@@ -41,19 +42,20 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
   if (profileStatus === "error" && profileError?.status !== 404) {
     return <div>An error occurred while fetching the profile.</div>;
   }
-  const isOwner = user?.id === userId;
+  const role =
+    user?.id === userId ? "owner" : user ? "user" : "unauthenticated";
   return (
     <div className="flex justify-center min-h-dvh p-4 bg-gradient-to-tr to-slate-200 from-slate-400 ">
       <GoBack />
-      {!profile && isOwner && (
+      {!profile && role === "owner" && (
         <CreateProfileForm userId={userId} onProfileRefetch={refetch} />
       )}
-      {!profile && !isOwner && (
+      {!profile && role !== "owner" && (
         <p className="text-xl font-comfortaa font-bold">
           Упс... кажись пусто 👀
         </p>
       )}
-      {profile && <UserProfile profile={profile} isOwner={isOwner} />}
+      {profile && <UserProfile profile={profile} role={role} />}
       {/* <img
         src="../public/tokyopeople.jpg"
         alt=""

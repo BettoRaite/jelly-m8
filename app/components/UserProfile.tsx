@@ -19,10 +19,10 @@ import UserProfileEditForm from "./UserProfileEditForm";
 
 type Props = {
   profile: Profile;
-  isOwner: boolean;
+  role: "owner" | "user" | "unauthenticated";
 };
 
-function UserProfile({ profile, isOwner }: Props) {
+function UserProfile({ profile, role }: Props) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isComplimenting, setIsComplimenting] = useState(false);
   const handleEditToggle = () => {
@@ -54,7 +54,7 @@ function UserProfile({ profile, isOwner }: Props) {
           />
         </div>
       )}
-      {!isEditMode && isOwner && (
+      {!isEditMode && role === "owner" && (
         <Button
           onClick={handleEditToggle}
           className="text-white z-50 absolute top-2 right-2"
@@ -94,7 +94,7 @@ function UserProfile({ profile, isOwner }: Props) {
         />
         <div className="ml-auto mr-10 mt-8">
           <div className="flex">
-            {!isOwner && (
+            {role === "user" && (
               <Button
                 variant="outline"
                 onClick={() => setIsComplimenting(true)}

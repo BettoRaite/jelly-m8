@@ -1,41 +1,23 @@
 import { GoBack } from "@/components/GoBack";
 import { Link, useLocation, useNavigate } from "react-router";
 import { Outlet } from "react-router";
-import { FaImages, FaHeart } from "react-icons/fa"; // Importing icons from react-icons
+import { FaImages, FaHeart, FaExclamationCircle } from "react-icons/fa"; // Importing icons from react-icons
 import { BiSearch } from "react-icons/bi";
 import { getAuth, useAuth } from "@/hooks/useAuth";
 import useProfileQuery from "@/hooks/useProfileQuery";
 import { HeartLoader } from "@/components/HeartLoader";
 import ErrorScreen from "@/components/ErrorScreen";
 import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 
 export default function Layout() {
-  const { data: user } = useAuth();
-  const { status, error } = useProfileQuery(
-    {
-      type: "profile",
-      userId: user?.id as number,
-    },
-    {
-      enabled: Boolean(user),
-      retry: false,
-    }
-  );
+  const { data: user, status } = useAuth();
+
   const location = useLocation();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (error?.status === 404) {
-      navigate(`/profiles/${user?.id}`);
-    }
-  }, [navigate, error, user]);
-
   if (status === "pending") {
     return <HeartLoader />;
   }
-  if (status === "error") {
-    return <ErrorScreen description="Ошибка при загрузке вашего профиля" />;
-  }
+
   const isActive = (path: string) => {
     return location.pathname === path;
   };
@@ -83,6 +65,15 @@ export default function Layout() {
         </nav>
       </div>
       <Outlet />
+      <Toaster
+        toastOptions={{
+          error: {
+            className:
+              " flex justify-center items-center bg-red-50 border border-red-200 rounded-lg shadow-lg",
+            icon: <FaExclamationCircle className="text-red-500" />,
+          },
+        }}
+      />
     </div>
   );
 }

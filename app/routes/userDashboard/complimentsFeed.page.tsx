@@ -4,7 +4,7 @@ import { GoBack } from "@/components/GoBack";
 import { HeartLoader } from "@/components/HeartLoader";
 import SearchBar from "@/components/SearchBar";
 import ComplimentCard from "@/components/complimentCard/ComplimentCard";
-import { useAuth } from "@/hooks/useAuth";
+import { getAuth, useAuth } from "@/hooks/useAuth";
 import useComplimentQuery from "@/hooks/useComplimentQuery";
 import {
   constructSearchPattern,
@@ -13,7 +13,8 @@ import {
 } from "@/lib/utils/strings";
 import Button from "@/ui/Button";
 import { AnimatePresence } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { FaFilter } from "react-icons/fa";
 import { HiChevronUp } from "react-icons/hi";
 type Filters = {
@@ -27,7 +28,7 @@ const INITIAL_FILTERS: Filters = {
   createdAt: "desc",
 };
 export default function Page() {
-  const { data: user } = useAuth();
+  const user = getAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<Filters>(INITIAL_FILTERS);
   const {
@@ -41,14 +42,20 @@ export default function Page() {
       ...constructSortConfig(filters),
     }),
   });
-  if (status === "error") {
-    return <ErrorScreen description={"Ошибка при загрузке комлиментов"} />;
+  useEffect(() => {
+    if (status === "error") {
+      toast.error("Ошибка загрузки комлиментов", {
+        position: "bottom-center",
+      });
+    }
+  }, [status]);
+  if (status === "pending") {
+    return <HeartLoader />;
   }
   function onSearch(q: string) {
     setSearchQuery(q);
     refetch();
   }
-
   function createApplyFiltersHandler(filtersToApply: Partial<Filters>) {
     return () =>
       setFilters({
@@ -56,7 +63,6 @@ export default function Page() {
         ...filtersToApply,
       });
   }
-
   function handleRemoveFiltersClick() {
     setFilters({} as Filters);
   }
