@@ -3,7 +3,6 @@ import type { Methods } from "./types";
 import { ApiError } from "./errors";
 
 export const constructFetchUrl = (route: string) => {
-  console.log(config.server.url, route);
   return `${config.server.url}${route}`;
 };
 

@@ -20,7 +20,7 @@ const checkFileType = (file: File) => {
 export const createProfileSchema = z.object({
   displayName: z.string().trim().min(3),
   biography: z.string().trim().min(3),
-  quote: z.string().trim().min(3),
+  quote: z.string().trim().optional(),
   gender: z.enum(["male", "female"]),
   occupation: z.enum(["student", "teacher"]),
   imageFile: z
@@ -53,7 +53,7 @@ export const updateProfileSchema = z
     biography: z.string().trim().min(3),
     gender: z.enum(["male", "female"]),
     isActivated: z.boolean(),
-    quote: z.string().trim().min(3),
+    quote: z.string().trim().optional(),
     imageFile: z
       .any()
       .transform((fileList) => fileList[0])
