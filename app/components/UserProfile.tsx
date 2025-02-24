@@ -16,6 +16,7 @@ import GlassyBackground from "./Backgrounds/GlassyBackground";
 import ComplimentForm from "./userDashboard/ComplimentForm";
 import { BiEdit } from "react-icons/bi";
 import UserProfileEditForm from "./UserProfileEditForm";
+import toast from "react-hot-toast";
 
 type Props = {
   profile: Profile;
@@ -27,6 +28,13 @@ function UserProfile({ profile, role }: Props) {
   const [isComplimenting, setIsComplimenting] = useState(false);
   const handleEditToggle = () => {
     setIsEditMode((prev) => !prev);
+  };
+
+  const handleOpenChat = () => {
+    if (role === "user") {
+      return setIsComplimenting(true);
+    }
+    toast("Сперва тебе нужно создать профиль");
   };
 
   return (
@@ -92,20 +100,19 @@ function UserProfile({ profile, role }: Props) {
           alt={profile.displayName}
           className="w-28 h-28 rounded-full border-4 border-purple-600 shadow-lg object-cover relative"
         />
+        {/* Open chat btn */}
         <div className="ml-auto mr-10 mt-8">
           <div className="flex">
-            {role === "user" && (
-              <Button
-                variant="outline"
-                onClick={() => setIsComplimenting(true)}
-                className="text-sm bottom-0
+            <Button
+              variant="outline"
+              onClick={handleOpenChat}
+              className="text-sm bottom-0
                           font-jost font-bold  bg-gradient-to-br from-gray-100 to-gray-200
                           text-white rounded-xl hover:scale-125 transition duration-300
                           shadow-lg hover:shadow-xl"
-              >
-                <MdMessage className="text-2xl text-blue-500" />
-              </Button>
-            )}
+            >
+              <MdMessage className="text-2xl text-blue-500" />
+            </Button>
           </div>
         </div>
       </motion.div>

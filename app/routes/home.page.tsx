@@ -33,15 +33,15 @@ export default function Home() {
   const links = [
     {
       isShown: true,
-      icon: (
-        <HiOutlineSquare2Stack className="text-xl md:text-3xl text-cyan-50" />
-      ),
-      to: "/cards",
+      icon: <FaRegComments className="text-xl md:text-3xl text-cyan-50" />,
+      to: "/discovery",
     },
     {
       isShown: true,
-      icon: <FaRegComments className="text-xl md:text-3xl text-cyan-50" />,
-      to: "/discovery",
+      icon: (
+        <HiOutlineSquare2Stack className="text-xl md:text-3xl relative text-cyan-50" />
+      ),
+      to: "/cards",
     },
     {
       isShown: role === "admin",
@@ -92,7 +92,8 @@ export default function Home() {
                   className={joinClasses(
                     "rounded-full p-2 shadow-xl hover:scale-125 duration-500",
                     "bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))]",
-                    "from-[#9d174d] via-[#d946ef] to-[#f0abfc]"
+                    "from-[#9d174d] via-[#d946ef] to-[#f0abfc]",
+                    link.className
                   )}
                   to={link.to}
                 >
@@ -104,7 +105,7 @@ export default function Home() {
         </div>
       </div>
 
-      {user && (
+      {user ? (
         <Button
           type="button"
           onClick={handleLogout}
@@ -114,6 +115,17 @@ export default function Home() {
         >
           Выйти
         </Button>
+      ) : (
+        <Link
+          type="button"
+          to={"/login"}
+          className={joinClasses(
+            " absolute top-4 right-4 text-white font-bold opacity-60 hover:opacity-100 bg-white bg-opacity-20",
+            "p-2 rounded-xl border border-white border-opacity-20 transition-all duration-300"
+          )}
+        >
+          Войти
+        </Link>
       )}
       <Toaster />
     </div>
