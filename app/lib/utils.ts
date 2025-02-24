@@ -2,8 +2,10 @@ import { config } from "./config";
 import type { Methods } from "./types";
 import { ApiError } from "./errors";
 
-export const constructFetchUrl = (route: string) =>
-  `${config.server.url}${route}`;
+export const constructFetchUrl = (route: string) => {
+  console.log(config.server.url, route);
+  return `${config.server.url}${route}`;
+};
 
 type FetchOptions = {
   method?: Methods;

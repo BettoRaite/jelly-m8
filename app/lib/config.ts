@@ -21,6 +21,6 @@ export const QUERY_KEYS = {
 
 export const config = {
   server: {
-    url: "http://localhost:5000/api/v1",
+    url: import.meta.env.VITE_API_BASE_URL,
   },
 };
