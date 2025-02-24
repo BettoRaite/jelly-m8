@@ -17,10 +17,6 @@ import ComplimentCard from "@/components/complimentCard/ComplimentCard";
 import { GoBack } from "@/components/GoBack";
 import TypingTextEffect from "@/components/TypingText";
 
-type Props = {
-  profile: Profile;
-};
-
 type AnimationInstance = {
   delay: number;
   scale: number;
@@ -60,6 +56,7 @@ export default function TributePage({ params }: Route.LoaderArgs) {
       }
     );
   const [slideIndex, setSlideIndex] = useState(0);
+  const [isInitialAnimationDone, setIsInitialAnimationDone] = useState(false);
   const slides = useMemo(() => {
     if (!profile) {
       return [];
@@ -88,13 +85,156 @@ export default function TributePage({ params }: Route.LoaderArgs) {
   if (status === "error") {
     return "Опс ошибочка";
   }
-
+  const sliderState = {
+    showImage: slideIndex > 0 && slideIndex < 3,
+  };
+  function handleSlideNav(direction: number) {
+    const next = slideIndex + direction;
+    if (next < slides.length && next > -1) {
+      setSlideIndex(next);
+    }
+  }
   return (
     <main className="overflow-y-scroll">
-      <CozyBackground className="-z-10" />
+      <p className="absolute top-4 right-4 text-black text-opacity-20 z-50 text-5xl font-bold">
+        {slideIndex + 1}
+      </p>
+      {sliderState.showImage && (
+        <>
+          <motion.img
+            initial={{
+              rotate: -10,
+              scale: 0.7,
+              y: 100,
+              x: -100,
+            }}
+            animate={
+              isInitialAnimationDone
+                ? {
+                    rotate: [2, 5, 0], // Swaying motion
+                    scale: [0.75, 0.76, 0.75], // Subtle scaling
+                    y: [5, 30, 10], // Slight vertical movement
+                    x: [0, -5, 0], // Slight horizontal movement
+                  }
+                : {
+                    rotate: [-10, 2],
+                    scale: [0.7, 0.75],
+                    y: [100, 5],
+                    x: [-100, 0],
+                  }
+            }
+            transition={
+              isInitialAnimationDone
+                ? {
+                    rotate: {
+                      duration: 5, // Duration of one sway cycle
+                      repeat: Number.POSITIVE_INFINITY, // Repeat infinitely
+                      repeatType: "mirror", // Smooth back-and-forth motion
+                      ease: "easeInOut", // Smooth easing
+                    },
+                    scale: {
+                      duration: 3,
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatType: "mirror",
+                      ease: "easeInOut",
+                    },
+                    y: {
+                      duration: 3,
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatType: "mirror",
+                      ease: "easeInOut",
+                    },
+                    x: {
+                      duration: 3,
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatType: "mirror",
+                      ease: "easeInOut",
+                    },
+                  }
+                : {
+                    type: "spring",
+                    damping: 10,
+                    mass: 0.75,
+                    stiffness: 100,
+                    duration: 1,
+                  }
+            }
+            onAnimationComplete={() => setIsInitialAnimationDone(true)} // Trigger state change
+            src="/flowersleft.png"
+            alt="Decorative flowers on the left"
+            className="fixed -bottom-26 -left-40"
+          />
+
+          {/* Right Flower Image */}
+          <motion.img
+            initial={{
+              rotate: 10,
+              scale: 0.7,
+              y: 100,
+              x: 100,
+            }}
+            animate={
+              isInitialAnimationDone
+                ? {
+                    rotate: [2, -5, -2], // Swaying motion
+                    scale: [0.75, 0.76, 0.75], // Subtle scaling
+                    y: [5, 30, 5], // Slight vertical movement
+                    x: [0, 5, 0], // Slight horizontal movement
+                  }
+                : {
+                    rotate: [10, 2],
+                    scale: [0.7, 0.75],
+                    y: [100, 5],
+                    x: [100, 0],
+                  }
+            }
+            transition={
+              isInitialAnimationDone
+                ? {
+                    rotate: {
+                      duration: 5, // Duration of one sway cycle
+                      repeat: Number.POSITIVE_INFINITY, // Repeat infinitely
+                      repeatType: "mirror", // Smooth back-and-forth motion
+                      ease: "easeInOut", // Smooth easing
+                    },
+                    scale: {
+                      duration: 3,
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatType: "mirror",
+                      ease: "easeInOut",
+                    },
+                    y: {
+                      duration: 3,
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatType: "mirror",
+                      ease: "easeInOut",
+                    },
+                    x: {
+                      duration: 3,
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatType: "mirror",
+                      ease: "easeInOut",
+                    },
+                  }
+                : {
+                    type: "spring",
+                    damping: 10,
+                    mass: 0.75,
+                    stiffness: 100,
+                    duration: 1,
+                  }
+            }
+            onAnimationComplete={() => setIsInitialAnimationDone(true)} // Trigger state change
+            src="/flowersright.png"
+            alt="Decorative flowers on the right"
+            className="fixed -bottom-26 -right-40"
+          />
+        </>
+      )}
+
       <NavButton
         onClick={() => {
-          setSlideIndex(slideIndex + 1);
+          handleSlideNav(1);
         }}
         direction="right"
         className={joinClasses(
@@ -107,7 +247,7 @@ export default function TributePage({ params }: Route.LoaderArgs) {
       />
       <NavButton
         onClick={() => {
-          setSlideIndex(slideIndex - 1);
+          handleSlideNav(-1);
         }}
         direction="left"
         className={joinClasses(
@@ -123,7 +263,7 @@ export default function TributePage({ params }: Route.LoaderArgs) {
   );
 }
 
-function Slide1({ profile }: Props) {
+function Slide1({ profile }: DefaultProps) {
   return (
     <motion.section
       exit={{ opacity: 0, scale: 0.1 }}
@@ -159,47 +299,54 @@ function Slide1({ profile }: Props) {
           );
         })}
         <motion.h1
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1.5 }}
+          animate={{ opacity: [0, 1], scale: 1.5, y: [0, -100] }}
           transition={{
             duration: 0.8,
             delay: 2,
             ease: [0, 0.76, 0.2, 1.01],
           }}
-          className="text-5xl text-pink-400 font-bold font-caveat"
+          className="absolute -bottom-10 text-7xl bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-indigo-600 via-indigo-700 to-blue-200 bg-clip-text text-transparent font-bold font-caveat"
         >
-          {profile.displayName}
+          {profile.displayName}.
         </motion.h1>
       </div>
     </motion.section>
   );
 }
 
-function Slide2() {
+type DefaultProps = {
+  profile: Profile;
+};
+
+type ComplimentProps = { profile: Profile; compliments: Compliment[] };
+
+function Slide2({ profile }: DefaultProps) {
   return (
     <motion.section
-      exit={{ opacity: 0, scale: 0.1 }}
-      animate={{ opacity: [0, 1], scale: [0, 1] }} // Exit animation
-      className="flex justify-center items-center h-screen w-screen overflow-y-scroll bg-slate-50"
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.5 }}
+      transition={{ duration: 0.1, ease: "easeInOut" }}
+      className="flex justify-center items-center h-screen w-screen"
     >
-      <div className="w-[50%] relative">
-        <FaQuoteLeft className="absolute -top-6 -left-10 text-gray-500 text-2xl" />
-        <h1
-          className={joinClasses(
-            "w-[100%] text-slate-500 font-bold text-sm md:text-2xl"
-          )}
+      <div className="w-[90%] md:w-[50%] relative p-8 bg-white rounded-lg shadow-2xl border border-opacity-10 border-gray-300">
+        <FaQuoteLeft className="absolute -top-6 -left-6 text-gray-400 text-3xl md:text-4xl transform rotate-12" />
+
+        {/* Quote text */}
+        <motion.h1
+          animate={{ y: [50, 0] }}
+          className="text-slate-700 font-nunito italic text-lg md:text-[1.7rem] font-bold leading-relaxed text-center"
         >
-          Юность тщеславна: в зрачках открыто Читается жажда «Быть знаменитой!»
-          Зрелость скептичнее: «Слава крылата. Верней и надежнее жить богато». И
-          знает лишь мудрость порой одна, Какая всем этим мечтам цена: Все дело
-          в здоровье. Его, друзья, Ни славой, ни златом купить нельзя!
-        </h1>
-        <FaQuoteRight className="absolute -bottom-6 -right-10 text-gray-500 text-2xl" />
+          {profile.quote}
+        </motion.h1>
+
+        <FaQuoteRight className="absolute -bottom-6 -right-6 text-gray-400 text-3xl md:text-4xl transform -rotate-12" />
       </div>
     </motion.section>
   );
 }
-function Slide3({ profile }: Props) {
+
+function Slide3({ profile }: DefaultProps) {
   return (
     <motion.section
       exit={{ opacity: 0 }}
@@ -223,7 +370,7 @@ function Slide3({ profile }: Props) {
   );
 }
 
-function Slide4({ profile, compliments }: Props) {
+function Slide4({ profile, compliments }: ComplimentProps) {
   return (
     <motion.section
       exit={{ opacity: 0, transition: { duration: 0.3, ease: "easeInOut" } }}
@@ -260,7 +407,7 @@ function Slide4({ profile, compliments }: Props) {
   );
 }
 
-function Slide5({ profile }: { profile: Profile; compliments: Compliment[] }) {
+function Slide5({ profile }: DefaultProps) {
   const text = `
     С Международным женским днем! 🌷 Сегодня мы отмечаем твою силу, красоту
     и вдохновение. Ты — невероятная женщина, и твоя энергия наполняет мир

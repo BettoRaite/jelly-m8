@@ -11,8 +11,9 @@ import { FormProvider } from "react-hook-form";
 import { BiHeart, BiSave } from "react-icons/bi";
 import { IoMdHeart } from "react-icons/io";
 import { MdDelete, MdEdit } from "react-icons/md";
-import { Link } from "react-router";
 import UserAvatar from "./UserAvatar";
+import toast from "react-hot-toast";
+import { RiProfileFill } from "react-icons/ri";
 
 type Props = {
   initialCompliment: Compliment;
@@ -48,7 +49,12 @@ function ComplimentCard({
   if (complimentQueryLoadStatus === "error") {
     return "err";
   }
-
+  function handleLikeClick() {
+    if (user) {
+      return toggleLike();
+    }
+    toast("Сперва создай свой профиль");
+  }
   return (
     <FormProvider {...formMethods}>
       <motion.article
@@ -183,7 +189,7 @@ function ComplimentCard({
         />
         {!isEditing && (
           <motion.button
-            onClick={toggleLike}
+            onClick={handleLikeClick}
             disabled={isLiking || likeQueryLoadStatus !== "success"}
             transition={{ duration: 0.05 }}
             whileHover={{ scale: 1.2 }}
@@ -195,7 +201,6 @@ function ComplimentCard({
               !hasLiked && "border border-gray-100",
               {
                 "border-none": variant === "special",
-                hidden: !user,
               }
             )}
             type="button"

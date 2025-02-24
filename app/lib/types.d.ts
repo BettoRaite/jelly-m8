@@ -23,6 +23,7 @@ export interface Profile {
   activationSecret: string; // varchar(255)
   profileImageUrl: string; // varchar(500)
   occupation: "teacher" | "student";
+  quote: string;
 }
 
 // Type for Compliments Table

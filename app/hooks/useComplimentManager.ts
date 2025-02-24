@@ -14,9 +14,11 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import useProfileQuery from "./useProfileQuery";
+import { getAuth } from "./useAuth";
 
 // Custom hook to encapsulate compliment-related logic
 export const useComplimentManager = (initialCompliment: Compliment) => {
+  const user = getAuth();
   const queryClient = useQueryClient();
   const commonQueryParams = {
     profileId: initialCompliment.profileId,
@@ -26,13 +28,19 @@ export const useComplimentManager = (initialCompliment: Compliment) => {
   // Queries
   const complimentQuery = useComplimentQuery(
     { type: "compliment", ...commonQueryParams },
-    { initialData: initialCompliment }
+    { initialData: initialCompliment, enabled: Boolean(user) }
   );
 
-  const likeQuery = useLikeQuery({
-    type: "has_liked",
-    complimentId: initialCompliment.id,
-  });
+  const likeQuery = useLikeQuery(
+    {
+      type: "has_liked",
+      complimentId: initialCompliment.id,
+    },
+    {
+      enabled: Boolean(user),
+      initialData: false,
+    }
+  );
 
   // Mutations
   const complimentMutation = useComplimentMutation();

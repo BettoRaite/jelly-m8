@@ -1,7 +1,7 @@
 import { GoBack } from "@/components/GoBack";
 import { Link, useLocation, useNavigate } from "react-router";
 import { Outlet } from "react-router";
-import { FaImages, FaHeart, FaExclamationCircle } from "react-icons/fa"; // Importing icons from react-icons
+import { FaImages, FaHeart, FaExclamationCircle, FaInfo } from "react-icons/fa"; // Importing icons from react-icons
 import { BiSearch } from "react-icons/bi";
 import { getAuth, useAuth } from "@/hooks/useAuth";
 import useProfileQuery from "@/hooks/useProfileQuery";
@@ -9,6 +9,7 @@ import { HeartLoader } from "@/components/HeartLoader";
 import ErrorScreen from "@/components/ErrorScreen";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
+import { MdInfo } from "react-icons/md";
 
 export default function Layout() {
   const { data: user, status } = useAuth();
@@ -67,6 +68,9 @@ export default function Layout() {
       <Outlet />
       <Toaster
         toastOptions={{
+          icon: <MdInfo className="text-blue-500 text-xl " />,
+          className:
+            "font-caveat text-lg flex justify-center items-center bg-slate-200 border border-blue-200 rounded-lg shadow-lg",
           error: {
             className:
               " flex justify-center items-center bg-red-50 border border-red-200 rounded-lg shadow-lg",

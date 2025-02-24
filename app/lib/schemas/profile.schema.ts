@@ -16,10 +16,11 @@ const IMAGE_TYPE_ERR_MESSAGE = `Только ${Array.from(VALID_IMAGE_TYPES).joi
 const checkFileType = (file: File) => {
   return VALID_IMAGE_TYPES.has(file.type);
 };
-
+// OMG BRO DECIDED TO CREATE TWO IDENTICAL SCHEMAS PLS DO NOT DO LIKE THIS.
 export const createProfileSchema = z.object({
   displayName: z.string().trim().min(3),
   biography: z.string().trim().min(3),
+  quote: z.string().trim().min(3),
   gender: z.enum(["male", "female"]),
   occupation: z.enum(["student", "teacher"]),
   imageFile: z
@@ -52,6 +53,7 @@ export const updateProfileSchema = z
     biography: z.string().trim().min(3),
     gender: z.enum(["male", "female"]),
     isActivated: z.boolean(),
+    quote: z.string().trim().min(3),
     imageFile: z
       .any()
       .transform((fileList) => fileList[0])

@@ -86,15 +86,17 @@ export default function Page() {
               Фильтр
             </p>
             <SearchBar onSearch={onSearch} className="w-full" />
-            <Button
-              onClick={createApplyFiltersHandler({
-                showOnlyOwned: !filters.showOnlyOwned,
-              })}
-              variant="outline"
-              className="mt-4 border bg-slate-300 hover:scale-105 font-bold text-slate-600"
-            >
-              Показать только мои{filters.showOnlyOwned ? " ✅" : " ❌"}
-            </Button>
+            {user && (
+              <Button
+                onClick={createApplyFiltersHandler({
+                  showOnlyOwned: !filters.showOnlyOwned,
+                })}
+                variant="outline"
+                className="mt-4 border bg-slate-300 hover:scale-105 font-bold text-slate-600"
+              >
+                Показать только мои{filters.showOnlyOwned ? " ✅" : " ❌"}
+              </Button>
+            )}
             <div className="flex gap-4">
               <Button
                 onClick={createApplyFiltersHandler({

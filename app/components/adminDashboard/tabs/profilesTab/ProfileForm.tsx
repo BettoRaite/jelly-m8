@@ -128,6 +128,12 @@ function ProfileForm({ formType, users, profile, onRefetch, onClose }: Props) {
           <FormField.Error />
         </FormField>
 
+        <FormField<CreateProfileFormFields> fieldName="quote">
+          <FormField.Label />
+          <FormField.TextArea />
+          <FormField.Error />
+        </FormField>
+
         <FormField<CreateProfileFormFields> fieldName="biography">
           <FormField.Label />
           <FormField.TextArea />

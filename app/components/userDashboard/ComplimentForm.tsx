@@ -1,6 +1,6 @@
 import { useComplimentMutation } from "@/hooks/useComplimentMutation";
 import useComplimentQuery from "@/hooks/useComplimentQuery";
-import { HiDotsVertical } from "react-icons/hi";
+import { HiDotsVertical, HiHeart } from "react-icons/hi";
 import {
   type CreateComplimentPayload,
   createComplimentSchema,
@@ -10,7 +10,7 @@ import Button from "@/ui/Button";
 import { FormField } from "@/ui/formField/FormField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { MdClose, MdSend } from "react-icons/md";
 import SelectInput from "@/ui/form/SelectInput";
@@ -18,6 +18,8 @@ import { joinClasses } from "@/lib/utils/strings";
 import toast from "react-hot-toast";
 import { getAuth } from "@/hooks/useAuth";
 import useQuestionQuery from "@/hooks/useQuestionQuery";
+import GlassyBackground from "../Backgrounds/GlassyBackground";
+import ChatMessage from "../chat/ChatMessage";
 
 type Props = {
   profile: Profile;
@@ -30,6 +32,18 @@ const SPECIAL_QUESTION: Question = {
   isApproved: true,
   content: "Ты что-то хотел мне сказать?",
   createdAt: new Date(),
+};
+type ChatState = {
+  userHasMessaged: boolean;
+  isChatDisabled: boolean;
+  botIsTyping: boolean;
+  userChoosingQuestion: boolean;
+};
+const INITIAL_CHAT_STATE = {
+  userHasMessaged: false,
+  isChatDisabled: false,
+  botIsTyping: false,
+  userChoosingQuestion: true,
 };
 function ComplimentForm({ profile, onClose }: Props) {
   const user = getAuth();
@@ -48,21 +62,27 @@ function ComplimentForm({ profile, onClose }: Props) {
       enabled: profile.occupation !== "teacher",
     }
   );
-  const timeoutRef = useRef(null);
-  const [hasMessaged, setHasMessaged] = useState(false);
   const [message, setMessage] = useState("");
-  const [hasComplimented, setHasComplimented] = useState(false);
-  const [showQuestions, setShowQuestions] = useState(true);
-  const chatContainerRef = useRef<null | HTMLDivElement>();
+  const [chatState, setChatState] = useState<ChatState>(INITIAL_CHAT_STATE);
+  const timeoutRef = useRef(null);
+  const chatContainerRef = useRef<null | HTMLDivElement>(null);
   const methods = useForm<CreateComplimentPayload>({
     resolver: zodResolver(createComplimentSchema),
     defaultValues: {
       title: "If I were you, I would not touch this.",
     },
   });
+  const handleSetChatState = useCallback(
+    (s: Partial<ChatState>) => {
+      setChatState({
+        ...chatState,
+        ...s,
+      });
+    },
+    [chatState]
+  );
 
   const mutation = useComplimentMutation();
-
   async function handleCreateCompliment(payload: CreateComplimentPayload) {
     try {
       await mutation.mutateAsync({
@@ -73,32 +93,62 @@ function ComplimentForm({ profile, onClose }: Props) {
           title: message,
         },
       });
-      setHasComplimented(true);
+      setTimeout(() => {
+        handleSetChatState({
+          isChatDisabled: true,
+        });
+      }, 4000);
+
+      setMessage(
+        profile.occupation === "teacher" ? "Приятно было услышать" : ":3"
+      );
+      handleSetChatState({
+        userHasMessaged: true,
+        botIsTyping: true,
+      });
       methods.reset();
+      methods.setFocus("title");
     } catch (err) {
-      setHasMessaged(false);
+      handleSetChatState({
+        isChatDisabled: true,
+      });
       toast("Что-то пошло не так");
       console.error(err);
     }
   }
+
   useEffect(() => {
-    if (!showQuestions) {
+    if (!chatState.userChoosingQuestion && chatState.botIsTyping) {
       timeoutRef.current = setTimeout(() => {
-        setHasMessaged(true);
+        handleSetChatState({
+          botIsTyping: false,
+        });
       }, 2000);
     }
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [showQuestions]);
+  }, [
+    chatState.userChoosingQuestion,
+    chatState.botIsTyping,
+    handleSetChatState,
+  ]);
+
+  // Scroll to chat bottom
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
-        top: chatContainerRef.current.scrollHeight, // Scroll to the bottom
-        behavior: "instant", // Use "smooth" for smooth scrolling
+        top: chatContainerRef.current.scrollHeight,
+        behavior: "instant",
       });
     }
   });
+
+  const unexploredQuestions =
+    questions?.filter(
+      (q) => !compliments?.find((c) => c.content === q.content)
+    ) ?? [];
+
   return (
     <FormProvider {...methods}>
       <motion.form
@@ -114,7 +164,37 @@ function ComplimentForm({ profile, onClose }: Props) {
           "fixed bottom-10 bg-gradient-to-br from-gray-100 to-gray-200  rounded-xl shadow-xl max-w-96 w-11/12 flex flex-col h-[400px]"
         )}
       >
-        {showQuestions && (
+        <motion.button
+          animate={{
+            scale: [0, 1],
+          }}
+          type="button"
+          onClick={onClose}
+          className={joinClasses(
+            "absolute top-4 right-4 text-blue-400 hover:text-blue-600 transition-colors z-50",
+            {
+              "text-blue-400": true,
+            }
+          )}
+        >
+          <MdClose size={20} />
+        </motion.button>
+        {chatState.isChatDisabled && (
+          <motion.div
+            animate={{
+              scale: [0, 1],
+            }}
+            className="rounded-xl bg-white flex justify-center items-center  shadow-lg absolute z-10 w-full h-full"
+          >
+            <HiHeart
+              onClick={() => setChatState(INITIAL_CHAT_STATE)}
+              className="text-4xl text-pink-400 hover:text-6xl cursor-pointer transition-all duration-300"
+            />
+          </motion.div>
+        )}
+
+        {/* Questions aka topics */}
+        {chatState.userChoosingQuestion && (
           <div className="rounded-xl  bg-gradient-to-br from-gray-100 to-gray-200  shadow-lg absolute z-10 w-full h-full flex justify-start items-center flex-col p-6">
             <p className="text-2xl font-bold text-slate-800 mb-6">Тема</p>
             <ul className="bg-white rounded-xl shadow-inner w-full max-w-md p-6 overflow-y-auto custom-scrollbar">
@@ -152,17 +232,16 @@ function ComplimentForm({ profile, onClose }: Props) {
                 complimentsLoadStatus !== "success" ||
                 compliments.length === 3
               }
-              onClick={() => setShowQuestions(false)}
+              onClick={() =>
+                handleSetChatState({
+                  userChoosingQuestion: false,
+                  botIsTyping: true,
+                })
+              }
             >
               Начать
             </Button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <MdClose size={20} />
-            </button>
+
             {compliments?.length === 3 && (
               <span className="text-center mt-4 text-gray-500">
                 Ты написал максимальное количество комлиментов на одного
@@ -172,6 +251,7 @@ function ComplimentForm({ profile, onClose }: Props) {
           </div>
         )}
 
+        {/* Avatar */}
         <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 rounded-t-xl flex justify-between items-center">
           <div className="flex items-center gap-2 relative">
             <img
@@ -180,7 +260,7 @@ function ComplimentForm({ profile, onClose }: Props) {
               className="h-10 w-10 rounded-full"
             />
             <h3 className="font-bold text-slate-700">{profile.displayName}</h3>
-            {!hasMessaged && (
+            {chatState.botIsTyping && (
               <div className="absolute -bottom-2 left-12 text-sm text-slate-600 text-opacity-70">
                 пишет
                 <span className="animate-ping">.</span>
@@ -189,13 +269,6 @@ function ComplimentForm({ profile, onClose }: Props) {
               </div>
             )}
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <MdClose size={20} />
-          </button>
         </div>
 
         {/* Chat Messages Area */}
@@ -203,54 +276,26 @@ function ComplimentForm({ profile, onClose }: Props) {
           className="p-4 flex-1 space-y-4 max-h-[400px] overflow-y-auto"
           ref={chatContainerRef}
         >
-          {/* System Message */}
+          {/* Prev Message */}
           {compliments?.map((c, index) => {
             if (c.profileId !== profile.id) return null;
             return (
               <motion.div key={c.id}>
-                <div className="flex justify-start">
-                  <div className="bg-gray-100 px-4 py-2 rounded-2xl max-w-[80%]">
-                    <p className="text-slate-600">{c.title}</p>
-                  </div>
-                </div>
-                <div className="flex justify-end mt-3">
-                  <div className="bg-blue-300 px-4 py-2 rounded-2xl max-w-[80%]">
-                    <p className="text-slate-700">{c.content}</p>
-                  </div>
-                </div>
+                <ChatMessage variant="other">{c.title}</ChatMessage>
+                <ChatMessage variant="user">{c.content}</ChatMessage>
               </motion.div>
             );
           })}
-          {hasMessaged && !hasComplimented && (
-            <motion.div
-              animate={{
-                scale: [0, 1],
-              }}
-              className="flex justify-start"
-            >
-              <div className="bg-gray-200 px-4 py-2 rounded-2xl max-w-[80%] relative">
-                <p className="text-slate-600">{message}</p>
-              </div>
-            </motion.div>
-          )}
-          {hasMessaged && hasComplimented && (
-            <motion.div
-              animate={{
-                scale: [0, 1],
-              }}
-              className="flex justify-start"
-            >
-              <div className="bg-gray-200 px-4 py-2 rounded-2xl max-w-[80%] relative">
-                <p className="text-slate-600">Спасибки!</p>
-              </div>
-            </motion.div>
+          {/* Bot message */}
+          {!chatState.botIsTyping && (
+            <ChatMessage variant="other">{message}</ChatMessage>
           )}
         </div>
 
         {/* Input Area */}
         <div className="p-4 border-t border-gray-100 relative rounded-b-xl overflow-hidden">
           <div
-            className="absolute bg-blue-500 bg-clip-padding backdrop-filter  backdrop-blur bg-opacity-10
+            className="absolute bg-slate-300 bg-clip-padding backdrop-filter  backdrop-blur
           backdrop-saturate-100 backdrop-contrast-100 w-full h-full -z-10 top-0 left-0"
           />
           <div className="grid grid-cols-[1fr_auto] gap-10">
@@ -258,16 +303,16 @@ function ComplimentForm({ profile, onClose }: Props) {
               <FormField.TextArea
                 placeholder="Напиши что-нибудь..."
                 rows={3}
-                className="resize-none rounded-2xl bg-white px-4 py-2 hover:border-blue-200 focus:border-blue-400"
+                className="resize-none rounded-2xl bg-white px-4 py-2 hover:border-purple-200 focus:border-purple-400"
               />
             </FormField>
             <Button
               type="submit"
               variant="solid"
-              className="mb-1 px-3 py-3 rounded-xl "
+              className="mb-1 px-3 py-3 rounded-xl bg-opacity-90"
               disabled={
                 mutation.isPending ||
-                hasComplimented ||
+                chatState.userHasMessaged ||
                 complimentsLoadStatus !== "success"
               }
             >
