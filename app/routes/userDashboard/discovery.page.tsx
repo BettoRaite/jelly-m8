@@ -45,9 +45,9 @@ export default function Page() {
       <GoBack
         to="/"
         theme="light"
-        className="text-purple-600 lg:text-white text-sm md:text-lg"
+        className="text-black md:text-white text-sm md:text-lg"
       />
-      <CozyBackground className="hidden lg:block" />
+      <CozyBackground />
       <header className="mb-20 sticky top-4 z-30">
         <h1 className="w-full text-center text-4xl sm:text-5xl  font-bold drop-shadow-[0_0_10px_rgba(255,192,203,0.8)] font-caveat">
           <span className="bg-gradient-to-r from-pink-400 to-yellow-300 bg-clip-text text-transparent">

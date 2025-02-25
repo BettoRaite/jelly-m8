@@ -33,7 +33,8 @@ export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
   {
     rel: "preload",
-    href: "./public/pattern.jpg",
+    as: "image",
+    href: "/pattern.jpg",
   },
 ];
 
