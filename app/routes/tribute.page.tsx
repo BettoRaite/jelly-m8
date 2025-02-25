@@ -32,7 +32,7 @@ export default function TributePage({ params }: Route.LoaderArgs) {
         enabled: Boolean(profile),
       }
     );
-  const [slideIndex, setSlideIndex] = useState(1);
+  const [slideIndex, setSlideIndex] = useState(0);
   const [isInitialAnimationDone, setIsInitialAnimationDone] = useState(false);
   const slides = useMemo(() => {
     if (!profile) {
@@ -239,18 +239,18 @@ export default function TributePage({ params }: Route.LoaderArgs) {
       />
       <AnimatePresence mode="wait">{slides[slideIndex]}</AnimatePresence>
       {/* Enhanced background with overlay */}
-      {sliderState.showImage && (
-        <div className="absolute inset-0 -z-30">
-          <img
-            fetchPriority="high"
-            src="/tokyonight.jpg"
-            alt="Decorative background"
-            className="object-cover w-full h-full blur-[2px] opacity-90"
-          />
-          <GlassyBackground intensity="none" />
-          <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/30 to-indigo-950/80" />
-        </div>
-      )}
+
+      <div
+        className={`absolute inset-0 -z-30  ${slideIndex !== 1 && "hidden"}`}
+      >
+        <img
+          src="/tokyonight.jpg"
+          alt="Decorative background"
+          className="object-cover w-full h-full blur-[2px] opacity-90"
+        />
+        <GlassyBackground intensity="none" className="blur-sm" />
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/30 to-indigo-950/80" />
+      </div>
     </main>
   );
 }
@@ -374,7 +374,7 @@ function Slide2({ profile }: DefaultProps) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.5 }}
       transition={{ duration: 0.1, ease: "easeInOut" }}
-      className="flex justify-center items-center h-screen w-screen overflow-hidden bg-slate-100"
+      className="flex justify-center items-center h-screen w-screen overflow-hidden bg-gray-100"
     >
       <CozyBackground />
       <motion.div
@@ -392,7 +392,7 @@ function Slide2({ profile }: DefaultProps) {
         <FaQuoteLeft className="absolute -top-6 -left-6 text-gray-400 text-3xl md:text-4xl transform rotate-12" />
 
         {/* Quote text */}
-        <motion.h1 className="max-h-96 overflow-y-scroll text-slate-700 font-nunito italic text-lg md:text-[1.7rem] font-bold leading-relaxed text-center">
+        <motion.h1 className="max-h-96 overflow-y-scroll text-slate-700 font-nunito italic text-lg md:text-[1.4rem] font-bold leading-relaxed text-center">
           {profile.quote}
         </motion.h1>
 
@@ -406,61 +406,152 @@ function Slide2({ profile }: DefaultProps) {
 function Slide3({ profile }: DefaultProps) {
   return (
     <motion.section
-      exit={{ opacity: 0 }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="flex items-center justify-center h-screen w-screen overflow-hidden bg-black"
+      exit={{
+        opacity: 0,
+        scale: 0.95,
+        transition: { duration: 0.4, ease: "easeInOut" },
+      }}
+      initial={{ opacity: 0, scale: 1.05 }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+      }}
+      className="relative flex items-center justify-center h-screen w-screen overflow-hidden bg-black"
     >
-      <GoBack />
-      <h1
-        className={
-          "text-8xl bg-clip-text animate-animateBG bg-repeat font-bold text-transparent"
-        }
-        style={{
-          backgroundImage: `url(${profile.profileImageUrl})`,
+      <GoBack className="absolute top-6 left-6 z-20 text-white/80 hover:text-white transition-colors" />
+
+      <motion.h1
+        className="relative z-10 text-5xl md:text-6xl xl:text-7xl font-bold tracking-tighter text-center px-4"
+        animate={{
+          y: 0,
+          opacity: [0, 1],
+          transition: { delay: 0.3, duration: 1.0 },
         }}
       >
-        {profile?.displayName}
-      </h1>
+        <span className="font-amatic bg-gradient-to-tl from-slate-800 via-violet-500 to-zinc-400 bg-clip-text text-transparent">
+          {profile?.displayName}
+        </span>
+      </motion.h1>
+
+      {/* Animated particles */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        {[...Array(12)].map((_, i) => {
+          const sign = Math.random() > 0.5;
+          const f = sign ? -1 : 1;
+          return (
+            <motion.div
+              animate={{
+                y: [f * 100 * Math.random(), 0],
+                x: [f * 100 * Math.random(), 0],
+              }}
+              transition={{
+                y: {
+                  duration: 10,
+                  repeat: Number.POSITIVE_INFINITY,
+                  repeatType: "mirror",
+                  ease: "easeInOut",
+                },
+                x: {
+                  duration: 10,
+                  repeat: Number.POSITIVE_INFINITY,
+                  repeatType: "mirror",
+                  ease: "easeInOut",
+                },
+              }}
+              key={i}
+              className="absolute w-1 h-1 bg-white/30 rounded-full animate-float"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${i * 0.5}s`,
+              }}
+            />
+          );
+        })}
+      </motion.div>
     </motion.section>
   );
 }
+
 // Compliments slide
 function Slide4({ profile, compliments }: ComplimentProps) {
   return (
     <motion.section
-      exit={{ opacity: 0, transition: { duration: 0.3, ease: "easeInOut" } }}
-      initial={{ opacity: 0 }}
-      animate={{
-        opacity: [0, 1],
+      exit={{
+        opacity: 0,
+        scale: 0.95,
+        transition: { duration: 0.3, ease: "easeInOut" },
       }}
-      className="relative mx-auto px-4 pt-20 pb-4 w-full min-h-screen "
+      initial={{ opacity: 0, scale: 1.05 }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        transition: { duration: 0.4, ease: "easeOut" },
+      }}
+      className="relative mx-auto px-4 md:px-8 pt-20 pb-4 w-full min-h-screen bg-gradient-to-br from-pink-50/20 to-blue-50/20"
     >
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-20 -right-20 w-96 h-96 bg-pink-200/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-blue-200/10 rounded-full blur-3xl" />
+      </div>
+
       <div className="max-w-2xl mx-auto flex flex-col relative z-20">
         <motion.h1
           initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="text-center text-3xl md:text-4xl lg:text-5xl text-slate-700 font-thin mb-16 md:mb-24 font-caveat"
+          animate={{
+            y: 0,
+            opacity: 1,
+            transition: { delay: 0.2 },
+          }}
+          className="text-center text-3xl md:text-4xl lg:text-5xl text-slate-800/90 font-medium mb-12 md:mb-20 font-caveat drop-shadow-md"
         >
-          Посмотри что о{" "}
-          <span className="text-pink-400 font-jost font-bold">
-            {profile.occupation === "teacher" ? "вас" : "тебе"}{" "}
-          </span>
-          думают другие
+          Посмотри, что о{" "}
+          <motion.span
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent font-jost font-bold tracking-tight"
+          >
+            {profile.occupation === "teacher" ? "вас" : "тебе"}
+          </motion.span>{" "}
+          <motion.span
+            initial={{ x: 10, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            className="inline-block"
+          >
+            думают другие
+          </motion.span>
         </motion.h1>
 
-        <div className="grid gap-6 md:gap-8">
-          {compliments?.map((c) => (
-            <ComplimentCard
+        <motion.div
+          className="grid gap-6 md:gap-8"
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: 1,
+            transition: { staggerChildren: 0.1, delayChildren: 0.3 },
+          }}
+        >
+          {compliments?.map((c, index) => (
+            <motion.div
               key={c.id}
-              className="w-full transform transition-transform hover:scale-[1.02]"
-              initialCompliment={c}
-              isOwner={false}
-              variant={c.isAdmin ? "special" : "default"}
-            />
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 100 }}
+            >
+              <ComplimentCard
+                className="w-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                initialCompliment={c}
+                isOwner={false}
+                variant={c.isAdmin ? "special" : "default"}
+              />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </motion.section>
   );
