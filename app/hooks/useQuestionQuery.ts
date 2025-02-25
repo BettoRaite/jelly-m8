@@ -8,13 +8,21 @@ import { fetchWithHandler } from "@/lib/utils";
 import type { Question, User } from "@/lib/types";
 import type { ApiError } from "@/lib/errors";
 
-type QuestionQueryAction = { type: "questions" };
+type QuestionQueryAction = { type: "questions"; role: string };
 
 type QuestionQueryResult<T extends QuestionQueryAction> = T extends {
   type: "questions";
 }
   ? Question[]
   : never;
+
+const SPECIAL_QUESTION: Question = {
+  id: Number.MAX_SAFE_INTEGER,
+  userId: 1,
+  isApproved: true,
+  content: "Ты что-то хотел мне сказать?",
+  createdAt: new Date(),
+};
 
 function useQuestionQuery<T extends QuestionQueryAction>(
   action: T,
@@ -23,7 +31,7 @@ function useQuestionQuery<T extends QuestionQueryAction>(
   const queryKey = (() => {
     switch (action.type) {
       case "questions":
-        return [QUERY_KEYS.QUESTIONS];
+        return [QUERY_KEYS.QUESTIONS, action.role];
       default:
         throw new Error(`Invalid action type: ${action as never}`);
     }
@@ -35,6 +43,9 @@ function useQuestionQuery<T extends QuestionQueryAction>(
     queryFn: async () => {
       switch (action.type) {
         case "questions": {
+          if (action.role === "teacher") {
+            return [SPECIAL_QUESTION] as QuestionQueryResult<T>;
+          }
           const { data } = await fetchWithHandler<{ data: Question[] }>(
             "/questions"
           );

@@ -26,13 +26,6 @@ type Props = {
   onClose: () => void;
 };
 
-const SPECIAL_QUESTION: Question = {
-  id: Number.MAX_SAFE_INTEGER,
-  userId: 1,
-  isApproved: true,
-  content: "Ты что-то хотел мне сказать?",
-  createdAt: new Date(),
-};
 type ChatState = {
   userHasMessaged: boolean;
   isChatDisabled: boolean;
@@ -53,15 +46,10 @@ function ComplimentForm({ profile, onClose }: Props) {
       profileId: profile.id,
       searchPattern: `userId=${user?.id}|asc=createdAt`,
     });
-  const { data: questions } = useQuestionQuery(
-    {
-      type: "questions",
-    },
-    {
-      initialData: profile.occupation === "teacher" ? [SPECIAL_QUESTION] : [],
-      enabled: profile.occupation !== "teacher",
-    }
-  );
+  const { data: questions } = useQuestionQuery({
+    type: "questions",
+    role: profile.occupation,
+  });
   const [message, setMessage] = useState("");
   const [chatState, setChatState] = useState<ChatState>(INITIAL_CHAT_STATE);
   const timeoutRef = useRef(null);
