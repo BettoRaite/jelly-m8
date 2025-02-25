@@ -35,8 +35,13 @@ export default {
         moveHorizontal: "moveHorizontal 40s ease infinite",
         "scale-up-down": "scale-up-down 2s infinite",
         animateBG: "animateBackground 400s linear infinite",
+        rotation: "rotation 1s linear infinite",
       },
       keyframes: {
+        rotation: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
         "scale-up-down": {
           "0%, 100%": { transform: "scale(1)" },
           "50%": { transform: "scale(1.5)" },

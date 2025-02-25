@@ -12,10 +12,12 @@ import { jsonToFormData } from "@/lib/utils/conversion";
 import { joinClasses } from "@/lib/utils/strings";
 import SelectInput from "@/ui/form/SelectInput";
 import { FormField } from "@/ui/formField/FormField";
+import LoadingIndicator from "@/ui/LoadingIndicator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { FaTruckLoading } from "react-icons/fa";
 
 interface CreateProfileFormFields extends CreateProfilePayload {
   userId: number;
@@ -54,34 +56,27 @@ function ProfileForm({ formType, users, profile, onRefetch, onClose }: Props) {
   const [newProfileUserId, setNewProfileUserId] = useState(1);
   const profileMutation = useProfileMutation();
 
-  function handleCreateProfileSubmit(payload: CreateProfileFormFields) {
-    if (formType === "edit") {
-      return profileMutation.mutate(
-        {
-          userId: profile.userId,
-          payload: payload.imageFile
-            ? jsonToFormData(
-                payload as Omit<UpdateProfilePayload, "isActivated">
-              )
-            : payload,
-          type: "update",
-        },
-        {
-          onSuccess: () => {
-            onRefetch();
-            onClose();
-          },
-        }
-      );
+  async function handleCreateProfileSubmit(payload: CreateProfileFormFields) {
+    if (isCreateForm) {
+      profileMutation.mutate({
+        userId: newProfileUserId,
+        payload: jsonToFormData(payload as CreateProfilePayload),
+        type: "create",
+      });
+    } else {
+      await profileMutation.mutateAsync({
+        userId: profile.userId,
+        payload: payload.imageFile
+          ? jsonToFormData(payload as Omit<UpdateProfilePayload, "isActivated">)
+          : payload,
+        type: "update",
+      });
+      onRefetch();
+      onClose();
     }
-    profileMutation.mutate({
-      userId: newProfileUserId,
-      payload: jsonToFormData(payload as CreateProfilePayload),
-      type: "create",
-    });
     methods.reset();
   }
-
+  console.log(methods.formState.errors);
   const options = isCreateForm
     ? users.map((u) => ({
         label: u.username,
@@ -175,10 +170,14 @@ function ProfileForm({ formType, users, profile, onRefetch, onClose }: Props) {
         </FormField>
 
         <button
+          disabled={profileMutation.isPending}
           type="submit"
-          className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition duration-200"
+          className="flex items-center justify-center w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition duration-200"
         >
-          {isCreateForm ? "Create profile" : "Save"}
+          {isCreateForm && !profileMutation.isPending
+            ? "Create profile"
+            : "Save"}
+          {profileMutation.isPending && <LoadingIndicator />}
         </button>
       </form>
     </FormProvider>

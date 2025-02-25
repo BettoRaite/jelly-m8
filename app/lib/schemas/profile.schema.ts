@@ -14,15 +14,38 @@ const IMAGE_TYPE_ERR_MESSAGE = `Только ${Array.from(VALID_IMAGE_TYPES).joi
 )} форматы файлов поддерживаются`;
 
 const checkFileType = (file: File) => {
-  return VALID_IMAGE_TYPES.has(file.type);
+  return VALID_IMAGE_TYPES.has(file?.type);
 };
 // OMG BRO DECIDED TO CREATE TWO IDENTICAL SCHEMAS PLS DO NOT DO LIKE THIS.
 export const createProfileSchema = z.object({
-  displayName: z.string().trim().min(3),
-  biography: z.string().trim().min(3),
-  quote: z.string().trim().optional(),
-  gender: z.enum(["male", "female"]),
-  occupation: z.enum(["student", "teacher"]),
+  displayName: z.string().trim().min(3, {
+    message: "Имя должно содержать не менее 3 символов",
+  }),
+  biography: z
+    .string()
+    .trim()
+    .min(3, {
+      message: "Биография должна содержать не менее 3 символов",
+    })
+    .optional(),
+  quote: z
+    .any()
+    .transform((v) => (v === null ? "" : v))
+    .refine(
+      (v) => {
+        if (!v) return true;
+        return typeof v === "string" && v.length > 3;
+      },
+      {
+        message: "Цитата должна быть не менее 3 символов",
+      }
+    ),
+  gender: z.enum(["male", "female"], {
+    errorMap: () => ({ message: "Выберите пол: male или female" }),
+  }),
+  occupation: z.enum(["student", "teacher"], {
+    errorMap: () => ({ message: "Выберите occupation: student или teacher" }),
+  }),
   imageFile: z
     .any()
     .transform((fileList) => fileList?.[0])
@@ -31,7 +54,7 @@ export const createProfileSchema = z.object({
         return file instanceof File && file.size > 0;
       },
       {
-        message: "File is required",
+        message: "Файл обязателен",
       }
     )
     .refine(checkFileType, {
@@ -47,28 +70,6 @@ export const profileActivationSchema = z.object({
 
 export type ProfileActivationPayload = z.infer<typeof profileActivationSchema>;
 
-export const updateProfileSchema = z
-  .object({
-    displayName: z.string().trim().min(3),
-    biography: z.string().trim().min(3),
-    gender: z.enum(["male", "female"]),
-    isActivated: z.boolean(),
-    quote: z.string().trim().optional(),
-    imageFile: z
-      .any()
-      .transform((fileList) => fileList[0])
-      .refine(
-        (file) => {
-          return file instanceof File && file.size > 0;
-        },
-        {
-          message: "File is required",
-        }
-      )
-      .refine(checkFileType, {
-        message: IMAGE_TYPE_ERR_MESSAGE,
-      }),
-  })
-  .partial();
+export const updateProfileSchema = createProfileSchema.optional();
 
 export type UpdateProfilePayload = z.infer<typeof updateProfileSchema>;
