@@ -10,7 +10,7 @@ function CozyBackground({ className }: Props) {
     <div className="absolute w-full h-full top-0 overflow-hidden">
       <motion.div
         className={joinClasses(
-          "bg-pink-600 opacity-25 w-[30%] h-[50%] sm:w-[50%] sm:h-[40%] md:w-[15%] md:h-[30%] absolute rounded-full -left-24 -top-20 sm:-left-16 sm:-top-16",
+          "bg-pink-600 opacity-25 w-[150px] h-[150px] sm:w-[250px] sm:h-[250px] absolute rounded-full -left-10 -top-5 sm:-left-16 sm:-top-12",
           className
         )}
         animate={{
@@ -28,7 +28,7 @@ function CozyBackground({ className }: Props) {
       {/* Second animated circle */}
       <motion.div
         className={joinClasses(
-          "bg-purple-600 opacity-25 w-[25%] h-[45%] sm:w-[15%] sm:h-[35%] md:w-[10%] md:h-[25%] absolute rounded-full -right-24 -bottom-20 sm:-right-16 sm:-bottom-16",
+          "bg-purple-600 opacity-25 w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] absolute rounded-full -right-10 -bottom-5 sm:-right-16 sm:-bottom-12",
           className
         )}
         animate={{
@@ -46,7 +46,7 @@ function CozyBackground({ className }: Props) {
       {/* Third animated circle */}
       <motion.div
         className={joinClasses(
-          "bg-blue-600 opacity-25 w-[20%] h-[40%] sm:w-[10%] sm:h-[30%] md:w-[8%] md:h-[20%] absolute rounded-full -left-12 top-1/2 sm:-left-8",
+          "bg-blue-600 opacity-25 w-[100px] h-[100px] sm:w-[150px] sm:h-[150px] absolute rounded-full -left-10 top-1/3 sm:-left-20 sm:top-1/2",
           className
         )}
         animate={{
@@ -64,7 +64,7 @@ function CozyBackground({ className }: Props) {
       {/* Fourth animated circle */}
       <motion.div
         className={joinClasses(
-          "bg-green-600 opacity-25 w-[18%] h-[35%] sm:w-[12%] sm:h-[25%] md:w-[9%] md:h-[18%] absolute rounded-full -right-12 bottom-1/2 sm:-right-8",
+          "bg-green-600 opacity-25 w-[70px] h-[70px] sm:w-[90px] sm:h-[90px] absolute rounded-full -right-4 bottom-1/3 sm:-right-14 sm:bottom-1/2",
           className
         )}
         animate={{
