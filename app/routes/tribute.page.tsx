@@ -77,139 +77,135 @@ export default function TributePage({ params }: Route.LoaderArgs) {
       <p className="absolute top-4 right-4 text-black text-opacity-20 z-50 text-5xl font-bold">
         {slideIndex + 1}
       </p>
-      <AnimatePresence>
-        {sliderState.showImage && (
-          <>
-            <motion.img
-              initial={{
-                rotate: -10,
-                scale: 0.7,
-                y: 100,
-                x: -100,
-              }}
-              animate={
-                isInitialAnimationDone
-                  ? {
-                      rotate: [2, 5], // Swaying motion
-                      scale: [0.75, 0.76, 0.75], // Subtle scaling
-                      y: [5, 30, 10], // Slight vertical movement
-                      x: [0, -5, 0], // Slight horizontal movement
-                    }
-                  : {
-                      rotate: [-10, 2],
-                      scale: [0.7, 0.75],
-                      y: [100, 5],
-                      x: [-100, 0],
-                    }
-              }
-              transition={
-                isInitialAnimationDone
-                  ? {
-                      rotate: {
-                        duration: 2, // Duration of one sway cycle
-                        repeat: Number.POSITIVE_INFINITY, // Repeat infinitely
-                        repeatType: "mirror", // Smooth back-and-forth motion
-                        ease: "easeInOut", // Smooth easing
-                      },
-                      scale: {
-                        duration: 5,
-                        repeat: Number.POSITIVE_INFINITY,
-                        repeatType: "mirror",
-                        ease: "easeInOut",
-                      },
-                      y: {
-                        duration: 5,
-                        repeat: Number.POSITIVE_INFINITY,
-                        repeatType: "mirror",
-                        ease: "easeInOut",
-                      },
-                      x: {
-                        duration: 5,
-                        repeat: Number.POSITIVE_INFINITY,
-                        repeatType: "mirror",
-                        ease: "easeInOut",
-                      },
-                    }
-                  : {
-                      type: "spring",
-                      damping: 10,
-                      mass: 0.75,
-                      stiffness: 100,
-                    }
-              }
-              onAnimationComplete={() => setIsInitialAnimationDone(true)} // Trigger state change
-              src="/flowersleft.png"
-              alt="Decorative flowers on the left"
-              className="fixed -bottom-12 lg:-bottom-32 -left-24 sm:-bottom-20 sm:-left-28 md:-left-36 sm: scale-150"
-            />
+      <div className={sliderState.showImage ? "" : "hidden"}>
+        <motion.img
+          initial={{
+            rotate: -10,
+            scale: 0.7,
+            y: 100,
+            x: -100,
+          }}
+          animate={
+            isInitialAnimationDone
+              ? {
+                  rotate: [2, 5], // Swaying motion
+                  scale: [0.75, 0.76, 0.75], // Subtle scaling
+                  y: [5, 30, 10], // Slight vertical movement
+                  x: [0, -5, 0], // Slight horizontal movement
+                }
+              : {
+                  rotate: [-10, 2],
+                  scale: [0.7, 0.75],
+                  y: [100, 5],
+                  x: [-100, 0],
+                }
+          }
+          transition={
+            isInitialAnimationDone
+              ? {
+                  rotate: {
+                    duration: 2, // Duration of one sway cycle
+                    repeat: Number.POSITIVE_INFINITY, // Repeat infinitely
+                    repeatType: "mirror", // Smooth back-and-forth motion
+                    ease: "easeInOut", // Smooth easing
+                  },
+                  scale: {
+                    duration: 5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    repeatType: "mirror",
+                    ease: "easeInOut",
+                  },
+                  y: {
+                    duration: 5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    repeatType: "mirror",
+                    ease: "easeInOut",
+                  },
+                  x: {
+                    duration: 5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    repeatType: "mirror",
+                    ease: "easeInOut",
+                  },
+                }
+              : {
+                  type: "spring",
+                  damping: 10,
+                  mass: 0.75,
+                  stiffness: 100,
+                }
+          }
+          onAnimationComplete={() => setIsInitialAnimationDone(true)} // Trigger state change
+          src="/flowersleft.png"
+          alt="Decorative flowers on the left"
+          className="fixed -bottom-12 lg:-bottom-32 -left-24 sm:-bottom-20 sm:-left-28 md:-left-36 sm: scale-150"
+        />
 
-            {/* Right Flower Image */}
-            <motion.img
-              initial={{
-                rotate: 10,
-                scale: 0.7,
-                y: 100,
-                x: 100,
-              }}
-              animate={
-                isInitialAnimationDone
-                  ? {
-                      rotate: [-2, -5],
-                      scale: [0.75, 0.76, 0.75], // Subtle scaling
-                      y: [5, 30, 5], // Slight vertical movement
-                      x: [0, 10, 0], // Slight horizontal movement
-                    }
-                  : {
-                      rotate: [10, -2],
-                      scale: [0.7, 0.75],
-                      y: [100, 5],
-                      x: [100, 0],
-                    }
-              }
-              transition={
-                isInitialAnimationDone
-                  ? {
-                      rotate: {
-                        duration: 2, // Duration of one sway cycle
-                        repeat: Number.POSITIVE_INFINITY, // Repeat infinitely
-                        repeatType: "mirror", // Smooth back-and-forth motion
-                        ease: "easeInOut", // Smooth easing
-                      },
-                      scale: {
-                        duration: 5,
-                        repeat: Number.POSITIVE_INFINITY,
-                        repeatType: "mirror",
-                        ease: "easeInOut",
-                      },
-                      y: {
-                        duration: 5,
-                        repeat: Number.POSITIVE_INFINITY,
-                        repeatType: "mirror",
-                        ease: "easeInOut",
-                      },
-                      x: {
-                        duration: 5,
-                        repeat: Number.POSITIVE_INFINITY,
-                        repeatType: "mirror",
-                        ease: "easeInOut",
-                      },
-                    }
-                  : {
-                      type: "spring",
-                      damping: 10,
-                      mass: 0.75,
-                      stiffness: 100,
-                      duration: 1,
-                    }
-              }
-              onAnimationComplete={() => setIsInitialAnimationDone(true)} // Trigger state change
-              src="/flowersright.png"
-              alt="Decorative flowers on the right"
-              className="fixed -bottom-16 -right-32 sm:-right-44 sm:-bottom-48 lg:-bottom-26 lg:-right-40"
-            />
-          </>
-        )}
-      </AnimatePresence>
+        {/* Right Flower Image */}
+        <motion.img
+          initial={{
+            rotate: 10,
+            scale: 0.7,
+            y: 100,
+            x: 100,
+          }}
+          animate={
+            isInitialAnimationDone
+              ? {
+                  rotate: [-2, -5],
+                  scale: [0.75, 0.76, 0.75], // Subtle scaling
+                  y: [5, 30, 5], // Slight vertical movement
+                  x: [0, 10, 0], // Slight horizontal movement
+                }
+              : {
+                  rotate: [10, -2],
+                  scale: [0.7, 0.75],
+                  y: [100, 5],
+                  x: [100, 0],
+                }
+          }
+          transition={
+            isInitialAnimationDone
+              ? {
+                  rotate: {
+                    duration: 2, // Duration of one sway cycle
+                    repeat: Number.POSITIVE_INFINITY, // Repeat infinitely
+                    repeatType: "mirror", // Smooth back-and-forth motion
+                    ease: "easeInOut", // Smooth easing
+                  },
+                  scale: {
+                    duration: 5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    repeatType: "mirror",
+                    ease: "easeInOut",
+                  },
+                  y: {
+                    duration: 5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    repeatType: "mirror",
+                    ease: "easeInOut",
+                  },
+                  x: {
+                    duration: 5,
+                    repeat: Number.POSITIVE_INFINITY,
+                    repeatType: "mirror",
+                    ease: "easeInOut",
+                  },
+                }
+              : {
+                  type: "spring",
+                  damping: 10,
+                  mass: 0.75,
+                  stiffness: 100,
+                  duration: 1,
+                }
+          }
+          onAnimationComplete={() => setIsInitialAnimationDone(true)} // Trigger state change
+          src="/flowersright.png"
+          alt="Decorative flowers on the right"
+          className="fixed -bottom-16 -right-32 sm:-right-44 sm:-bottom-48 lg:-bottom-26 lg:-right-40"
+        />
+      </div>
 
       <NavButton
         onClick={() => {
@@ -241,7 +237,9 @@ export default function TributePage({ params }: Route.LoaderArgs) {
       {/* Enhanced background with overlay */}
 
       <div
-        className={`absolute inset-0 -z-30  ${slideIndex !== 1 && "hidden"}`}
+        className={`absolute inset-0 -z-30  ${
+          sliderState.showImage && "hidden"
+        }`}
       >
         <img
           src="/tokyonight.jpg"
