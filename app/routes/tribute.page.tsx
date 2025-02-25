@@ -317,13 +317,13 @@ function Slide1({ profile }: DefaultProps) {
               <motion.img
                 className={joinClasses(
                   "w-32 h-32 md:w-48 md:h-48 rounded-full",
-                  "border-4 transition-transform duration-500 cursor-pointer",
+                  "border-4 transition-transform duration-500 cursor-pointer object-cover",
                   "shadow-lg hover:shadow-2xl hover:scale-105",
                   i === 0 ? "border-amber-400" : ""
                 )}
                 src={profile.profileImageUrl}
                 alt={profile.displayName}
-                whileHover={{ scale: 1.1 }}
+                whileHover={{ scale: 1.3 }}
               />
             </motion.div>
           ))}
