@@ -4,12 +4,14 @@ type Props = {
   children: ReactNode;
   variant?: "user" | "other"; // Variant for user or other user messages
   className?: string; // Additional custom class names
+  cancelAnimation?: boolean;
 };
 
 function ChatMessage({
   children,
   variant = "other", // Default to "other" variant
   className = "",
+  cancelAnimation = false,
 }: Props) {
   // Define styles based on the variant
   const alignment = variant === "user" ? "justify-end" : "justify-start";
@@ -23,7 +25,7 @@ function ChatMessage({
 
   return (
     <motion.div
-      animate={{ scale: [0, 1] }}
+      animate={cancelAnimation ? undefined : { scale: [0, 1] }}
       className={`flex ${alignment} my-2`}
     >
       <div

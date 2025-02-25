@@ -46,10 +46,15 @@ function ComplimentForm({ profile, onClose }: Props) {
       profileId: profile.id,
       searchPattern: `userId=${user?.id}|asc=createdAt`,
     });
-  const { data: questions } = useQuestionQuery({
-    type: "questions",
-    role: profile.occupation,
-  });
+  const { data: questions } = useQuestionQuery(
+    {
+      type: "questions",
+      role: profile.occupation,
+    },
+    {
+      initialData: [],
+    }
+  );
   const [message, setMessage] = useState("");
   const [chatState, setChatState] = useState<ChatState>(INITIAL_CHAT_STATE);
   const timeoutRef = useRef(null);
@@ -104,7 +109,10 @@ function ComplimentForm({ profile, onClose }: Props) {
       console.error(err);
     }
   }
-
+  function handleResetChatClick() {
+    setChatState(INITIAL_CHAT_STATE);
+    setMessage("");
+  }
   useEffect(() => {
     if (!chatState.userChoosingQuestion && chatState.botIsTyping) {
       timeoutRef.current = setTimeout(() => {
@@ -131,12 +139,12 @@ function ComplimentForm({ profile, onClose }: Props) {
       });
     }
   });
-
-  const unexploredQuestions =
-    questions?.filter(
-      (q) => !compliments?.find((c) => c.content === q.content)
-    ) ?? [];
-
+  // Compliments user written compliment to the user of the current viewed profile
+  const unexploredQuestions = (questions ?? []).filter((q) => {
+    return !compliments?.some((c) => {
+      return c.title === q.content;
+    });
+  });
   return (
     <FormProvider {...methods}>
       <motion.form
@@ -175,7 +183,7 @@ function ComplimentForm({ profile, onClose }: Props) {
             className="rounded-xl bg-white flex justify-center items-center  shadow-lg absolute z-10 w-full h-full"
           >
             <HiHeart
-              onClick={() => setChatState(INITIAL_CHAT_STATE)}
+              onClick={handleResetChatClick}
               className="text-4xl text-pink-400 hover:text-6xl cursor-pointer transition-all duration-300"
             />
           </motion.div>
@@ -186,11 +194,10 @@ function ComplimentForm({ profile, onClose }: Props) {
           <div className="rounded-xl  bg-gradient-to-br from-gray-100 to-gray-200  shadow-lg absolute z-10 w-full h-full flex justify-start items-center flex-col p-6">
             <p className="text-2xl font-bold text-slate-800 mb-6">Тема</p>
             <ul className="bg-white rounded-xl shadow-inner w-full max-w-md p-6 overflow-y-auto custom-scrollbar">
-              {questions?.map((question) => {
-                const isPrevQuestion = compliments?.find(
-                  (c) => c.title === question.content
-                );
-                if (isPrevQuestion) return null;
+              {unexploredQuestions?.length === 0 && (
+                <p className="text-center text-gray-400">Пусто...</p>
+              )}
+              {unexploredQuestions?.map((question) => {
                 return (
                   <li
                     key={question.id}
@@ -214,7 +221,9 @@ function ComplimentForm({ profile, onClose }: Props) {
             </ul>
             <Button
               variant="solid"
-              className={`mt-4 ${!message && "opacity-60"} bg-blue-500`}
+              className={`mt-4 ${!message && "opacity-60"} ${
+                compliments?.length === 3 && "bg-gray-400 opacity-60"
+              } bg-blue-500`}
               disabled={
                 !message ||
                 complimentsLoadStatus !== "success" ||
@@ -266,11 +275,12 @@ function ComplimentForm({ profile, onClose }: Props) {
         >
           {/* Prev Message */}
           {compliments?.map((c, index) => {
-            console.log(c);
             if (c.profileId !== profile.id) return null;
             return (
               <motion.div key={c.id}>
-                <ChatMessage variant="other">{c.title}</ChatMessage>
+                <ChatMessage cancelAnimation={true} variant="other">
+                  {c.title}
+                </ChatMessage>
                 <ChatMessage variant="user">{c.content}</ChatMessage>
               </motion.div>
             );
