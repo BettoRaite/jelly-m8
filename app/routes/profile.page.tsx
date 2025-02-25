@@ -7,6 +7,7 @@ import type { Route } from "./+types/profile.page";
 import { GoBack } from "@/components/GoBack";
 import UserProfile from "@/components/UserProfile";
 import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
+import ErrorScreen from "@/components/ErrorScreen";
 
 export default function ProfilePage({ params }: Route.ComponentProps) {
   const userId = Number.parseInt(params.userId);
@@ -27,6 +28,20 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
       enabled: status !== "pending",
     }
   );
+  const {
+    data: viewerProfile,
+    status: viewerProfileStatus,
+    error: viewerProfileError,
+  } = useProfileQuery(
+    {
+      type: "profile",
+      userId: user?.id as number,
+    },
+    {
+      retry: 2,
+      enabled: status !== "pending",
+    }
+  );
   // Validate userId
   if (!Number.isFinite(userId) || userId < 0) {
     navigate("/");
@@ -34,16 +49,20 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
   }
 
   // Show loader while auth or profile data is loading
-  if (profileStatus === "pending") {
+  if (profileStatus === "pending" || viewerProfileStatus === "pending") {
     return <HeartLoader />;
   }
 
   // Handle profile fetch errors (excluding 404)
   if (profileStatus === "error" && profileError?.status !== 404) {
-    return <div>An error occurred while fetching the profile.</div>;
+    return <ErrorScreen description="Что-то пошло не так" />;
   }
   const role =
-    user?.id === userId ? "owner" : user ? "user" : "unauthenticated";
+    user?.id === userId
+      ? "owner"
+      : user && viewerProfile
+      ? "user"
+      : "unauthenticated";
   return (
     <div className="flex justify-center min-h-dvh p-4 bg-gradient-to-tr to-slate-200 from-slate-400 ">
       <GoBack />

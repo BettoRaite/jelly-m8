@@ -34,7 +34,7 @@ function UserProfile({ profile, role }: Props) {
     if (role === "user") {
       return setIsComplimenting(true);
     }
-    toast("Сперва тебе нужно создать профиль");
+    toast("Сперва тебе нужно зарегистрироваться и создать свой профиль");
   };
 
   return (
@@ -101,20 +101,22 @@ function UserProfile({ profile, role }: Props) {
           className="w-28 h-28 rounded-full border-4 border-purple-600 shadow-lg object-cover relative"
         />
         {/* Open chat btn */}
-        <div className="ml-auto mr-10 mt-8">
-          <div className="flex">
-            <Button
-              variant="outline"
-              onClick={handleOpenChat}
-              className="text-sm bottom-0
-                          font-jost font-bold  bg-gradient-to-br from-gray-100 to-gray-200
-                          text-white rounded-xl hover:scale-125 transition duration-300
-                          shadow-lg hover:shadow-xl"
-            >
-              <MdMessage className="text-2xl text-blue-500" />
-            </Button>
+        {role !== "owner" && (
+          <div className="ml-auto mr-10 mt-8">
+            <div className="flex">
+              <Button
+                variant="outline"
+                onClick={handleOpenChat}
+                className="text-sm bottom-0
+                           font-jost font-bold  bg-gradient-to-br from-gray-100 to-gray-200
+                           text-white rounded-xl hover:scale-125 transition duration-300
+                           shadow-lg hover:shadow-xl"
+              >
+                <MdMessage className="text-2xl text-blue-500" />
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </motion.div>
 
       <h2 className="ml-6 text-2xl sm:text-[2rem] font-bold text-slate-800">

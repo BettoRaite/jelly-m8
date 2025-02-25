@@ -70,6 +70,6 @@ export const profileActivationSchema = z.object({
 
 export type ProfileActivationPayload = z.infer<typeof profileActivationSchema>;
 
-export const updateProfileSchema = createProfileSchema.optional();
+export const updateProfileSchema = createProfileSchema.partial();
 
 export type UpdateProfilePayload = z.infer<typeof updateProfileSchema>;
