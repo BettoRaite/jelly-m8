@@ -17,29 +17,6 @@ import ComplimentCard from "@/components/complimentCard/ComplimentCard";
 import { GoBack } from "@/components/GoBack";
 import TypingTextEffect from "@/components/TypingText";
 
-type AnimationInstance = {
-  delay: number;
-  scale: number;
-  className?: string;
-};
-
-const animationConfig: AnimationInstance[] = [
-  {
-    delay: 0.5,
-    scale: 1.5,
-  },
-  {
-    delay: 1.2,
-    scale: 1.2,
-    className: "absolute left-[20%] top-[20%] hidden lg:block",
-  },
-  {
-    delay: 1.5,
-    scale: 0.8,
-    className: "absolute left-[70%] top-[10%]  hidden lg:block",
-  },
-];
-
 export default function TributePage({ params }: Route.LoaderArgs) {
   const { data: profile, status } = useProfileQuery({
     type: "profile",
@@ -55,7 +32,7 @@ export default function TributePage({ params }: Route.LoaderArgs) {
         enabled: Boolean(profile),
       }
     );
-  const [slideIndex, setSlideIndex] = useState(0);
+  const [slideIndex, setSlideIndex] = useState(1);
   const [isInitialAnimationDone, setIsInitialAnimationDone] = useState(false);
   const slides = useMemo(() => {
     if (!profile) {
@@ -86,151 +63,153 @@ export default function TributePage({ params }: Route.LoaderArgs) {
     return "Опс ошибочка";
   }
   const sliderState = {
-    showImage: slideIndex > 0 && slideIndex < 3,
+    showImage: slideIndex === 1,
   };
   function handleSlideNav(direction: number) {
     const next = slideIndex + direction;
     if (next < slides.length && next > -1) {
       setSlideIndex(next);
+      setIsInitialAnimationDone(false);
     }
   }
   return (
-    <main className="overflow-y-scroll">
+    <main className="overflow-y-scroll overflow-hidden">
       <p className="absolute top-4 right-4 text-black text-opacity-20 z-50 text-5xl font-bold">
         {slideIndex + 1}
       </p>
-      {sliderState.showImage && (
-        <>
-          <motion.img
-            initial={{
-              rotate: -10,
-              scale: 0.7,
-              y: 100,
-              x: -100,
-            }}
-            animate={
-              isInitialAnimationDone
-                ? {
-                    rotate: [2, 5, 0], // Swaying motion
-                    scale: [0.75, 0.76, 0.75], // Subtle scaling
-                    y: [5, 30, 10], // Slight vertical movement
-                    x: [0, -5, 0], // Slight horizontal movement
-                  }
-                : {
-                    rotate: [-10, 2],
-                    scale: [0.7, 0.75],
-                    y: [100, 5],
-                    x: [-100, 0],
-                  }
-            }
-            transition={
-              isInitialAnimationDone
-                ? {
-                    rotate: {
-                      duration: 5, // Duration of one sway cycle
-                      repeat: Number.POSITIVE_INFINITY, // Repeat infinitely
-                      repeatType: "mirror", // Smooth back-and-forth motion
-                      ease: "easeInOut", // Smooth easing
-                    },
-                    scale: {
-                      duration: 3,
-                      repeat: Number.POSITIVE_INFINITY,
-                      repeatType: "mirror",
-                      ease: "easeInOut",
-                    },
-                    y: {
-                      duration: 3,
-                      repeat: Number.POSITIVE_INFINITY,
-                      repeatType: "mirror",
-                      ease: "easeInOut",
-                    },
-                    x: {
-                      duration: 3,
-                      repeat: Number.POSITIVE_INFINITY,
-                      repeatType: "mirror",
-                      ease: "easeInOut",
-                    },
-                  }
-                : {
-                    type: "spring",
-                    damping: 10,
-                    mass: 0.75,
-                    stiffness: 100,
-                    duration: 1,
-                  }
-            }
-            onAnimationComplete={() => setIsInitialAnimationDone(true)} // Trigger state change
-            src="/flowersleft.png"
-            alt="Decorative flowers on the left"
-            className="fixed -bottom-26 -left-40"
-          />
+      <AnimatePresence>
+        {sliderState.showImage && (
+          <>
+            <motion.img
+              initial={{
+                rotate: -10,
+                scale: 0.7,
+                y: 100,
+                x: -100,
+              }}
+              animate={
+                isInitialAnimationDone
+                  ? {
+                      rotate: [2, 5], // Swaying motion
+                      scale: [0.75, 0.76, 0.75], // Subtle scaling
+                      y: [5, 30, 10], // Slight vertical movement
+                      x: [0, -5, 0], // Slight horizontal movement
+                    }
+                  : {
+                      rotate: [-10, 2],
+                      scale: [0.7, 0.75],
+                      y: [100, 5],
+                      x: [-100, 0],
+                    }
+              }
+              transition={
+                isInitialAnimationDone
+                  ? {
+                      rotate: {
+                        duration: 2, // Duration of one sway cycle
+                        repeat: Number.POSITIVE_INFINITY, // Repeat infinitely
+                        repeatType: "mirror", // Smooth back-and-forth motion
+                        ease: "easeInOut", // Smooth easing
+                      },
+                      scale: {
+                        duration: 5,
+                        repeat: Number.POSITIVE_INFINITY,
+                        repeatType: "mirror",
+                        ease: "easeInOut",
+                      },
+                      y: {
+                        duration: 5,
+                        repeat: Number.POSITIVE_INFINITY,
+                        repeatType: "mirror",
+                        ease: "easeInOut",
+                      },
+                      x: {
+                        duration: 5,
+                        repeat: Number.POSITIVE_INFINITY,
+                        repeatType: "mirror",
+                        ease: "easeInOut",
+                      },
+                    }
+                  : {
+                      type: "spring",
+                      damping: 10,
+                      mass: 0.75,
+                      stiffness: 100,
+                    }
+              }
+              onAnimationComplete={() => setIsInitialAnimationDone(true)} // Trigger state change
+              src="/flowersleft.png"
+              alt="Decorative flowers on the left"
+              className="fixed -bottom-12 lg:-bottom-32 -left-24 sm:-bottom-20 sm:-left-28 md:-left-36 sm: scale-150"
+            />
 
-          {/* Right Flower Image */}
-          <motion.img
-            initial={{
-              rotate: 10,
-              scale: 0.7,
-              y: 100,
-              x: 100,
-            }}
-            animate={
-              isInitialAnimationDone
-                ? {
-                    rotate: [2, -5, -2], // Swaying motion
-                    scale: [0.75, 0.76, 0.75], // Subtle scaling
-                    y: [5, 30, 5], // Slight vertical movement
-                    x: [0, 5, 0], // Slight horizontal movement
-                  }
-                : {
-                    rotate: [10, 2],
-                    scale: [0.7, 0.75],
-                    y: [100, 5],
-                    x: [100, 0],
-                  }
-            }
-            transition={
-              isInitialAnimationDone
-                ? {
-                    rotate: {
-                      duration: 5, // Duration of one sway cycle
-                      repeat: Number.POSITIVE_INFINITY, // Repeat infinitely
-                      repeatType: "mirror", // Smooth back-and-forth motion
-                      ease: "easeInOut", // Smooth easing
-                    },
-                    scale: {
-                      duration: 3,
-                      repeat: Number.POSITIVE_INFINITY,
-                      repeatType: "mirror",
-                      ease: "easeInOut",
-                    },
-                    y: {
-                      duration: 3,
-                      repeat: Number.POSITIVE_INFINITY,
-                      repeatType: "mirror",
-                      ease: "easeInOut",
-                    },
-                    x: {
-                      duration: 3,
-                      repeat: Number.POSITIVE_INFINITY,
-                      repeatType: "mirror",
-                      ease: "easeInOut",
-                    },
-                  }
-                : {
-                    type: "spring",
-                    damping: 10,
-                    mass: 0.75,
-                    stiffness: 100,
-                    duration: 1,
-                  }
-            }
-            onAnimationComplete={() => setIsInitialAnimationDone(true)} // Trigger state change
-            src="/flowersright.png"
-            alt="Decorative flowers on the right"
-            className="fixed -bottom-26 -right-40"
-          />
-        </>
-      )}
+            {/* Right Flower Image */}
+            <motion.img
+              initial={{
+                rotate: 10,
+                scale: 0.7,
+                y: 100,
+                x: 100,
+              }}
+              animate={
+                isInitialAnimationDone
+                  ? {
+                      rotate: [-2, -5],
+                      scale: [0.75, 0.76, 0.75], // Subtle scaling
+                      y: [5, 30, 5], // Slight vertical movement
+                      x: [0, 10, 0], // Slight horizontal movement
+                    }
+                  : {
+                      rotate: [10, -2],
+                      scale: [0.7, 0.75],
+                      y: [100, 5],
+                      x: [100, 0],
+                    }
+              }
+              transition={
+                isInitialAnimationDone
+                  ? {
+                      rotate: {
+                        duration: 2, // Duration of one sway cycle
+                        repeat: Number.POSITIVE_INFINITY, // Repeat infinitely
+                        repeatType: "mirror", // Smooth back-and-forth motion
+                        ease: "easeInOut", // Smooth easing
+                      },
+                      scale: {
+                        duration: 5,
+                        repeat: Number.POSITIVE_INFINITY,
+                        repeatType: "mirror",
+                        ease: "easeInOut",
+                      },
+                      y: {
+                        duration: 5,
+                        repeat: Number.POSITIVE_INFINITY,
+                        repeatType: "mirror",
+                        ease: "easeInOut",
+                      },
+                      x: {
+                        duration: 5,
+                        repeat: Number.POSITIVE_INFINITY,
+                        repeatType: "mirror",
+                        ease: "easeInOut",
+                      },
+                    }
+                  : {
+                      type: "spring",
+                      damping: 10,
+                      mass: 0.75,
+                      stiffness: 100,
+                      duration: 1,
+                    }
+              }
+              onAnimationComplete={() => setIsInitialAnimationDone(true)} // Trigger state change
+              src="/flowersright.png"
+              alt="Decorative flowers on the right"
+              className="fixed -bottom-16 -right-32 sm:-right-44 sm:-bottom-48 lg:-bottom-26 lg:-right-40"
+            />
+          </>
+        )}
+      </AnimatePresence>
 
       <NavButton
         onClick={() => {
@@ -259,25 +238,75 @@ export default function TributePage({ params }: Route.LoaderArgs) {
         )}
       />
       <AnimatePresence mode="wait">{slides[slideIndex]}</AnimatePresence>
+      {/* Enhanced background with overlay */}
+      {sliderState.showImage && (
+        <div className="absolute inset-0 -z-30">
+          <img
+            fetchPriority="high"
+            src="/tokyonight.jpg"
+            alt="Decorative background"
+            className="object-cover w-full h-full blur-[2px] opacity-90"
+          />
+          <GlassyBackground intensity="none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/30 to-indigo-950/80" />
+        </div>
+      )}
     </main>
   );
 }
 
+type AnimationInstance = {
+  delay: number;
+  scale: number;
+  className?: string;
+};
+// Second slide with flowers/name
 function Slide1({ profile }: DefaultProps) {
+  const animationConfig: AnimationInstance[] = [
+    {
+      delay: 0.5 + 0.4,
+      scale: 1.5,
+      className: "z-20 shadow-2xl rounded-full shadow-pink-400", // Added z-index for main image
+    },
+    {
+      delay: 1.2 + 0.4,
+      scale: 1.2,
+      className:
+        "absolute left-[15%] top-[15%] hidden lg:block filter drop-shadow-2xl",
+    },
+    {
+      delay: 1.5 + 0.4,
+      scale: 0.8,
+      className:
+        "absolute right-[17%] top-[15%] hidden lg:block filter drop-shadow-2xl",
+    },
+  ];
+
   return (
     <motion.section
       exit={{ opacity: 0, scale: 0.1 }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex items-center h-screen w-screen overflow-hidden"
+      className="relative flex flex-col items-center justify-center h-screen w-screen overflow-y-scroll"
     >
-      <div className="flex w-dvw justify-center">
-        {animationConfig.map((a, i) => {
-          return (
+      <div className="relative flex flex-col items-center justify-center w-full h-full">
+        <div className="relative w-full max-w-4xl flex justify-center">
+          {animationConfig.map((a, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: a.scale }}
+              initial={{
+                opacity: 0,
+                scale: 0.5,
+                rotate: 0,
+                filter: "blur(1px)",
+              }}
+              animate={{
+                opacity: 1,
+                scale: a.scale,
+                rotate: i === 0 ? 0 : i % 2 === 0 ? 10 : -10,
+                filter: "blur(0px)",
+                y: [300, 0],
+              }}
               transition={{
                 duration: 0.8,
                 delay: a.delay,
@@ -287,39 +316,57 @@ function Slide1({ profile }: DefaultProps) {
             >
               <motion.img
                 className={joinClasses(
-                  "w-28 h-28 md:w-40 md:h-40 rounded-full transition-transform duration-500 cursor-pointer shadow-2xl border-4 lg:border-8 border-pink-100",
-                  {
-                    "border border-yellow-400": i === 0,
-                  }
+                  "w-32 h-32 md:w-48 md:h-48 rounded-full",
+                  "border-4 transition-transform duration-500 cursor-pointer",
+                  "shadow-lg hover:shadow-2xl hover:scale-105",
+                  i === 0 ? "border-amber-400" : ""
                 )}
                 src={profile.profileImageUrl}
                 alt={profile.displayName}
+                whileHover={{ scale: 1.1 }}
               />
             </motion.div>
-          );
-        })}
+          ))}
+        </div>
+
+        {/* Enhanced name animation */}
         <motion.h1
-          animate={{ opacity: [0, 1], scale: 1.5, y: [0, -100] }}
-          transition={{
-            duration: 0.8,
-            delay: 2,
-            ease: [0, 0.76, 0.2, 1.01],
+          animate={{
+            scale: [0, 1],
+            y: [200, 0],
           }}
-          className="absolute -bottom-10 text-7xl bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-indigo-600 via-indigo-700 to-blue-200 bg-clip-text text-transparent font-bold font-caveat"
+          transition={{
+            duration: 0.5,
+            delay: 2.2,
+            type: "spring",
+            mass: 0.75,
+            damping: 7,
+          }}
+          className="text-8xl md:text-9xl font-bold text-center font-caveat absolute z-30 bottom-[15%]"
         >
-          {profile.displayName}.
+          <span className="pr-2 bg-[conic-gradient(at_top,_var(--tw-gradient-stops))] from-amber-200 via-indigo-200 to-cyan-400 bg-clip-text text-transparent">
+            {profile.displayName}
+          </span>
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 3 }}
+            className="ml-2 text-4xl md:text-6xl text-cyan-300"
+          >
+            ✨
+          </motion.span>
         </motion.h1>
       </div>
     </motion.section>
   );
 }
-
 type DefaultProps = {
   profile: Profile;
 };
 
 type ComplimentProps = { profile: Profile; compliments: Compliment[] };
 
+// Quote slide
 function Slide2({ profile }: DefaultProps) {
   return (
     <motion.section
@@ -327,25 +374,35 @@ function Slide2({ profile }: DefaultProps) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.5 }}
       transition={{ duration: 0.1, ease: "easeInOut" }}
-      className="flex justify-center items-center h-screen w-screen"
+      className="flex justify-center items-center h-screen w-screen overflow-hidden bg-slate-100"
     >
-      <div className="w-[90%] md:w-[50%] relative p-8 bg-white rounded-lg shadow-2xl border border-opacity-10 border-gray-300">
+      <CozyBackground />
+      <motion.div
+        animate={{
+          scale: [0, 1],
+        }}
+        transition={{
+          mass: 0.75,
+          type: "spring",
+          damping: 7,
+          duration: 0.1,
+        }}
+        className="w-[90%] md:w-[50%] relative p-8 bg-white rounded-lg shadow-2xl border border-opacity-10 border-gray-300"
+      >
         <FaQuoteLeft className="absolute -top-6 -left-6 text-gray-400 text-3xl md:text-4xl transform rotate-12" />
 
         {/* Quote text */}
-        <motion.h1
-          animate={{ y: [50, 0] }}
-          className="text-slate-700 font-nunito italic text-lg md:text-[1.7rem] font-bold leading-relaxed text-center"
-        >
+        <motion.h1 className="max-h-96 overflow-y-scroll text-slate-700 font-nunito italic text-lg md:text-[1.7rem] font-bold leading-relaxed text-center">
           {profile.quote}
         </motion.h1>
 
         <FaQuoteRight className="absolute -bottom-6 -right-6 text-gray-400 text-3xl md:text-4xl transform -rotate-12" />
-      </div>
+      </motion.div>
     </motion.section>
   );
 }
 
+// First slide with name
 function Slide3({ profile }: DefaultProps) {
   return (
     <motion.section
@@ -369,7 +426,7 @@ function Slide3({ profile }: DefaultProps) {
     </motion.section>
   );
 }
-
+// Compliments slide
 function Slide4({ profile, compliments }: ComplimentProps) {
   return (
     <motion.section
@@ -378,7 +435,7 @@ function Slide4({ profile, compliments }: ComplimentProps) {
       animate={{
         opacity: [0, 1],
       }}
-      className="relative mx-auto px-4 pt-20 pb-4 w-full min-h-screen bg-slate-100"
+      className="relative mx-auto px-4 pt-20 pb-4 w-full min-h-screen "
     >
       <div className="max-w-2xl mx-auto flex flex-col relative z-20">
         <motion.h1
@@ -387,7 +444,9 @@ function Slide4({ profile, compliments }: ComplimentProps) {
           className="text-center text-3xl md:text-4xl lg:text-5xl text-slate-700 font-thin mb-16 md:mb-24 font-caveat"
         >
           Посмотри что о{" "}
-          <span className="text-pink-400 font-jost font-bold">тебе </span>
+          <span className="text-pink-400 font-jost font-bold">
+            {profile.occupation === "teacher" ? "вас" : "тебе"}{" "}
+          </span>
           думают другие
         </motion.h1>
 
