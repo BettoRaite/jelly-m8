@@ -32,7 +32,7 @@ export const links: Route.LinksFunction = () => [
   },
   { rel: "stylesheet", href: stylesheet },
   {
-    rel: "preload",
+    rel: "prefetch",
     as: "image",
     href: "/pattern.jpg",
   },

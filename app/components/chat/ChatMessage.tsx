@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-
+import { motion } from "motion/react";
 type Props = {
   children: ReactNode;
   variant?: "user" | "other"; // Variant for user or other user messages
@@ -22,13 +22,16 @@ function ChatMessage({
     variant === "user" ? "rounded-br-none" : "rounded-bl-none";
 
   return (
-    <div className={`flex ${alignment} my-2`}>
+    <motion.div
+      animate={{ scale: [0, 1] }}
+      className={`flex ${alignment} my-2`}
+    >
       <div
         className={`${bgColor} ${textColor} px-4 py-2 rounded-2xl ${borderRadius} max-w-[80%] text-wrap ${className}`}
       >
         <p className="max-w-full break-words">{children}</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

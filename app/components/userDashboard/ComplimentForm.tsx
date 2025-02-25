@@ -278,6 +278,7 @@ function ComplimentForm({ profile, onClose }: Props) {
         >
           {/* Prev Message */}
           {compliments?.map((c, index) => {
+            console.log(c);
             if (c.profileId !== profile.id) return null;
             return (
               <motion.div key={c.id}>

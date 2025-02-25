@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaFilter } from "react-icons/fa";
 import { HiChevronUp } from "react-icons/hi";
+
 type Filters = {
   showOnlyOwned: boolean;
   likes: "desc" | "asc";
@@ -49,9 +50,6 @@ export default function Page() {
       });
     }
   }, [status]);
-  if (status === "pending") {
-    return <HeartLoader />;
-  }
   function onSearch(q: string) {
     setSearchQuery(q);
     refetch();

@@ -37,7 +37,7 @@ export interface Compliment {
   recipient: Profile;
   likes: number;
   isAdmin: boolean;
-  createdAt: Date;
+  createdAt: string;
 }
 
 export interface Question {
