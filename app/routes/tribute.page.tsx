@@ -238,7 +238,7 @@ export default function TributePage({ params }: Route.LoaderArgs) {
 
       <div
         className={`absolute inset-0 -z-30  ${
-          sliderState.showImage && "hidden"
+          !sliderState.showImage && "hidden"
         }`}
       >
         <img
