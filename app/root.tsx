@@ -36,6 +36,16 @@ export const links: Route.LinksFunction = () => [
     as: "image",
     href: "/pattern.jpg",
   },
+  {
+    rel: "prefetch",
+    as: "image",
+    href: "/flowersleft.png",
+  },
+  {
+    rel: "prefetch",
+    as: "image",
+    href: "/flowersright.png",
+  },
 ];
 
 export function meta(_: Route.MetaArgs) {
