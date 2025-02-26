@@ -61,7 +61,7 @@ function ComplimentCard({
       limitLikes.current = true;
       setTimeout(() => {
         limitLikes.current = false;
-      }, 200);
+      }, 350);
       return toggleLike();
     }
   }
