@@ -14,7 +14,8 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import UserAvatar from "./UserAvatar";
 import toast from "react-hot-toast";
 import { RiProfileFill } from "react-icons/ri";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import LoadingIndicator from "@/ui/LoadingIndicator";
 
 type Props = {
   initialCompliment: Compliment;
@@ -43,7 +44,7 @@ function ComplimentCard({
     },
     actions: { toggleLike, handleDelete, handleUpdate, setIsEditing },
   } = useComplimentManager(initialCompliment);
-  const limitLikes = useRef(false);
+  const [limitLikes, setLimitLikes] = useState(false);
   const user = getAuth();
   const showEditTools = isOwner || user?.userRole === "admin";
   if (complimentQueryLoadStatus === "pending") {
@@ -56,15 +57,20 @@ function ComplimentCard({
     if (!user) {
       return toast("Сперва создай свой профиль");
     }
-    if (!likeMutation.isPending && !limitLikes.current) {
-      // Limiting the number of like clicks user can make
-      limitLikes.current = true;
-      setTimeout(() => {
-        limitLikes.current = false;
-      }, 350);
-      return toggleLike();
-    }
+    const debounceTime = 500;
+    // Limiting the number of like clicks user can make
+    setLimitLikes(true);
+    setTimeout(() => {
+      setLimitLikes(false);
+    }, debounceTime);
+    return toggleLike();
   }
+  const likeBtnIcon = hasLiked ? (
+    <IoMdHeart className="h-6 w-6 " />
+  ) : (
+    <BiHeart className="h-6 w-6" />
+  );
+  const isLikeLoading = isLiking || limitLikes;
   return (
     <FormProvider {...formMethods}>
       <motion.article
@@ -201,10 +207,10 @@ function ComplimentCard({
         {!isEditing && (
           <motion.button
             onClick={handleLikeClick}
-            disabled={isLiking || isEditing}
+            disabled={isLikeLoading}
             transition={{ duration: 0.05 }}
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.3 }}
+            whileHover={isLikeLoading ? {} : { scale: 1.2 }}
+            whileTap={isLikeLoading ? {} : { scale: 0.3 }}
             className={joinClasses(
               "flex items-center space-x-2 p-2 rounded-lg hover:scale-105",
               "duration-200 hover:border-pink-400 hover:border",
@@ -212,15 +218,12 @@ function ComplimentCard({
               !hasLiked && "border border-gray-100",
               {
                 "border-none": variant === "special",
+                "pointer-events-none opacity-40": isLikeLoading,
               }
             )}
             type="button"
           >
-            {hasLiked ? (
-              <IoMdHeart className="h-6 w-6 " />
-            ) : (
-              <BiHeart className="h-6 w-6" />
-            )}
+            {likeBtnIcon}
             <span className={joinClasses("font-bold")}>
               {compliment?.likes}
             </span>

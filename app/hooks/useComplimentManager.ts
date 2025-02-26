@@ -72,6 +72,7 @@ export const useComplimentManager = (initialCompliment: Compliment) => {
     ];
     const likeQueryKey = [QUERY_KEYS.LIKES, commonQueryParams.complimentId];
     const previousHasLiked = likeQuery.data;
+
     // Optimistic update
     queryClient.setQueryData(likeQueryKey, (old: boolean) => !old);
     queryClient.setQueryData(complimentQueryKey, (c: Compliment) => {
