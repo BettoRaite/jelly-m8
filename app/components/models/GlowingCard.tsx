@@ -52,8 +52,9 @@ const CONFIG = {
 type Props = {
   cardProps?: GroupProps;
   profile: Profile;
+  showSpecialEffects?: boolean;
 };
-export function GlowingCard({ cardProps, profile }: Props) {
+export function GlowingCard({ cardProps, profile, showSpecialEffects }: Props) {
   const { gl } = useThree();
   const [textures, setTextures] = useState<Record<
     keyof typeof CONFIG.textures,
@@ -265,23 +266,27 @@ export function GlowingCard({ cardProps, profile }: Props) {
           <planeGeometry args={[20, 30]} />
         </mesh>
       )}
-      <mesh
-        rotation={[cardState.flipped ? -Math.PI : 0, 0, -0.3]}
-        position={[0, 0, 0]}
-        renderOrder={1}
-        material={effectMaterials.plane}
-      >
-        <planeGeometry args={[50, 50]} />
-      </mesh>
+      {showSpecialEffects && (
+        <>
+          <mesh
+            rotation={[cardState.flipped ? -Math.PI : 0, 0, -0.3]}
+            position={[0, 0, 0]}
+            renderOrder={1}
+            material={effectMaterials.plane}
+          >
+            <planeGeometry args={[50, 50]} />
+          </mesh>
 
-      <mesh
-        rotation={[cardState.flipped ? -Math.PI : 0, 0, -0.3]}
-        position={[0, 0, 0]}
-        renderOrder={1}
-        material={effectMaterials.sphere}
-      >
-        <sphereGeometry args={[15, 15]} />
-      </mesh>
+          <mesh
+            rotation={[cardState.flipped ? -Math.PI : 0, 0, -0.3]}
+            position={[0, 0, 0]}
+            renderOrder={1}
+            material={effectMaterials.sphere}
+          >
+            <sphereGeometry args={[15, 15]} />
+          </mesh>
+        </>
+      )}
     </a.group>
   );
 }

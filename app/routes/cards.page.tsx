@@ -21,11 +21,14 @@ import { BiHeart } from "react-icons/bi";
 import { FaQuestion, FaSearch } from "react-icons/fa";
 import { Link, useNavigate } from "react-router";
 import { Vector3 } from "three";
+import { BsStars } from "react-icons/bs";
+
 const CAM_MOVE_DIST = 1.2;
 
 export default function Cards() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [openSearch, setOpenSearch] = useState(false);
+  const [displayParticles, setDisplayParticles] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const {
     data: profiles,
@@ -82,7 +85,7 @@ export default function Cards() {
       )}
       <GlassyBackground className="opacity-50" intensity="medium" />
       <GoBack to="/" className="opacity-20 hover:opacity-80" />
-      {/* <ParticlesWrapper key="particles" /> */}
+      {displayParticles && <ParticlesWrapper key="particles" />}
 
       {/* Search bar */}
       <div className="w-[50%] flex justify-end items-center gap-2 absolute top-4 right-4 z-40">
@@ -109,7 +112,11 @@ export default function Cards() {
       {profile?.isActivated && (
         <AppScene>
           <SmoothCamera targetPos={new Vector3(0, 0, 1)} />
-          <GlowingCard key={profile.id} profile={profile} />
+          <GlowingCard
+            showSpecialEffects={!displayParticles}
+            key={profile.id}
+            profile={profile}
+          />
         </AppScene>
       )}
       {/* --- */}
@@ -172,6 +179,16 @@ export default function Cards() {
           classNameIcon="duration-300"
         />
       </div>
+      {/* Toggle particles */}
+      <button
+        className="absolute bottom-4 right-4 z-20 opacity-60
+        hover:opacity-100 hover:scale-125 transition-all duration-300 active:scale-90"
+        type="button"
+        onClick={() => setDisplayParticles(!displayParticles)}
+      >
+        <BsStars className="text-3xl text-white" />
+      </button>
+
       {/* --- */}
       <p
         className="z-50 absolute bottom-14 md:bottom-10 left-4 md:left-10 text-white font-jost bg-white bg-opacity-10 p-3 md:p-6
