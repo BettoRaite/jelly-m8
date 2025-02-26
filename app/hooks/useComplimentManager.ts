@@ -62,41 +62,30 @@ export const useComplimentManager = (initialCompliment: Compliment) => {
 
   // Like handling with optimistic updates
   const toggleLike = async () => {
+    // Optimistic update
+    queryClient.setQueryData(
+      [QUERY_KEYS.LIKES, commonQueryParams.complimentId],
+      (old: boolean) => !old
+    );
     const previousHasLiked = likeQuery.data;
-    const previousCompliment = queryClient.getQueryData([
-      QUERY_KEYS.COMPLIMENTS,
-      commonQueryParams,
-    ]);
-
     try {
-      // Optimistic update
-      queryClient.setQueryData(
-        ["like", { complimentId: commonQueryParams.complimentId }],
-        (old: boolean) => !old
-      );
-
       await likeMutation.mutateAsync({
         type: previousHasLiked ? "delete" : "create",
         complimentId: commonQueryParams.complimentId,
       });
-
       // Refresh both queries after successful mutation
       await queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.COMPLIMENTS],
+        queryKey: [
+          QUERY_KEYS.COMPLIMENTS,
+          initialCompliment.profileId,
+          initialCompliment.id,
+        ],
       });
     } catch (error) {
       // Rollback on error
       queryClient.setQueryData(
         [QUERY_KEYS.LIKES, initialCompliment.id],
-        previousHasLiked
-      );
-      queryClient.setQueryData(
-        [
-          QUERY_KEYS.COMPLIMENTS,
-          initialCompliment.profileId,
-          initialCompliment.id,
-        ],
-        previousCompliment
+        (old: boolean) => !old
       );
       throw error;
     }
@@ -124,9 +113,11 @@ export const useComplimentManager = (initialCompliment: Compliment) => {
         payload,
       });
       setIsEditing(false);
-      toast.success("Compliment updated successfully");
+      toast.success("Комплимент изменён");
     } catch (error) {
-      toast.error("Failed to update compliment", { position: "bottom-center" });
+      toast.error("Ошибка при изменении комплимента", {
+        position: "bottom-center",
+      });
     }
   };
 

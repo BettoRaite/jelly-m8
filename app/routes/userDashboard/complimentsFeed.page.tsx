@@ -159,7 +159,7 @@ export default function Page() {
 
           {/* =========================== Cards layout */}
           <AnimatePresence>
-            <div className="mb-20 flex flex-col gap-8 w-full justify-center">
+            <div className="mb-20 flex flex-col gap-8 w-full justify-center items-center">
               {items?.map((c) => {
                 const isOwned = c.userId === user?.id;
                 if (filters.showOnlyOwned && !isOwned) {
@@ -170,10 +170,9 @@ export default function Page() {
                   <ComplimentCard
                     key={c.id}
                     initialCompliment={c}
-                    className={joinClasses({
-                      "border-yellow-400 hover:border-yellow-400 max-w-[680px] justify-self":
+                    className={joinClasses("w-[100%] max-w-[680px]", {
+                      "border-yellow-400 hover:border-yellow-400 hover:shadow-lg":
                         isOwned && !c.isAdmin,
-                      "max-w-[680px] justify-self": c.isAdmin,
                     })}
                     isOwner={isOwned}
                     variant={c.isAdmin ? "special" : "default"}
