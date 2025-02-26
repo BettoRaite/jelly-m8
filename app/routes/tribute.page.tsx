@@ -34,6 +34,24 @@ export default function TributePage({ params }: Route.LoaderArgs) {
     );
   const [slideIndex, setSlideIndex] = useState(0);
   const [isInitialAnimationDone, setIsInitialAnimationDone] = useState(false);
+  const [flowersLoaded, setFlowersLoaded] = useState(0);
+
+  useEffect(() => {
+    const preloadImage = (src: string) => {
+      const img = new Image();
+      img.src = src;
+    };
+    preloadImage("/flowersleft.png");
+    preloadImage("/flowersright.png");
+    preloadImage("/tokyonight.jpg");
+  }, []);
+  useEffect(() => {
+    if (flowersLoaded === 2) {
+      // Both flowers loaded, reset animation trigger
+      setIsInitialAnimationDone(false);
+    }
+  }, [flowersLoaded]);
+
   const slides = useMemo(() => {
     if (!profile) {
       return [];
@@ -65,6 +83,7 @@ export default function TributePage({ params }: Route.LoaderArgs) {
   const sliderState = {
     showImage: slideIndex === 1,
   };
+
   function handleSlideNav(direction: number) {
     const next = slideIndex + direction;
     if (next < slides.length && next > -1) {
@@ -72,13 +91,30 @@ export default function TributePage({ params }: Route.LoaderArgs) {
       setIsInitialAnimationDone(false);
     }
   }
+
   return (
     <main className="overflow-y-scroll overflow-hidden">
       <p className="absolute top-4 right-4 text-black text-opacity-20 z-50 text-5xl font-bold">
         {slideIndex + 1}
       </p>
+
+      <NavButton
+        onClick={() => {
+          handleSlideNav(-1);
+        }}
+        direction="left"
+        className={joinClasses(
+          "left-4 fixed z-10 bottom-4 text-gray-600 bg-pink-200",
+          {
+            "opacity-0 pointer-events-none": slideIndex === 0,
+            "text-slate-700": slideIndex !== 0,
+          }
+        )}
+      />
+      <AnimatePresence mode="wait">{slides[slideIndex]}</AnimatePresence>
+
       {sliderState.showImage && (
-        <div>
+        <>
           <motion.img
             initial={{
               rotate: -10,
@@ -137,6 +173,7 @@ export default function TributePage({ params }: Route.LoaderArgs) {
                   }
             }
             onAnimationComplete={() => setIsInitialAnimationDone(true)} // Trigger state change
+            onLoad={() => setFlowersLoaded((prev) => prev + 1)}
             src="/flowersleft.png"
             alt="Decorative flowers on the left"
             className="fixed -bottom-12 lg:-bottom-32 -left-24 sm:-bottom-20 sm:-left-28 md:-left-36 sm: scale-150"
@@ -201,14 +238,14 @@ export default function TributePage({ params }: Route.LoaderArgs) {
                     duration: 1,
                   }
             }
+            onLoad={() => setFlowersLoaded((prev) => prev + 1)}
             onAnimationComplete={() => setIsInitialAnimationDone(true)} // Trigger state change
             src="/flowersright.png"
             alt="Decorative flowers on the right"
             className="fixed -bottom-16 -right-32 sm:-right-44 sm:-bottom-48 lg:-bottom-26 lg:-right-40"
           />
-        </div>
+        </>
       )}
-
       <NavButton
         onClick={() => {
           handleSlideNav(1);
@@ -222,35 +259,17 @@ export default function TributePage({ params }: Route.LoaderArgs) {
           }
         )}
       />
-      <NavButton
-        onClick={() => {
-          handleSlideNav(-1);
-        }}
-        direction="left"
-        className={joinClasses(
-          "left-4 fixed z-10 bottom-4 text-gray-600 bg-pink-200",
-          {
-            "opacity-0 pointer-events-none": slideIndex === 0,
-            "text-slate-700": slideIndex !== 0,
-          }
-        )}
-      />
-      <AnimatePresence mode="wait">{slides[slideIndex]}</AnimatePresence>
-      {/* Enhanced background with overlay */}
 
-      <div
-        className={`absolute inset-0 -z-30  ${
-          !sliderState.showImage && "hidden"
-        }`}
-      >
-        <img
-          src="/tokyonight.jpg"
-          alt="Decorative background"
-          className="object-cover w-full h-full blur-[2px] opacity-90"
-        />
-        <GlassyBackground intensity="none" className="blur-sm" />
-        <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/30 to-indigo-950/80" />
-      </div>
+      {slideIndex < 2 && (
+        <div className={"absolute inset-0 -z-30"}>
+          <img
+            src="/tokyonight.jpg"
+            alt="Decorative background"
+            className="object-cover w-full h-full blur-[2px] opacity-100"
+          />
+          <GlassyBackground intensity="none" className="blur-lg" />
+        </div>
+      )}
     </main>
   );
 }
@@ -278,7 +297,7 @@ function Slide1({ profile }: DefaultProps) {
       delay: 1.5 + 0.4,
       scale: 0.8,
       className:
-        "absolute right-[17%] top-[15%] hidden lg:block filter drop-shadow-2xl",
+        "absolute right-[20%] top-[15%] hidden lg:block filter drop-shadow-2xl",
     },
   ];
 
@@ -316,7 +335,7 @@ function Slide1({ profile }: DefaultProps) {
             >
               <motion.img
                 className={joinClasses(
-                  "w-32 h-32 md:w-48 md:h-48 rounded-full",
+                  "w-32 h-32 md:w-44 md:h-44 rounded-full",
                   "border-4 transition-transform duration-500 cursor-pointer object-cover",
                   "shadow-lg hover:shadow-2xl hover:scale-105",
                   i === 0 ? "border-amber-400" : ""
@@ -342,7 +361,7 @@ function Slide1({ profile }: DefaultProps) {
             mass: 0.75,
             damping: 7,
           }}
-          className="text-8xl md:text-9xl font-bold text-center font-caveat absolute z-30 bottom-[15%]"
+          className="text-8xl md:text-8xl font-bold text-center font-caveat absolute z-30 bottom-[15%]"
         >
           <span className="pr-2 bg-[conic-gradient(at_top,_var(--tw-gradient-stops))] from-amber-200 via-indigo-200 to-cyan-400 bg-clip-text text-transparent">
             {profile.displayName}
