@@ -14,6 +14,7 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import UserAvatar from "./UserAvatar";
 import toast from "react-hot-toast";
 import { RiProfileFill } from "react-icons/ri";
+import { useRef } from "react";
 
 type Props = {
   initialCompliment: Compliment;
@@ -38,9 +39,11 @@ function ComplimentCard({
       isDeleting,
       isUpdating,
       isLiking,
+      likeMutation,
     },
     actions: { toggleLike, handleDelete, handleUpdate, setIsEditing },
   } = useComplimentManager(initialCompliment);
+  const limitLikes = useRef(false);
   const user = getAuth();
   const showEditTools = isOwner || user?.userRole === "admin";
   if (complimentQueryLoadStatus === "pending") {
@@ -50,10 +53,17 @@ function ComplimentCard({
     return "err";
   }
   function handleLikeClick() {
-    if (user) {
+    if (!user) {
+      return toast("Сперва создай свой профиль");
+    }
+    if (!likeMutation.isPending && !limitLikes.current) {
+      // Limiting the number of like clicks user can make
+      limitLikes.current = true;
+      setTimeout(() => {
+        limitLikes.current = false;
+      }, 200);
       return toggleLike();
     }
-    toast("Сперва создай свой профиль");
   }
   return (
     <FormProvider {...formMethods}>
@@ -187,10 +197,11 @@ function ComplimentCard({
             username: "text-[0.9rem]",
           }}
         />
+        {/* Like button */}
         {!isEditing && (
           <motion.button
             onClick={handleLikeClick}
-            disabled={isLiking || likeQueryLoadStatus !== "success"}
+            disabled={isLiking || isEditing}
             transition={{ duration: 0.05 }}
             whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.3 }}
@@ -215,6 +226,7 @@ function ComplimentCard({
             </span>
           </motion.button>
         )}
+        {/* Date */}
         <div
           className={joinClasses("mt-4 flex items-center gap-6 text-xs ", {
             "text-slate-400 text-opacity-80": !initialCompliment.isAdmin,

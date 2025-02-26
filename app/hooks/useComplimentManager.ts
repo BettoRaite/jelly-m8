@@ -62,12 +62,26 @@ export const useComplimentManager = (initialCompliment: Compliment) => {
 
   // Like handling with optimistic updates
   const toggleLike = async () => {
-    // Optimistic update
-    queryClient.setQueryData(
-      [QUERY_KEYS.LIKES, commonQueryParams.complimentId],
-      (old: boolean) => !old
-    );
+    const { data } = complimentQuery;
+    if (!data) return;
+
+    const complimentQueryKey = [
+      QUERY_KEYS.COMPLIMENTS,
+      commonQueryParams.profileId,
+      commonQueryParams.complimentId,
+    ];
+    const likeQueryKey = [QUERY_KEYS.LIKES, commonQueryParams.complimentId];
     const previousHasLiked = likeQuery.data;
+    // Optimistic update
+    queryClient.setQueryData(likeQueryKey, (old: boolean) => !old);
+    queryClient.setQueryData(complimentQueryKey, (c: Compliment) => {
+      return {
+        ...c,
+        author: { ...c.author },
+        recipient: { ...c.recipient },
+        likes: previousHasLiked ? c.likes - 1 : c.likes + 1,
+      };
+    });
     try {
       await likeMutation.mutateAsync({
         type: previousHasLiked ? "delete" : "create",
@@ -83,10 +97,10 @@ export const useComplimentManager = (initialCompliment: Compliment) => {
       });
     } catch (error) {
       // Rollback on error
-      queryClient.setQueryData(
-        [QUERY_KEYS.LIKES, initialCompliment.id],
-        (old: boolean) => !old
-      );
+      queryClient.setQueryData(likeQueryKey, (old: boolean) => !old);
+      queryClient.setQueryData(complimentQueryKey, (c: Compliment) => {
+        return data;
+      });
       throw error;
     }
   };
@@ -132,6 +146,7 @@ export const useComplimentManager = (initialCompliment: Compliment) => {
       isDeleting: complimentMutation.isPending,
       isUpdating: complimentMutation.isPending,
       isLiking: likeMutation.isPending,
+      likeMutation,
     },
     actions: {
       toggleLike,
