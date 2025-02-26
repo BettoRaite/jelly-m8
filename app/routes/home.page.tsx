@@ -257,7 +257,7 @@ export default function Home() {
       </Button>
       <Link
         to={"/about"}
-        className="absolute bottom-3 left-3 text-slate-300 text-opacity-30"
+        className="absolute bottom-1 left-3 text-slate-300 text-opacity-30 font-jost"
       >
         Made by bettoraite
       </Link>

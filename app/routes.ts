@@ -12,6 +12,7 @@ export default [
     route("cards", "./routes/cards.page.tsx"),
     route("login", "./routes/login.page.tsx"),
     route("dashboard", "./routes/adminDashboard.page.tsx"),
+    route("about", "./routes/about.page.tsx"),
     route("cards/tribute/:userId", "./routes/tribute.page.tsx"),
     route("users/:userId/profile", "./routes/profile.page.tsx"),
     layout("./routes/userDashboard/layout.tsx", [
