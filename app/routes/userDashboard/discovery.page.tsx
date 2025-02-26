@@ -17,19 +17,17 @@ export default function Page() {
     type: "profiles",
     searchParams: `gender=female|displayName=${searchQuery}`,
   });
-  const timeoutIdRef = useRef<number | unknown>(null);
+  const timeoutIdRef = useRef<number | null>(null);
   useEffect(() => {
     return () => {
       if (timeoutIdRef.current !== null) {
-        clearTimeout(timeoutIdRef.current as number);
+        clearTimeout(timeoutIdRef.current);
       }
     };
   }, []);
 
   const handleSearch = (query: string) => {
-    if (timeoutIdRef.current) {
-      clearTimeout(timeoutIdRef.current);
-    }
+    if (timeoutIdRef.current) clearTimeout(timeoutIdRef.current);
 
     timeoutIdRef.current = window.setTimeout(() => {
       setSearchQuery(query);

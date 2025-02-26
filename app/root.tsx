@@ -51,6 +51,11 @@ export const links: Route.LinksFunction = () => [
     as: "image",
     href: "/tokyonight.jpg",
   },
+  {
+    rel: "preload",
+    as: "image",
+    href: "/nihongoyama.jpg",
+  },
 ];
 
 export function meta(_: Route.MetaArgs) {
