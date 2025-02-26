@@ -1,5 +1,6 @@
 import type { Profile } from "@/lib/types";
 import { joinClasses } from "@/lib/utils/strings";
+import { Link } from "react-router";
 
 type Props = {
   profile: Profile;
@@ -40,20 +41,21 @@ function UserAvatar({
       />
       <div>
         {showDisplayName && (
-          <h3
-            className={joinClasses("text-lg font-semibold", {
+          <Link
+            to={`/users/${profile.userId}/profile`}
+            className={joinClasses("text-[1rem] sm:text-lg font-semibold", {
               "text-white": theme === "white",
               "text-slate-700": theme === "dark",
               [textStyles.displayName || ""]: !!textStyles.displayName,
             })}
           >
             {profile.displayName}
-          </h3>
+          </Link>
         )}
         {showUsername && (
           <p
             className={joinClasses(
-              "text-sm",
+              "text-[0.8rem] sm:text-sm",
               theme === "white" ? "text-slate-300" : "text-gray-500",
               textStyles.username || ""
             )}

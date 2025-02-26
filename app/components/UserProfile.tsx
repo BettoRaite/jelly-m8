@@ -17,6 +17,7 @@ import ComplimentForm from "./userDashboard/ComplimentForm";
 import { BiEdit } from "react-icons/bi";
 import UserProfileEditForm from "./UserProfileEditForm";
 import toast from "react-hot-toast";
+import { FiBookOpen } from "react-icons/fi";
 
 type Props = {
   profile: Profile;
@@ -51,7 +52,11 @@ function UserProfile({ profile, role }: Props) {
       }}
       className={joinClasses(
         "mt-20 sm:mt-0 relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl w-full max-w-[400px] overflow-hidden",
-        "border border-white"
+        {
+          "border border-white": profile.occupation === "teacher",
+          "border-none shadow-lg shadow-yellow-100":
+            profile.occupation === "teacher",
+        }
       )}
     >
       {isEditMode && (
@@ -98,8 +103,15 @@ function UserProfile({ profile, role }: Props) {
           whileHover={{ scale: 1.1 }}
           src={profile.profileImageUrl}
           alt={profile.displayName}
-          className="w-28 h-28 rounded-full border-4 border-purple-600 shadow-lg object-cover relative"
+          className={joinClasses(
+            "w-28 h-28 rounded-full shadow-lg object-cover relative",
+            {
+              "border-4 border-purple-600": profile.occupation === "student",
+              "border-4 border-yellow-400": profile.occupation === "teacher",
+            }
+          )}
         />
+
         {/* Open chat btn */}
         {role !== "owner" && (
           <div className="ml-auto mr-10 mt-8">
@@ -119,9 +131,21 @@ function UserProfile({ profile, role }: Props) {
         )}
       </motion.div>
 
-      <h2 className="ml-6 text-2xl sm:text-[2rem] font-bold text-slate-800">
+      <h2 className="ml-6 text-2xl sm:text-[1.7rem] font-bold text-slate-800">
         {profile.displayName}
       </h2>
+      {profile.occupation === "teacher" && (
+        <div className="flex items-center gap-1 mt-2 ml-6">
+          <FiBookOpen
+            size={16}
+            className="text-yellow-600 dark:text-yellow-400"
+          />
+          <span className="text-sm text-yellow-600 dark:text-yellow-400">
+            Teacher
+          </span>
+        </div>
+      )}
+      {/* Bio */}
       <div className="mt-6 bg-gray-100 h-40 mx-6 rounded-lg py-2 overflow-y-auto">
         <p className="ml-2 font-jost text-xl text-slate-500">
           {profile.biography}
