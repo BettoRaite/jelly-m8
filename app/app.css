@@ -107,11 +107,17 @@ body {
   animation: rotation 1s linear infinite;
 }
 
-@keyframes rotation {
+@keyframes slideRight {
   0% {
-    transform: rotate(0deg);
+    transform: translateX(-100%);
   }
   100% {
-    transform: rotate(360deg);
+    transform: translateX(100%);
   }
+}
+
+.animate-slideRight {
+  display: inline-block;
+  white-space: nowrap; /* Prevents text from wrapping */
+  animation: slideRight 10s linear infinite; /* Adjust duration as needed */
 }

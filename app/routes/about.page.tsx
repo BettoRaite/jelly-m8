@@ -1,5 +1,5 @@
 import { GoBack } from "@/components/GoBack";
-import { FaGithub } from "react-icons/fa"; // Import GitHub icon
+import { FaGithub } from "react-icons/fa";
 import { Link } from "react-router";
 
 export default function About() {
@@ -15,7 +15,7 @@ export default function About() {
       </span>
       {/* GitHub Link */}
       <Link
-        to="https://github.com/BettoRaite/jelly-m8" // Replace with your GitHub URL
+        to="https://github.com/BettoRaite/jelly-m8"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center justify-center text-gray-700 hover:text-gray-900 transition-colors"

@@ -9,17 +9,17 @@ import { ERROR_MESSAGES } from "@/lib/constants";
 import { joinClasses } from "@/lib/utils/strings";
 import Button from "@/ui/Button";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { FaRegComments, FaUser } from "react-icons/fa";
 import { HiOutlineSquare2Stack } from "react-icons/hi2";
 import { MdDashboard } from "react-icons/md";
 import { Link } from "react-router";
-import { Vector3 } from "three";
+import { Audio, Vector3 } from "three";
 import { motion } from "motion/react";
 import { ParticlesWrapper } from "@/components/ParticlesWrapper";
 import ReactConfetti from "react-confetti";
-import { FiInfo } from "react-icons/fi";
+import { FiInfo, FiPlay } from "react-icons/fi";
 import TypingTextEffect from "@/components/TypingText";
 export default function Home() {
   const { data: user, status, refetch } = useAuth();
@@ -27,6 +27,8 @@ export default function Home() {
   const { data: profiles, status: profilesStatus } = useProfileQuery({
     type: "profiles",
   });
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const handleLogout = useCallback(async () => {
     try {
@@ -37,6 +39,15 @@ export default function Home() {
       toast(ERROR_MESSAGES.UNEXPECTED_ERROR);
     }
   }, [session, refetch]);
+
+  const togglePlayPause = () => {
+    if (isPlaying) {
+      audioRef.current?.pause();
+    } else {
+      audioRef.current?.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
 
   const { userRole: role } = user ?? {};
   const links = [
@@ -80,6 +91,7 @@ export default function Home() {
       className="relative bg-black flex justify-center items-center overflow-hidden"
       style={{ width: "100dvw", height: "100dvh" }}
     >
+      <audio ref={audioRef} src="/music/leateq_tokyo.mp3" />
       <span className="absolute z-10 top-32 font-caveat mx-auto py-4 flex border w-fit bg-gradient-to-r blur-xl from-blue-500 via-teal-500 to-pink-500 bg-clip-text text-8xl box-content font-extrabold text-transparent text-center select-none">
         JellyM8
       </span>
@@ -105,6 +117,23 @@ export default function Home() {
             8
           </span>
         </motion.h1>
+        <Button
+          onClick={togglePlayPause}
+          roundedness="rounded-full"
+          className="mt-10 scale-75 opacity-60 hover:scale-100 transition-all duration-500"
+        >
+          <FiPlay className="text-white md:my-2" />
+        </Button>
+        {isPlaying && (
+          <div className="overflow-hidden rounded-xl">
+            <Link
+              to={"https://www.youtube.com/watch?v=qR4jvErGitg"}
+              className="text-sm text-white text-opacity-80 font-jost animate-slideRight"
+            >
+              Leat'eq - Tokyo
+            </Link>
+          </div>
+        )}
       </div>
       <motion.img
         fetchPriority="high"
@@ -257,7 +286,7 @@ export default function Home() {
       </Button>
       <Link
         to={"/about"}
-        className="absolute bottom-1 left-3 text-slate-300 text-opacity-30 font-jost"
+        className=" absolute text-sm sm:text-[1.2rem] bottom-1 sm:left-2 text-slate-300 text-opacity-30 font-caveat"
       >
         Made by bettoraite
       </Link>

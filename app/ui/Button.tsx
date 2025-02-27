@@ -5,6 +5,8 @@ import { FiLoader } from "react-icons/fi";
 type ButtonProps = ComponentProps<"button"> & {
   variant?: keyof typeof variantClasses;
   isLoading?: boolean;
+  roundedness?: string;
+  padding?: string;
 };
 
 const variantClasses = {
@@ -20,6 +22,8 @@ function Button({
   isLoading = false,
   className,
   children,
+  roundedness = "rounded-lg",
+  padding = "px-2 py-2 md:px-4 md:py-2",
   ...props
 }: ButtonProps) {
   return (
@@ -28,7 +32,9 @@ function Button({
       disabled={isLoading || props.disabled}
       className={joinClasses(
         className,
-        "px-2 py-2 md:px-4 md:py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2",
+        " transition-all duration-200 flex items-center justify-center gap-2",
+        roundedness,
+        padding,
         variantClasses[variant]
       )}
     >
