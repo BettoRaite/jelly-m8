@@ -449,7 +449,7 @@ function Slide3({ profile }: DefaultProps) {
         }}
       >
         <span className="font-amatic bg-gradient-to-tl from-slate-800 via-violet-500 to-zinc-400 bg-clip-text text-transparent">
-          {profile?.displayName}
+          угу-гу-гу
         </span>
       </motion.h1>
 

@@ -25,6 +25,18 @@ import { BsStars } from "react-icons/bs";
 import { GrPerformance } from "react-icons/gr";
 import { Text3D } from "@react-three/drei";
 import { FaBomb } from "react-icons/fa6";
+import {
+  EffectComposer,
+  DepthOfField,
+  Bloom,
+  ChromaticAberration,
+  SMAA,
+  Vignette,
+  ToneMapping,
+  SelectiveBloom,
+  Selection,
+} from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
 
 const CAM_MOVE_DIST = 1.2;
 
@@ -79,7 +91,7 @@ export default function Cards() {
       className={"overflow-hidden bg-transparent relative"}
       style={{ width: "100dvw", height: "100dvh" }}
     >
-      <AnimatedGradientBackground />
+      {/* <AnimatedGradientBackground /> */}
       {profile && !profile.isActivated && (
         <ProfileActivationOverlay
           profile={profile}
@@ -112,12 +124,45 @@ export default function Cards() {
       {/* Card scene */}
       {profile?.isActivated && (
         <AppScene>
-          <SmoothCamera targetPos={new Vector3(0, 0, 1)} />
-          <GlowingCard
-            showSpecialEffects={!displayParticles}
-            key={profile.id}
-            profile={profile}
-          />
+          <Selection>
+            <EffectComposer multisampling={0} disableNormalPass>
+              <SMAA />
+              <SelectiveBloom
+                intensity={1.2}
+                luminanceThreshold={0.2}
+                luminanceSmoothing={0.4}
+                height={300}
+                mipmapBlur
+                lights={
+                  [
+                    /* reference your card's light sources here */
+                  ]
+                }
+              />
+              <ChromaticAberration
+                offset={[0.001, 0.002]}
+                radialModulation={true}
+                modulationOffset={0.15}
+              />
+              <Vignette
+                offset={0.3}
+                darkness={0.1}
+                eskil={false}
+                blendFunction={BlendFunction.MULTIPLY}
+              />
+              <ToneMapping
+                resolution={256}
+                maxLuminance={16}
+                adaptationRate={0.05}
+              />
+            </EffectComposer>
+            <SmoothCamera targetPos={new Vector3(0, 0, 1)} />
+            <GlowingCard
+              showSpecialEffects={!displayParticles}
+              key={profile.id}
+              profile={profile}
+            />
+          </Selection>
         </AppScene>
       )}
       {/* Menu */}
@@ -127,34 +172,38 @@ export default function Cards() {
         </div>
       </div>
 
-      <div className="absolute w-full bottom-14 flex items-center justify-center">
-        <Link
-          to={`tribute/${profile?.userId}`}
-          key={profile?.id}
-          className={joinClasses(
-            "relative",
-            "hover:scale-125 cursor-pointer bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-indigo-500 via-fuchsia-100 to-violet-100 bg-clip-text text-transparent",
-            "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
-            "lg:text-6xl md:text-1xl text-3xl font-bold p-4 rounded-lg font-jost italic"
-          )}
-        >
-          {(profile?.isActivated && profile.displayName) ?? "Тут пустенько..."}
-        </Link>
-        <Link
-          to={`tribute/${profile?.userId}`}
-          viewTransition
-          className={joinClasses(
-            "text-yellow-400 relative -left-8 -top-2 text-2xl p-2 rounded-full bg-white bg-opacity-5",
-            "transition-all duration-500 hover:opacity-100",
-            "hover:text-pink-500",
-            {
-              "opacity-10 pointer-events-none": !profile?.isActivated,
-            }
-          )}
-        >
-          🤓
-        </Link>
-      </div>
+      {profile?.isActivated && (
+        <div className="absolute w-full top-10 flex items-center justify-center">
+          <Link
+            to={`tribute/${profile?.userId}`}
+            key={profile?.id}
+            className={joinClasses(
+              "relative",
+              "hover:scale-125 cursor-pointer bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-indigo-500 via-fuchsia-100 to-violet-100 bg-clip-text text-transparent",
+              "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
+              "lg:text-6xl md:text-1xl text-3xl font-bold p-4 rounded-lg font-jost italic"
+            )}
+          >
+            <ReactConfetti className="w-full h-full" />
+            {(profile?.isActivated && profile.displayName) ??
+              "Тут пустенько..."}
+          </Link>
+          <Link
+            to={`tribute/${profile?.userId}`}
+            viewTransition
+            className={joinClasses(
+              "text-yellow-400 relative -left-8 -top-2 text-2xl p-2 rounded-full bg-white bg-opacity-5",
+              "transition-all duration-500 hover:opacity-100",
+              "hover:text-pink-500",
+              {
+                "opacity-10 pointer-events-none": !profile?.isActivated,
+              }
+            )}
+          >
+            🤓
+          </Link>
+        </div>
+      )}
       {/* Slide navigation menu */}
       <div className="flex justify-center items-center w-screen absolute z-20 bottom-0 left-0 gap-4">
         <NavButton

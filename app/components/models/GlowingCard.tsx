@@ -21,6 +21,7 @@ import * as THREE from "three";
 import { createMaterial } from "@/lib/helpers/createMaterial";
 import { Text3D, Texture } from "@react-three/drei";
 import planeShaders from "@/lib/shaders/plane.shader";
+import { Select } from "@react-three/postprocessing";
 // Configuration
 const CONFIG = {
   exposure: 2.8,
@@ -255,17 +256,20 @@ export function GlowingCard({ cardProps, profile, showSpecialEffects }: Props) {
       rotation={rotationSpring.rotation}
       rotation-y={!isAnimating && rotationY}
     >
-      {materials?.front && (
-        <mesh material={materials.front}>
-          <planeGeometry args={[20, 30]} />
-        </mesh>
-      )}
+      <Select enabled>
+        {materials?.front && (
+          <mesh material={materials.front}>
+            <planeGeometry args={[20, 30]} />
+          </mesh>
+        )}
 
-      {materials?.back && (
-        <mesh material={materials.back} rotation={[0, Math.PI, 0]}>
-          <planeGeometry args={[20, 30]} />
-        </mesh>
-      )}
+        {materials?.back && (
+          <mesh material={materials.back} rotation={[0, Math.PI, 0]}>
+            <planeGeometry args={[20, 30]} />
+          </mesh>
+        )}
+      </Select>
+
       {showSpecialEffects && (
         <>
           <mesh
