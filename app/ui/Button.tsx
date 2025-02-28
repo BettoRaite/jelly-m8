@@ -7,6 +7,7 @@ type ButtonProps = ComponentProps<"button"> & {
   isLoading?: boolean;
   roundedness?: string;
   padding?: string;
+  bg?: string;
 };
 
 const variantClasses = {

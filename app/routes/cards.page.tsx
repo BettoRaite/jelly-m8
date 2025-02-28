@@ -1,5 +1,4 @@
 import { AppScene } from "@/components/AppScene";
-import AnimatedGradientBackground from "@/components/Backgrounds/AnimatedGradientBackground";
 import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
 import ErrorScreen from "@/components/ErrorScreen";
 import { GoBack } from "@/components/GoBack";
@@ -14,36 +13,36 @@ import type { Profile } from "@/lib/types";
 import { joinClasses } from "@/lib/utils/strings";
 import Button from "@/ui/Button";
 import NavButton from "@/ui/NavButton";
-import * as motion from "motion/react-client";
-import { forwardRef, useRef, useState } from "react";
-import ReactConfetti from "react-confetti";
-import { BiHeart, BiStar } from "react-icons/bi";
-import { FaOpera, FaQuestion, FaSearch } from "react-icons/fa";
-import { Link, useNavigate } from "react-router";
-import { Vector3 } from "three";
-import { BsStars } from "react-icons/bs";
-import { GrPerformance } from "react-icons/gr";
-import { Text3D } from "@react-three/drei";
-import { FaBomb } from "react-icons/fa6";
 import {
-  EffectComposer,
-  DepthOfField,
   Bloom,
   ChromaticAberration,
-  SMAA,
-  Vignette,
-  ToneMapping,
-  SelectiveBloom,
+  DepthOfField,
+  EffectComposer,
   Selection,
+  Vignette,
+  Outline,
 } from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
+import * as motion from "motion/react-client";
+import { BlendFunction, Resizer, KernelSize } from "postprocessing";
+import { useState } from "react";
+import ReactConfetti from "react-confetti";
+import { FaEye, FaSearch } from "react-icons/fa";
+import { FaBomb } from "react-icons/fa6";
+import { Link } from "react-router";
+import { Vector3 } from "three";
+import { Glitch } from "@react-three/postprocessing";
+import { GlitchMode } from "postprocessing";
+import { FiInfo } from "react-icons/fi";
+import { MdNorthEast } from "react-icons/md";
+import { GoNorthStar } from "react-icons/go";
 
 const CAM_MOVE_DIST = 1.2;
 
 export default function Cards() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [openSearch, setOpenSearch] = useState(false);
-  const [displayParticles, setDisplayParticles] = useState(false);
+
+  const [enableEffects, setEnableEffects] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const {
     data: profiles,
@@ -88,7 +87,9 @@ export default function Cards() {
   }
   return (
     <main
-      className={"overflow-hidden bg-transparent relative"}
+      className={
+        "overflow-hidden bg-transparent relative bg-gradient-to-bl from-pink-500 via-[#1e1a78] to-black "
+      }
       style={{ width: "100dvw", height: "100dvh" }}
     >
       {/* <AnimatedGradientBackground /> */}
@@ -98,9 +99,8 @@ export default function Cards() {
           onRefetchProfile={refetch}
         />
       )}
-      <GlassyBackground className="opacity-50" intensity="medium" />
       <GoBack to="/" className="opacity-20 hover:opacity-80" />
-      {displayParticles && <ParticlesWrapper key="particles" />}
+      {!enableEffects && <ParticlesWrapper key="particles" />}
       {/* Search bar */}
       <div className="w-[50%] flex justify-end items-center gap-2 absolute top-4 right-4 z-40">
         <button
@@ -124,41 +124,46 @@ export default function Cards() {
       {/* Card scene */}
       {profile?.isActivated && (
         <AppScene>
-          <Selection>
-            <EffectComposer multisampling={0} disableNormalPass>
-              <SMAA />
-              <SelectiveBloom
-                intensity={1.2}
-                luminanceThreshold={0.2}
-                luminanceSmoothing={0.4}
-                height={300}
-                mipmapBlur
-                lights={
-                  [
-                    /* reference your card's light sources here */
-                  ]
-                }
-              />
+          <SmoothCamera targetPos={new Vector3(0, 0, 1)} />
+          {enableEffects && (
+            <EffectComposer depthBuffer={true} multisampling={0}>
+              <Bloom intensity={0.5} />
               <ChromaticAberration
                 offset={[0.001, 0.002]}
                 radialModulation={true}
                 modulationOffset={0.15}
+                layers={[0]}
               />
               <Vignette
                 offset={0.3}
-                darkness={0.1}
+                darkness={0.01}
                 eskil={false}
                 blendFunction={BlendFunction.MULTIPLY}
               />
-              <ToneMapping
-                resolution={256}
-                maxLuminance={16}
-                adaptationRate={0.05}
+              <DepthOfField
+                focusDistance={0} // where to focus
+                focalLength={0.02} // focal length
+                bokehScale={0.5} // bokeh size
+              />
+              <Outline
+                selectionLayer={0} // selection layer
+                blendFunction={BlendFunction.SCREEN} // set this to BlendFunction.ALPHA for dark outlines
+                patternTexture={null} // a pattern texture
+                edgeStrength={2.5} // the edge strength
+                pulseSpeed={1} // a pulse speed. A value of zero disables the pulse effect
+                visibleEdgeColor={0xffffff} // the color of visible edges
+                hiddenEdgeColor={0x22090a} // the color of hidden edges
+                width={Resizer.AUTO_SIZE} // render width
+                height={Resizer.AUTO_SIZE} // render height
+                kernelSize={KernelSize.LARGE} // blur kernel size
+                blur={false} // whether the outline should be blurred
+                xRay={true} // indicates whether X-Ray outlines are enabled
               />
             </EffectComposer>
-            <SmoothCamera targetPos={new Vector3(0, 0, 1)} />
+          )}
+          <Selection enabled>
             <GlowingCard
-              showSpecialEffects={!displayParticles}
+              showSpecialEffects={enableEffects}
               key={profile.id}
               profile={profile}
             />
@@ -168,42 +173,57 @@ export default function Cards() {
       {/* Menu */}
       <div className="w-[35%] h-full flex items-start justify-center flex-col absolute right-0 top-0 ">
         <div>
-          <div className="flex justify-center  gap-4 items-center"></div>
+          <div className="flex justify-center  gap-4 items-center">
+            <Button
+              roundedness="rounded-full"
+              className="opacity-30 hover:opacity-100 scale-[60%] hover:scale-100 text-white text-opacity-30 hover:text-opacity-100"
+            >
+              <FiInfo className="md:my-2" />
+            </Button>
+          </div>
         </div>
       </div>
 
+      {/* The top line */}
       {profile?.isActivated && (
         <div className="absolute w-full top-10 flex items-center justify-center">
-          <Link
-            to={`tribute/${profile?.userId}`}
-            key={profile?.id}
-            className={joinClasses(
-              "relative",
-              "hover:scale-125 cursor-pointer bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-indigo-500 via-fuchsia-100 to-violet-100 bg-clip-text text-transparent",
-              "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
-              "lg:text-6xl md:text-1xl text-3xl font-bold p-4 rounded-lg font-jost italic"
-            )}
-          >
-            <ReactConfetti className="w-full h-full" />
-            {(profile?.isActivated && profile.displayName) ??
-              "Тут пустенько..."}
-          </Link>
-          <Link
-            to={`tribute/${profile?.userId}`}
-            viewTransition
-            className={joinClasses(
-              "text-yellow-400 relative -left-8 -top-2 text-2xl p-2 rounded-full bg-white bg-opacity-5",
-              "transition-all duration-500 hover:opacity-100",
-              "hover:text-pink-500",
-              {
-                "opacity-10 pointer-events-none": !profile?.isActivated,
-              }
-            )}
-          >
-            🤓
-          </Link>
+          <span className="opacity-40 h-[1px] sm:w-52  border-b-[1px] border-dotted" />
         </div>
       )}
+
+      {profile?.isActivated && (
+        <div className="absolute w-full top-10 sm:top-auto sm:bottom-14 flex items-center justify-center">
+          <div className="relative">
+            <Link
+              to={`tribute/${profile?.userId}`}
+              key={profile?.id}
+              className={joinClasses(
+                "relative",
+                "hover:scale-125 cursor-pointer bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-indigo-500 via-fuchsia-100 to-violet-100 bg-clip-text text-transparent",
+                "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
+                "lg:text-6xl md:text-1xl text-3xl font-bold p-4 rounded-lg font-jost italic"
+              )}
+            >
+              <ReactConfetti className="w-full h-full" />
+              {(profile?.isActivated && profile.displayName) ??
+                "Тут пустенько..."}
+            </Link>
+            <p
+              className={joinClasses(
+                "text-yellow-400 absolute scale-75 sm:scale-100 -right-1 -top-1 z-10 text-2xl p-2 rounded-full bg-white bg-opacity-5",
+                "transition-all duration-500 hover:opacity-100",
+                "hover:text-pink-500",
+                {
+                  "opacity-10 pointer-events-none": !profile?.isActivated,
+                }
+              )}
+            >
+              🤓
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Slide navigation menu */}
       <div className="flex justify-center items-center w-screen absolute z-20 bottom-0 left-0 gap-4">
         <NavButton
@@ -227,7 +247,7 @@ export default function Cards() {
             width: [50, 80],
           }}
           className="bg-white h-[2px] rounded-lg w-20"
-        ></motion.span>
+        />
         <NavButton
           direction="right"
           onClick={() => handleMoveClick(1)}
@@ -244,15 +264,15 @@ export default function Cards() {
         />
       </div>
 
-      {/* Toggle particles */}
-      <button
-        className="absolute bottom-4 right-4 z-20 opacity-60
-        hover:opacity-100 hover:scale-125 transition-all duration-300 active:scale-90"
-        type="button"
-        onClick={() => setDisplayParticles(!displayParticles)}
+      {/* Enable particles */}
+      <Button
+        roundedness="rounded-full"
+        className="bg-opacity-0 border-0 absolute bottom-2 right-2 z-20 text-3xl
+        opacity-30 hover:opacity-100 hover:text-yellow-300  transition-all duration-300 "
+        onClick={() => setEnableEffects(!enableEffects)}
       >
-        <FaBomb className="text-3xl text-white text-opacity-40" />
-      </button>
+        <GoNorthStar />
+      </Button>
 
       {/* Profiles counter */}
       <p

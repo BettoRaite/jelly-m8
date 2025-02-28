@@ -30,9 +30,9 @@ const frag = `
 
   void main() {
       // Add vertical scroll to UV coordinates
-      vec2 uv = fract(vUv + vec2(0.0, -(u_time * 0.15)));
+      vec2 uv = fract(vUv + vec2(0.0, -(u_time * 0.01)));
 
-      float gridScale = 10.0;
+      float gridScale = 15.0;
       vec2 scaledUV = uv * gridScale;
       vec2 cell = floor(scaledUV);
 
@@ -53,8 +53,8 @@ const frag = `
                   float dx = abs(uv.x - starUV.x);
                   float dy = abs(uv.y - starUV.y);
                   // Rectangular distance calculation (square shape)
-                  float dist = max(dx + 0.001, dy - 0.004);
-                  float radius = 0.002 + 0.003 * rand.y;
+                  float dist = max(dx + 0.001, dy - 0.0001);
+                  float radius = 0.004 + 0.001 * rand.y;
                   float falloff = 1.0 - smoothstep(0.0, radius, dist);
 
                   // Twinkle effect with random phase
@@ -66,7 +66,7 @@ const frag = `
 
       // Clamp brightness and set color
       brightness = min(brightness, 1.0);
-      gl_FragColor = vec4(0.5, 0.0, 0.5, brightness); // Purple color
+      gl_FragColor = vec4(1.5, 1.0, 1.5, brightness); // Purple color
   }
 `;
 const planeShaders = {

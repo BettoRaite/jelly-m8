@@ -1,3 +1,4 @@
+import { createMaterial } from "@/lib/helpers/createMaterial";
 import { loadTexturesAsync } from "@/lib/helpers/loadTextures";
 import {
   fragPlane,
@@ -6,6 +7,7 @@ import {
   profileImageVertexShader,
   vert,
 } from "@/lib/shaders/glowingCard.shader";
+import planeShaders from "@/lib/shaders/plane.shader";
 import type { Profile } from "@/lib/types";
 import { a, useSpring } from "@react-spring/three";
 import {
@@ -14,14 +16,11 @@ import {
   type GroupProps,
   type Vector3,
 } from "@react-three/fiber";
-import type { BloomEffect } from "postprocessing";
+import { Outline, Select } from "@react-three/postprocessing";
+import { BlendFunction, KernelSize, Resizer } from "postprocessing";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import * as THREE from "three";
-import { createMaterial } from "@/lib/helpers/createMaterial";
-import { Text3D, Texture } from "@react-three/drei";
-import planeShaders from "@/lib/shaders/plane.shader";
-import { Select } from "@react-three/postprocessing";
 // Configuration
 const CONFIG = {
   exposure: 2.8,
@@ -40,7 +39,7 @@ const CONFIG = {
     backPattern: "./heart.png",
     u_noise: "./noise2.png",
     u_color:
-      "https://images.unsplash.com/photo-1589307004173-3c95204d00ee?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHBhdHRlcm58ZW58MHx8MHx8fDI%3D",
+      "https://images.unsplash.com/photo-1597773026935-df49538167e4?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nzd8fHBhdHRlcm58ZW58MHwwfDB8fHwy",
     u_back_texture: "./backtexture.jpg",
   },
   dimensions: {
@@ -62,7 +61,7 @@ export function GlowingCard({ cardProps, profile, showSpecialEffects }: Props) {
     THREE.Texture
   > | null>(null);
   const cardRef = useRef<Group | null>(null);
-  const planeShaderRef = useRef<THREE.ShaderMaterial | null>(null);
+  const profilePicMeshRef = useRef<THREE.ShaderMaterial | null>(null);
   const [cardState, setCardState] = useState({
     hovered: false,
     flipped: false,
@@ -176,6 +175,7 @@ export function GlowingCard({ cardProps, profile, showSpecialEffects }: Props) {
         );
         profileMesh = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), material);
         profileMesh.position.set(0, 0, 0.1);
+        profileMesh.layers.set(1);
         cardRef.current?.add(profileMesh);
       },
       undefined, // onProgress callback (optional)
@@ -256,41 +256,40 @@ export function GlowingCard({ cardProps, profile, showSpecialEffects }: Props) {
       rotation={rotationSpring.rotation}
       rotation-y={!isAnimating && rotationY}
     >
-      <Select enabled>
-        {materials?.front && (
-          <mesh material={materials.front}>
-            <planeGeometry args={[20, 30]} />
-          </mesh>
-        )}
+      {materials?.front && (
+        <mesh material={materials.front}>
+          <planeGeometry args={[20, 30]} />
+        </mesh>
+      )}
 
-        {materials?.back && (
-          <mesh material={materials.back} rotation={[0, Math.PI, 0]}>
-            <planeGeometry args={[20, 30]} />
-          </mesh>
+      {materials?.back && (
+        <mesh material={materials.back} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[20, 30]} />
+        </mesh>
+      )}
+      <Select enabled>
+        {showSpecialEffects && (
+          <>
+            <mesh
+              rotation={[cardState.flipped ? -Math.PI : 0, 0, -0.3]}
+              position={[0, 0, 0]}
+              renderOrder={1}
+              material={effectMaterials.plane}
+            >
+              <planeGeometry args={[50, 50]} />
+            </mesh>
+
+            <mesh
+              rotation={[cardState.flipped ? -Math.PI : 0, 0, -0.3]}
+              position={[0, 0, 0]}
+              renderOrder={1}
+              material={effectMaterials.sphere}
+            >
+              <sphereGeometry args={[15, 15]} />
+            </mesh>
+          </>
         )}
       </Select>
-
-      {showSpecialEffects && (
-        <>
-          <mesh
-            rotation={[cardState.flipped ? -Math.PI : 0, 0, -0.3]}
-            position={[0, 0, 0]}
-            renderOrder={1}
-            material={effectMaterials.plane}
-          >
-            <planeGeometry args={[50, 50]} />
-          </mesh>
-
-          <mesh
-            rotation={[cardState.flipped ? -Math.PI : 0, 0, -0.3]}
-            position={[0, 0, 0]}
-            renderOrder={1}
-            material={effectMaterials.sphere}
-          >
-            <sphereGeometry args={[15, 15]} />
-          </mesh>
-        </>
-      )}
     </a.group>
   );
 }

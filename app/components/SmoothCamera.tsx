@@ -2,13 +2,12 @@ import { PerspectiveCamera } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import type { CameraPos } from "lib/types";
 import { useRef } from "react";
-import { Vector3 } from "three";
-
+import { PerspectiveCamera as Cam, Vector3 } from "three";
 type Props = {
   targetPos: CameraPos;
 };
 export function SmoothCamera({ targetPos }: Props) {
-  const cameraRef = useRef(null);
+  const cameraRef = useRef<Cam | null>(null);
   const currentPosition = useRef<Vector3>(new Vector3());
 
   useFrame(() => {
@@ -25,6 +24,8 @@ export function SmoothCamera({ targetPos }: Props) {
       makeDefault
       position={currentPosition.current.toArray()}
       fov={45}
+      near={0.1}
+      far={1000}
     />
   );
 }
