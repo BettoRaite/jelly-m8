@@ -204,7 +204,8 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0, scale: 0.5, y: 100, x: 100 }}
           animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
-          className="font-jost w-64 h-64 absolute bottom-10 bg-white bg-opacity-20 backdrop-blur-sm border-2 border-white border-opacity-30 right-20 rounded-xl p-6 shadow-lg flex flex-col justify-center items-center space-y-4"
+          className="font-jost w-52 h-52 sm:w-64 sm:h-64 absolute bottom-10 bg-white bg-opacity-20 backdrop-blur-sm border-2 border-white
+          border-opacity-30 right-14 rounded-xl p-6 shadow-lg flex flex-col justify-center items-center space-y-4"
         >
           {!areAllProfilesActivated && (
             <>
