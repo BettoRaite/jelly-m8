@@ -1,6 +1,9 @@
 # Project Name
 
-![Project Banner](./public/demo/logo.png)
+<p align="center">
+  <img style="border-radius: 1rem;" src="./public/demo/logo.png" alt="Logo">
+</p>
+
 
 A modern web application built with cutting-edge technologies to deliver a seamless user experience.
 This project features 3D elements, custom authentication, an admin dashboard, user profiles, and smooth animations.
