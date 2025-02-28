@@ -1,4 +1,3 @@
-# JellyM8
 <p align="center">
   <img style="border-radius: 1rem;" src="./public/demo/logo.png" alt="Logo">
 </p>
