@@ -17,11 +17,14 @@ import NavButton from "@/ui/NavButton";
 import * as motion from "motion/react-client";
 import { forwardRef, useRef, useState } from "react";
 import ReactConfetti from "react-confetti";
-import { BiHeart } from "react-icons/bi";
-import { FaQuestion, FaSearch } from "react-icons/fa";
+import { BiHeart, BiStar } from "react-icons/bi";
+import { FaOpera, FaQuestion, FaSearch } from "react-icons/fa";
 import { Link, useNavigate } from "react-router";
 import { Vector3 } from "three";
 import { BsStars } from "react-icons/bs";
+import { GrPerformance } from "react-icons/gr";
+import { Text3D } from "@react-three/drei";
+import { FaBomb } from "react-icons/fa6";
 
 const CAM_MOVE_DIST = 1.2;
 
@@ -86,7 +89,6 @@ export default function Cards() {
       <GlassyBackground className="opacity-50" intensity="medium" />
       <GoBack to="/" className="opacity-20 hover:opacity-80" />
       {displayParticles && <ParticlesWrapper key="particles" />}
-
       {/* Search bar */}
       <div className="w-[50%] flex justify-end items-center gap-2 absolute top-4 right-4 z-40">
         <button
@@ -107,7 +109,6 @@ export default function Cards() {
           />
         )}
       </div>
-
       {/* Card scene */}
       {profile?.isActivated && (
         <AppScene>
@@ -119,58 +120,72 @@ export default function Cards() {
           />
         </AppScene>
       )}
-      {/* --- */}
-      <header className="flex justify-center">
-        <h1
+      {/* Menu */}
+      <div className="w-[35%] h-full flex items-start justify-center flex-col absolute right-0 top-0 ">
+        <div>
+          <div className="flex justify-center  gap-4 items-center"></div>
+        </div>
+      </div>
+
+      <div className="absolute w-full bottom-14 flex items-center justify-center">
+        <Link
+          to={`tribute/${profile?.userId}`}
+          key={profile?.id}
           className={joinClasses(
-            "z-20 flex absolute top-[10%] md:top-[40%] md:left-[10%] hover:scale-125 cursor-pointer",
+            "relative",
+            "hover:scale-125 cursor-pointer bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-indigo-500 via-fuchsia-100 to-violet-100 bg-clip-text text-transparent",
             "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
-            "lg:text-8xl md:text-7xl text-6xl font-bold text-white p-4 rounded-lg font-amatic",
-            {
-              "top-[23%] left-auto": !profile?.isActivated,
-            }
+            "lg:text-6xl md:text-1xl text-3xl font-bold p-4 rounded-lg font-jost italic"
           )}
         >
           {(profile?.isActivated && profile.displayName) ?? "Тут пустенько..."}
-          <ReactConfetti className="h-full w-full" />
-        </h1>
-      </header>
-      {/* Navigation menu */}
-      <div className="flex justify-center w-screen absolute z-20 bottom-0 left-0 gap-20">
-        <NavButton
-          direction="left"
-          onClick={() => handleMoveClick(-1)}
-          disabled={activeIndex === 0}
-          ariaLabel="Previous profile"
-          className={joinClasses(
-            "z-40 border-none cursor-pointer hover:text-gray-100 text-gray-500",
-            {
-              "opacity-15 pointer-events-none": activeIndex === 0,
-            }
-          )}
-          classNameIcon="duration-300"
-        />
+        </Link>
         <Link
           to={`tribute/${profile?.userId}`}
           viewTransition
           className={joinClasses(
-            "p-4 bg-gray-200 rounded-full opacity-60 relative -bottom-4 hover:bottom-4",
-            "transition-all duration-500 hover:opacity-100 hover:shadow-xl hover:shadow-pink-500",
+            "text-yellow-400 relative -left-8 -top-2 text-2xl p-2 rounded-full bg-white bg-opacity-5",
+            "transition-all duration-500 hover:opacity-100",
             "hover:text-pink-500",
             {
               "opacity-10 pointer-events-none": !profile?.isActivated,
             }
           )}
         >
-          <BiHeart />
+          🤓
         </Link>
+      </div>
+      {/* Slide navigation menu */}
+      <div className="flex justify-center items-center w-screen absolute z-20 bottom-0 left-0 gap-4">
+        <NavButton
+          direction="left"
+          onClick={() => handleMoveClick(-1)}
+          disabled={activeIndex === 0}
+          ariaLabel="Previous profile"
+          className={joinClasses(
+            "z-40 border-none cursor-pointer hover:text-gray-100 text-white text-opacity-30",
+            {
+              "opacity-15 pointer-events-none": activeIndex === 0,
+            }
+          )}
+          classNameIcon="duration-300"
+        />
+        <motion.span
+          key={activeIndex}
+          animate={{
+            scale: [0, 1],
+            opacity: [0, 1, 0.1],
+            width: [50, 80],
+          }}
+          className="bg-white h-[2px] rounded-lg w-20"
+        ></motion.span>
         <NavButton
           direction="right"
           onClick={() => handleMoveClick(1)}
           disabled={activeIndex === (profiles?.length ?? 1) - 1}
           ariaLabel="Next profile"
           className={joinClasses(
-            "z-40 border-none cursor-pointer hover:text-gray-100 text-gray-500",
+            "z-40 border-none cursor-pointer hover:text-gray-100 text-white text-opacity-30",
             {
               "opacity-15 pointer-events-none":
                 activeIndex === (profiles?.length ?? 1) - 1,
@@ -179,6 +194,7 @@ export default function Cards() {
           classNameIcon="duration-300"
         />
       </div>
+
       {/* Toggle particles */}
       <button
         className="absolute bottom-4 right-4 z-20 opacity-60
@@ -186,10 +202,10 @@ export default function Cards() {
         type="button"
         onClick={() => setDisplayParticles(!displayParticles)}
       >
-        <BsStars className="text-3xl text-white" />
+        <FaBomb className="text-3xl text-white text-opacity-40" />
       </button>
 
-      {/* --- */}
+      {/* Profiles counter */}
       <p
         className="z-50 absolute bottom-14 md:bottom-10 left-4 md:left-10 text-white font-jost bg-white bg-opacity-10 p-3 md:p-6
         rounded-2xl  flex justify-center items-center backdrop-blur-sm shadow-lg opacity-50 md:opacity-100"

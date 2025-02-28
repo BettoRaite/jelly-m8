@@ -19,7 +19,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import * as THREE from "three";
 import { createMaterial } from "@/lib/helpers/createMaterial";
-import { Texture } from "@react-three/drei";
+import { Text3D, Texture } from "@react-three/drei";
 import planeShaders from "@/lib/shaders/plane.shader";
 // Configuration
 const CONFIG = {

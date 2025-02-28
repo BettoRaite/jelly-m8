@@ -66,7 +66,7 @@ const frag = `
 
       // Clamp brightness and set color
       brightness = min(brightness, 1.0);
-      gl_FragColor = vec4(1.0, 0.5, 0.7, brightness);
+      gl_FragColor = vec4(0.5, 0.0, 0.5, brightness); // Purple color
   }
 `;
 const planeShaders = {
