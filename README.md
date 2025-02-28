@@ -61,9 +61,11 @@ Install the dependencies:
 ```bash
 pnpm install
 ```
-Next you need a server:
-Follow instructions there to start up the server
-https://github.com/BettoRaite/jelly-m8-api
+
+Next follow instuctions for the server
+Once done come back here
+
+ [API](https://github.com/BettoRaite/jelly-m8-api)
 
 ### Development
 
