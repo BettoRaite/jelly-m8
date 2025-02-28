@@ -1,6 +1,7 @@
-# Project Name
+<p align="center">
+  <img style="border-radius: 1rem;" src="./public/demo/logo.png" alt="Logo">
+</p>
 
-![Project Banner](./public/demo/logo.png)
 
 A modern web application built with cutting-edge technologies to deliver a seamless user experience.
 This project features 3D elements, custom authentication, an admin dashboard, user profiles, and smooth animations.
@@ -60,6 +61,11 @@ Install the dependencies:
 ```bash
 pnpm install
 ```
+
+Next follow instuctions for the server, once done come back here.
+
+github repo:
+[Jelly-m8 API](https://github.com/BettoRaite/jelly-m8-api)
 
 ### Development
 
