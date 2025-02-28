@@ -62,10 +62,8 @@ Install the dependencies:
 pnpm install
 ```
 
-Next follow instuctions for the server
-Once done come back here
-
- [API](https://github.com/BettoRaite/jelly-m8-api)
+Next follow instuctions for the server, once done come back here.
+ [Jelly-m8 API](https://github.com/BettoRaite/jelly-m8-api)
 
 ### Development
 
