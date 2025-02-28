@@ -1,13 +1,64 @@
+# Project Name
+
+![Project Banner](./public/demo/logo.png)
+
+A modern web application built with cutting-edge technologies to deliver a seamless user experience.
+This project features 3D elements, custom authentication, an admin dashboard, user profiles, and smooth animations.
+
+---
+
+## Features
+
+- **3D Interactive Cards**: Built with Three.js for immersive user interactions.
+- **Custom Login System**: Secure authentication with secret keys.
+- **Admin Dashboard**: Manage users, content, and settings with ease.
+- **User Profiles**: Personalized profiles for each user.
+- **Search Functionality**: Fast and efficient searching across the platform.
+- **Animations**: Smooth and engaging animations powered by Tailwind CSS and Framer Motion.
+
+---
+
+## Technologies Used
+
+- **Frontend**: React, React Router
+- **Fetchin, Caching**: React Query
+- **3D Rendering**: Three.js
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Forms**: React Hook Form
+
+# Project screenshoots
+
+## 1. Home Page
+![Home Page](./public/demo/home.png)
 
 
-## Getting Started
+## 2. 3D Interactive Cards
+![3D Cards](./public/demo/cards.png)
+
+
+## 3. Admin Dashboard
+![Admin Dashboard](./public/demo/admin.png)
+
+## 4. User Profiles Discovery
+![User Profiles](./public/demo/profiles.png)
+
+## 4. User Profile
+![User Profiles](./public/demo/profile.png)
+
+## 5. User compliments page
+![User Profiles](./public/demo/complimentsFeed.png)
+
+## 6. Login Page
+![Login Page](./public/demo/login.png)
+
 
 ### Installation
 
 Install the dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### Development
@@ -15,7 +66,7 @@ npm install
 Start the development server with HMR:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 Your application will be available at `http://localhost:5173`.
@@ -25,16 +76,10 @@ Your application will be available at `http://localhost:5173`.
 Create a production build:
 
 ```bash
-npm run build
+pnpm run build
 ```
 
-## Deployment
-
 ### Docker Deployment
-
-This template includes three Dockerfiles optimized for different package managers:
-
-- `Dockerfile` - for npm
 
 To build and run using Docker:
 
@@ -48,7 +93,7 @@ docker run -p 3000:3000 my-app
 
 If you're familiar with deploying Node applications, the built-in app server is production-ready.
 
-Make sure to deploy the output of `npm run build`
+Make sure to deploy the output of `pnpm run build`
 
 ```
 ├── package.json
