@@ -1,7 +1,6 @@
 import { Loader } from "@/components/Loader";
 import useProfileQuery from "@/hooks/useProfileQuery";
 import useUserQuery from "@/hooks/useUserQuery";
-import { queryKeys } from "@/lib/config";
 import { AnimatePresence } from "motion/react";
 import ProfileCard from "./ProfileCard";
 import ProfileForm from "./ProfileForm";
@@ -13,7 +12,6 @@ export function ProfilesTab() {
   });
   const { data: users, status: usersQueryStatus } = useUserQuery({
     type: "users",
-    queryKey: queryKeys.usersKey,
   });
 
   if (profilesQueryStatus === "pending" || usersQueryStatus === "pending") {

@@ -1,4 +1,4 @@
-import { QUERY_KEYS, queryKeys } from "@/lib/config";
+import { QUERY_KEYS } from "@/lib/config";
 import {
   useQuery,
   type UseQueryOptions,

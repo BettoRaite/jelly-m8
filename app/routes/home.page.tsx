@@ -1,5 +1,3 @@
-import { AppScene } from "@/components/AppScene";
-import AnimatedGradientBackground from "@/components/Backgrounds/AnimatedGradientBackground";
 import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
 import { HeartLoader } from "@/components/HeartLoader";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,19 +6,17 @@ import { useSessionMutation } from "@/hooks/useSessionMutation";
 import { ERROR_MESSAGES } from "@/lib/constants";
 import { joinClasses } from "@/lib/utils/strings";
 import Button from "@/ui/Button";
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { useCallback, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { FaRegComments, FaUser } from "react-icons/fa";
 import { HiOutlineSquare2Stack } from "react-icons/hi2";
 import { MdDashboard } from "react-icons/md";
 import { Link } from "react-router";
-import { Audio, Vector3 } from "three";
 import { motion } from "motion/react";
-import { ParticlesWrapper } from "@/components/ParticlesWrapper";
 import ReactConfetti from "react-confetti";
 import { FiInfo, FiPlay } from "react-icons/fi";
 import TypingTextEffect from "@/components/TypingText";
+
 export default function Home() {
   const { data: user, status, refetch } = useAuth();
   const session = useSessionMutation();

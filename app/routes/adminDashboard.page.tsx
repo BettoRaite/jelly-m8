@@ -1,16 +1,8 @@
-import { Link } from "react-router";
-import { queryClient, queryKeys } from "@/lib/config";
-import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router";
-import { useQuery } from "@tanstack/react-query";
-import { constructFetchUrl } from "@/lib/utils";
-import type { User } from "@/lib/types";
-import { UsersTab } from "@/components/adminDashboard/tabs/usersTab/UsersTab";
 import { Tabs } from "@/components/adminDashboard/Tabs";
 import { Loader } from "@/components/Loader";
 import { GoBack } from "@/components/GoBack";
-import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
 
 export default function AdminDashboard() {
   const { data: getUserResponse, status } = useAuth();
