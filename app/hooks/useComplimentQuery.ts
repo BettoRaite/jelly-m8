@@ -19,6 +19,12 @@ type Action =
       profileId: number;
       searchPattern?: string;
     }
+  // DO NOT BE LIKE ME, THINK ABOUT RELATIONS BETWEEN RESOURCES FIRST, BEFORE CODING ANYTHING
+  | {
+      type: "user/compliments";
+      userId: number;
+      searchPattern?: string;
+    }
   | {
       type: "compliment";
       profileId: number;
@@ -29,6 +35,8 @@ type Action =
 type ComplimentQueryResult<T extends Action> = T["type"] extends "compliments"
   ? Compliment[]
   : T["type"] extends "profile/compliments"
+  ? Compliment[]
+  : T["type"] extends "user/compliments"
   ? Compliment[]
   : T["type"] extends "compliment"
   ? Compliment
@@ -50,6 +58,11 @@ function useComplimentQuery<T extends Action>(
     case "profile/compliments": {
       baseRoute = `/profiles/${action.profileId}/compliments`;
       queryKey = [QUERY_KEYS.COMPLIMENTS, action.profileId];
+      break;
+    }
+    case "user/compliments": {
+      baseRoute = `/users/${action.userId}/compliments`;
+      queryKey = [QUERY_KEYS.COMPLIMENTS, action.userId];
       break;
     }
     case "compliment": {

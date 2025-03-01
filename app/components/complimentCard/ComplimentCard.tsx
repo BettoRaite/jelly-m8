@@ -193,16 +193,18 @@ function ComplimentCard({
             </button>
           )}
         </form>
-        <UserAvatar
-          profile={initialCompliment.author}
-          theme={variant === "default" ? "dark" : "white"}
-          className="justify-end px-2 gap-2"
-          avatarSize={55}
-          textStyles={{
-            displayName: "text-[1rem]",
-            username: "text-[0.9rem]",
-          }}
-        />
+        {initialCompliment.author && (
+          <UserAvatar
+            profile={initialCompliment.author}
+            theme={variant === "default" ? "dark" : "white"}
+            className="justify-end px-2 gap-2"
+            avatarSize={55}
+            textStyles={{
+              displayName: "text-[1rem]",
+              username: "text-[0.9rem]",
+            }}
+          />
+        )}
         {/* Like button */}
         {!isEditing && (
           <motion.button

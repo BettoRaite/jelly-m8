@@ -38,6 +38,7 @@ export interface Compliment {
   likes: number;
   isAdmin: boolean;
   createdAt: string;
+  visibility: "private" | "public";
 }
 
 export interface Question {
