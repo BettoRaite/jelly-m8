@@ -139,7 +139,7 @@ function UserProfile({ profile, role }: Props) {
       <div className="grid gap-8 px-4 py-8 sm:px-6 md:px-8 md:grid-cols-2 lg:px-12 lg:py-12">
         {/* Biography Section */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-gray-800 sm:text-3xl font-playfair">
+          <h2 className="text-2xl font-bold text-gray-700 sm:text-3xl font-playfair">
             Обо мне
           </h2>
           <div className="p-6 rounded-2xl bg-white/50 border border-white/30 backdrop-blur-lg transition-shadow duration-300 sm:p-8">

@@ -97,6 +97,7 @@ export default function Cards() {
       )}
       <GoBack to="/" className="opacity-20 hover:opacity-80" />
       {!enableEffects && <ParticlesWrapper key="particles" />}
+
       {/* Search bar */}
       <div className="w-[50%] flex justify-end items-center gap-2 absolute top-4 right-4 z-40">
         <button
@@ -114,9 +115,13 @@ export default function Cards() {
             classNameContainer="w-full max-w-60"
             className="bg-opacity-10 bg-white border-none text-white w-full"
             showSearchBtn={false}
+            styles={{
+              text: "placeholder:text-slate-200",
+            }}
           />
         )}
       </div>
+
       {/* Card scene */}
       {profile?.isActivated && (
         <AppScene>

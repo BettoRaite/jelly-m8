@@ -8,6 +8,10 @@ type Props = {
   className?: string;
   classNameContainer?: string;
   showSearchBtn?: boolean;
+  styles?: {
+    btnText?: string;
+    text?: string;
+  };
 };
 function SearchBar({
   onSearch,
@@ -15,6 +19,10 @@ function SearchBar({
   className,
   classNameContainer,
   showSearchBtn = true,
+  styles = {
+    btnText: "text-slate-500 active:text-white",
+    text: "text-gray-700",
+  },
 }: Props) {
   const [query, setQuery] = useState("");
 
@@ -32,7 +40,7 @@ function SearchBar({
       handleSearch();
     }
   };
-
+  const { btnText, text } = styles;
   return (
     <div className={joinClasses(classNameContainer, "flex items-center gap-4")}>
       <input
@@ -43,7 +51,8 @@ function SearchBar({
         onKeyDown={handleKeyPress}
         className={joinClasses(
           className,
-          "p-2 px-4 focus:outline-none border rounded-xl focus:border-purple-300 transition duration-300 font-bold text-gray-700"
+          "p-2 px-4 focus:outline-none border rounded-xl focus:border-purple-300 transition duration-300 font-bold",
+          text
         )}
       />
       {showSearchBtn && (
@@ -51,8 +60,8 @@ function SearchBar({
           type="button"
           onClick={handleSearch}
           variant="outline"
-          className="bg-opacity-20 text-slate-500 border border-gray-500 hover:border-opacity-30 active:border-gray-100
-        shadow-lg active:text-white active:bg-purple-400 font-bold"
+          className={`bg-opacity-20  border border-gray-500 hover:border-opacity-30 active:border-gray-100
+        shadow-lg  active:bg-purple-400 font-bold ${btnText}`}
         >
           <BiSearch />
           Search
