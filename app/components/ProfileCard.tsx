@@ -21,7 +21,7 @@ function ProfileCard({ profile }: { profile: Profile }) {
         },
       }}
       className={joinClasses(
-        "relative bg-slate-500/5 backdrop-blur-md dark:bg-gray-800 rounded-xl",
+        "relative bg-slate-500/5  dark:bg-gray-800 rounded-xl",
         "shadow-sm  transition-shadow duration-500 p-6",
         {
           "border-yellow-300 bg-yellow-50 dark:bg-yellow-900":

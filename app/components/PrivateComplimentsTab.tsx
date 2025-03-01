@@ -8,7 +8,7 @@ function PrivateComplimentsTab() {
   const user = getAuth();
   const [showPrivateOnly, setShowPrivateOnly] = useState(false);
 
-  const { data: compliments } = useComplimentQuery({
+  const { data: compliments, refetch } = useComplimentQuery({
     type: "user/compliments",
     userId: user?.id as number,
   });
@@ -17,7 +17,9 @@ function PrivateComplimentsTab() {
   const filteredCompliments = showPrivateOnly
     ? compliments?.filter((c) => c.visibility === "private")
     : compliments;
-
+  function handleTogglePrivateOnly() {
+    setShowPrivateOnly(!showPrivateOnly);
+  }
   return (
     <main className="flex flex-col items-center w-full p-4 min-h-screen">
       {/* Stats Section */}
@@ -27,7 +29,7 @@ function PrivateComplimentsTab() {
         type="button"
         variant="outline"
         className="text-slate-500"
-        onClick={() => setShowPrivateOnly(!showPrivateOnly)}
+        onClick={handleTogglePrivateOnly}
       >
         {showPrivateOnly
           ? "Показать все комплименты"

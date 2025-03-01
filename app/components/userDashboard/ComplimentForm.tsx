@@ -1,24 +1,27 @@
+import { getAuth } from "@/hooks/useAuth";
 import { useComplimentMutation } from "@/hooks/useComplimentMutation";
 import useComplimentQuery from "@/hooks/useComplimentQuery";
-import { HiDotsVertical, HiHeart } from "react-icons/hi";
+import useQuestionQuery from "@/hooks/useQuestionQuery";
 import {
   type CreateComplimentPayload,
   createComplimentSchema,
 } from "@/lib/schemas/compliment.schema";
-import type { Profile, Question } from "@/lib/types";
+import type { Profile } from "@/lib/types";
+import { joinClasses } from "@/lib/utils/strings";
 import Button from "@/ui/Button";
 import { FormField } from "@/ui/formField/FormField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useForm, FormProvider } from "react-hook-form";
-import { MdClose, MdSend } from "react-icons/md";
-import SelectInput from "@/ui/form/SelectInput";
-import { joinClasses } from "@/lib/utils/strings";
+import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { getAuth } from "@/hooks/useAuth";
-import useQuestionQuery from "@/hooks/useQuestionQuery";
-import GlassyBackground from "../Backgrounds/GlassyBackground";
+import { HiHeart } from "react-icons/hi";
+import {
+  MdClose,
+  MdOutlinePublic,
+  MdOutlinePublicOff,
+  MdSend,
+} from "react-icons/md";
 import ChatMessage from "../chat/ChatMessage";
 
 type Props = {
@@ -56,8 +59,8 @@ function ComplimentForm({ profile, onClose }: Props) {
     }
   );
   const [message, setMessage] = useState("");
+  const [isComplimentPrivate, setIsComplimentPrivate] = useState(false);
   const [chatState, setChatState] = useState<ChatState>(INITIAL_CHAT_STATE);
-  const timeoutRef = useRef(null);
   const chatContainerRef = useRef<null | HTMLDivElement>(null);
   const methods = useForm<CreateComplimentPayload>({
     resolver: zodResolver(createComplimentSchema),
@@ -84,6 +87,7 @@ function ComplimentForm({ profile, onClose }: Props) {
         payload: {
           ...payload,
           title: message,
+          visibility: isComplimentPrivate ? "private" : "public",
         },
       });
       setTimeout(() => {
@@ -113,16 +117,25 @@ function ComplimentForm({ profile, onClose }: Props) {
     setChatState(INITIAL_CHAT_STATE);
     setMessage("");
   }
+  function handleToggleComplimentPrivacy() {
+    setIsComplimentPrivate(!isComplimentPrivate);
+    toast(
+      isComplimentPrivate
+        ? "Комлимент стал публичным"
+        : "Комплимент стал приватным. Т.е его только сможет прочитать человек которому он был написан"
+    );
+  }
   useEffect(() => {
+    let timeoutId: number | undefined;
     if (!chatState.userChoosingQuestion && chatState.botIsTyping) {
-      timeoutRef.current = setTimeout(() => {
+      timeoutId = setTimeout(() => {
         handleSetChatState({
           botIsTyping: false,
         });
       }, 2000);
     }
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (timeoutId) clearTimeout(timeoutId);
     };
   }, [
     chatState.userChoosingQuestion,
@@ -145,6 +158,7 @@ function ComplimentForm({ profile, onClose }: Props) {
       return c.title === q.content;
     });
   });
+
   return (
     <FormProvider {...methods}>
       <motion.form
@@ -254,7 +268,7 @@ function ComplimentForm({ profile, onClose }: Props) {
             <img
               src={profile.profileImageUrl}
               alt={profile.profileImageUrl}
-              className="h-10 w-10 rounded-full"
+              className="h-10 w-10 rounded-full object-cover"
             />
             <h3 className="font-bold text-slate-700">{profile.displayName}</h3>
             {chatState.botIsTyping && (
@@ -291,10 +305,27 @@ function ComplimentForm({ profile, onClose }: Props) {
           )}
         </div>
 
+        {/* Toggle compliment privacy */}
+        <Button
+          type="button"
+          roundedness="rounded-full"
+          padding="px-2 py-2"
+          variant="solid"
+          onClick={handleToggleComplimentPrivacy}
+          className={joinClasses("absolute right-2 top-20 border-blue-500", {
+            "": isComplimentPrivate,
+          })}
+        >
+          {isComplimentPrivate ? (
+            <MdOutlinePublicOff />
+          ) : (
+            <MdOutlinePublic className="text-white" />
+          )}
+        </Button>
         {/* Input Area */}
         <div className="p-4 border-t border-gray-100 relative rounded-b-xl overflow-hidden">
           <div
-            className="absolute bg-slate-300 bg-clip-padding backdrop-filter  backdrop-blur
+            className="absolute bg-gray-200 bg-clip-padding backdrop-filter  backdrop-blur
           backdrop-saturate-100 backdrop-contrast-100 w-full h-full -z-10 top-0 left-0"
           />
           <div className="grid grid-cols-[1fr_auto] gap-10">
