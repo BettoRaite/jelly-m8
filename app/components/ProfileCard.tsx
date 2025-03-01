@@ -21,12 +21,13 @@ function ProfileCard({ profile }: { profile: Profile }) {
         },
       }}
       className={joinClasses(
-        "relative bg-white dark:bg-gray-800 rounded-xl",
-        "shadow-lg transition-shadow duration-200 p-6",
-        "border border-pink-300 bg-opacity-80 border-opacity-60",
+        "relative bg-slate-500/5 backdrop-blur-md dark:bg-gray-800 rounded-xl",
+        "shadow-sm  transition-shadow duration-500 p-6",
         {
           "border-yellow-300 bg-yellow-50 dark:bg-yellow-900":
             profile.occupation === "teacher",
+          "border-purple-600/5 hover:border-purple-600/40  border":
+            profile.occupation === "student",
         }
       )}
     >
@@ -46,23 +47,23 @@ function ProfileCard({ profile }: { profile: Profile }) {
           <div>
             <h3
               className={joinClasses("text-lg font-bold", {
-                "text-pink-400": profile.occupation !== "teacher",
-                "text-yellow-600 dark:text-yellow-400":
+                "text-slate-700": profile.occupation !== "teacher",
+                "text-yellow-500 dark:text-yellow-400":
                   profile.occupation === "teacher",
               })}
             >
               {profile.displayName}
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
+            <p className="text-sm text-slate-500 dark:text-gray-300">
               @{profile.displayName}
             </p>
             {profile.occupation === "teacher" && (
               <div className="flex items-center gap-1 mt-1">
                 <FiBookOpen
                   size={16}
-                  className="text-yellow-600 dark:text-yellow-400"
+                  className="text-yellow-500 dark:text-yellow-400"
                 />
-                <span className="text-sm text-yellow-600 dark:text-yellow-400">
+                <span className="text-sm text-yellow-500 dark:text-yellow-400">
                   Teacher
                 </span>
               </div>
@@ -71,13 +72,13 @@ function ProfileCard({ profile }: { profile: Profile }) {
         </div>
       </div>
 
-      <p className="text-gray-600 dark:text-gray-300 text-sm mb-6 line-clamp-3 italic">
+      <p className="text-slate-500 dark:text-gray-300 text-sm mb-6 line-clamp-3 italic">
         {profile.biography}
       </p>
       <Link
         to={`/users/${profile.userId}/profile`}
         className={joinClasses(
-          "bg-pink-400 hover:bg-pink-600 text-white px-4 py-2 rounded-lg",
+          "bg-purple-400 hover:bg-purple-600 text-white px-4 py-2 rounded-lg",
           "text-sm font-bold text-center transition-colors duration-300",
           "flex items-center justify-center gap-2",
           {
@@ -89,6 +90,7 @@ function ProfileCard({ profile }: { profile: Profile }) {
         <FiMessageCircle size={16} />
         Посмотреть профиль
       </Link>
+      <div className="absolute bottom-0 left-0 bg-pink-500" />
     </motion.div>
   );
 }

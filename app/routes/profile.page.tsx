@@ -19,7 +19,7 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
   const userId = Number.parseInt(params.userId);
   const navigate = useNavigate();
   const { data: user, status } = useAuth();
-  const [tab, setTab] = useState<"profile" | "compliments">("compliments");
+  const [tab, setTab] = useState<"profile" | "compliments">("profile");
   const {
     data: profile,
     status: profileStatus,

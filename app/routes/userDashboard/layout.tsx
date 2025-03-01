@@ -49,7 +49,7 @@ export default function Layout() {
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200 ${
                   isActive("/compliments-feed")
                     ? "bg-pink-500 text-white"
-                    : "text-gray-700 hover:bg-pink-50"
+                    : "text-slate-700 hover:bg-pink-50"
                 }`}
               >
                 <FaHeart

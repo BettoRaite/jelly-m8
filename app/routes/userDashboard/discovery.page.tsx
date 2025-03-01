@@ -1,4 +1,6 @@
+import AnimatedGradientBackground from "@/components/Backgrounds/AnimatedGradientBackground";
 import CozyBackground from "@/components/Backgrounds/CozyBackground";
+import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
 import ErrorScreen from "@/components/ErrorScreen";
 import { GoBack } from "@/components/GoBack";
 import ProfileCard from "@/components/ProfileCard";
@@ -45,6 +47,8 @@ export default function Page() {
         theme="light"
         className="text-black md:text-white text-sm md:text-lg"
       />
+      {/* <AnimatedGradientBackground /> */}
+      <GlassyBackground className="bg-white" />
       <CozyBackground />
       <header className="mb-20 sticky top-4 z-30">
         <h1 className="w-full text-center text-4xl sm:text-5xl  font-bold drop-shadow-[0_0_10px_rgba(255,192,203,0.8)] font-caveat">
@@ -57,7 +61,7 @@ export default function Page() {
       <div className="flex justify-center px-8 sm:px-4 relative">
         <SearchBar
           onChange={handleSearch}
-          className="w-full"
+          className="w-full border-opacity-20"
           aria-label="Search profiles"
         />
       </div>
