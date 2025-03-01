@@ -21,10 +21,16 @@ import {
   Selection,
   Vignette,
   Outline,
+  SMAA,
 } from "@react-three/postprocessing";
 import * as motion from "motion/react-client";
-import { BlendFunction, Resizer, KernelSize } from "postprocessing";
-import { useState } from "react";
+import {
+  BlendFunction,
+  Resizer,
+  KernelSize,
+  GlitchEffect,
+} from "postprocessing";
+import { useEffect, useRef, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { FaEye, FaSearch } from "react-icons/fa";
 import { FaBomb } from "react-icons/fa6";
@@ -41,9 +47,9 @@ const CAM_MOVE_DIST = 1.2;
 export default function Cards() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [openSearch, setOpenSearch] = useState(false);
-
   const [enableEffects, setEnableEffects] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isGlitchActive, setIsGlitchActive] = useState(true);
   const {
     data: profiles,
     status,
@@ -57,7 +63,16 @@ export default function Cards() {
       retry: false,
     }
   );
-
+  useEffect(() => {
+    const id = setTimeout(() => {
+      if (isGlitchActive) {
+        setIsGlitchActive(false);
+      }
+    }, 950);
+    return () => {
+      clearTimeout(id);
+    };
+  }, [isGlitchActive]);
   if (status === "pending") return <HeartLoader />;
   if (status === "error")
     return (
@@ -81,10 +96,12 @@ export default function Cards() {
       const newIndex = prev + indexDelta;
       return Math.max(0, Math.min(newIndex, (profiles?.length ?? 1) - 1));
     });
+    setIsGlitchActive(true);
   }
   function handleSearch(s: string) {
     setSearchQuery(s);
   }
+  console.log("rerender");
   return (
     <main
       className={
@@ -127,7 +144,12 @@ export default function Cards() {
           <SmoothCamera targetPos={new Vector3(0, 0, 1)} />
           {enableEffects && (
             <EffectComposer depthBuffer={true} multisampling={0}>
-              <Bloom intensity={0.5} />
+              <SMAA />
+              <Bloom
+                luminanceSmoothing={0.05}
+                intensity={0.8}
+                blendFunction={BlendFunction.SCREEN}
+              />
               <ChromaticAberration
                 offset={[0.001, 0.002]}
                 radialModulation={true}
@@ -139,25 +161,6 @@ export default function Cards() {
                 darkness={0.01}
                 eskil={false}
                 blendFunction={BlendFunction.MULTIPLY}
-              />
-              <DepthOfField
-                focusDistance={0} // where to focus
-                focalLength={0.02} // focal length
-                bokehScale={0.5} // bokeh size
-              />
-              <Outline
-                selectionLayer={0} // selection layer
-                blendFunction={BlendFunction.SCREEN} // set this to BlendFunction.ALPHA for dark outlines
-                patternTexture={null} // a pattern texture
-                edgeStrength={2.5} // the edge strength
-                pulseSpeed={1} // a pulse speed. A value of zero disables the pulse effect
-                visibleEdgeColor={0xffffff} // the color of visible edges
-                hiddenEdgeColor={0x22090a} // the color of hidden edges
-                width={Resizer.AUTO_SIZE} // render width
-                height={Resizer.AUTO_SIZE} // render height
-                kernelSize={KernelSize.LARGE} // blur kernel size
-                blur={false} // whether the outline should be blurred
-                xRay={true} // indicates whether X-Ray outlines are enabled
               />
             </EffectComposer>
           )}
@@ -190,7 +193,7 @@ export default function Cards() {
           <span className="opacity-40 h-[1px] sm:w-52  border-b-[1px] border-dotted" />
         </div>
       )}
-
+      {/* Profile name */}
       {profile?.isActivated && (
         <div className="absolute w-full top-10 sm:top-auto sm:bottom-14 flex items-center justify-center">
           <div className="relative">
@@ -264,7 +267,7 @@ export default function Cards() {
         />
       </div>
 
-      {/* Enable particles */}
+      {/* Enable post-proccessing */}
       <Button
         roundedness="rounded-full"
         className="bg-opacity-0 border-0 absolute bottom-2 right-2 z-20 text-3xl

@@ -175,7 +175,6 @@ export function GlowingCard({ cardProps, profile, showSpecialEffects }: Props) {
         );
         profileMesh = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), material);
         profileMesh.position.set(0, 0, 0.1);
-        profileMesh.layers.set(1);
         cardRef.current?.add(profileMesh);
       },
       undefined, // onProgress callback (optional)
@@ -273,7 +272,6 @@ export function GlowingCard({ cardProps, profile, showSpecialEffects }: Props) {
             <mesh
               rotation={[cardState.flipped ? -Math.PI : 0, 0, -0.3]}
               position={[0, 0, 0]}
-              renderOrder={1}
               material={effectMaterials.plane}
             >
               <planeGeometry args={[50, 50]} />
@@ -282,7 +280,6 @@ export function GlowingCard({ cardProps, profile, showSpecialEffects }: Props) {
             <mesh
               rotation={[cardState.flipped ? -Math.PI : 0, 0, -0.3]}
               position={[0, 0, 0]}
-              renderOrder={1}
               material={effectMaterials.sphere}
             >
               <sphereGeometry args={[15, 15]} />
