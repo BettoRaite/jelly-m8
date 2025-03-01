@@ -1,5 +1,4 @@
 import { AppScene } from "@/components/AppScene";
-import GlassyBackground from "@/components/Backgrounds/GlassyBackground";
 import ErrorScreen from "@/components/ErrorScreen";
 import { GoBack } from "@/components/GoBack";
 import { HeartLoader } from "@/components/HeartLoader";
@@ -16,31 +15,22 @@ import NavButton from "@/ui/NavButton";
 import {
   Bloom,
   ChromaticAberration,
-  DepthOfField,
   EffectComposer,
   Selection,
-  Vignette,
-  Outline,
   SMAA,
+  Vignette,
 } from "@react-three/postprocessing";
+import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
-import {
-  BlendFunction,
-  Resizer,
-  KernelSize,
-  GlitchEffect,
-} from "postprocessing";
-import { useEffect, useRef, useState } from "react";
+import { BlendFunction } from "postprocessing";
+import { useState } from "react";
 import ReactConfetti from "react-confetti";
-import { FaEye, FaSearch } from "react-icons/fa";
-import { FaBomb } from "react-icons/fa6";
+import { FaSearch } from "react-icons/fa";
+import { FiInfo } from "react-icons/fi";
+import { GoNorthStar } from "react-icons/go";
+import { IoMdEye } from "react-icons/io";
 import { Link } from "react-router";
 import { Vector3 } from "three";
-import { Glitch } from "@react-three/postprocessing";
-import { GlitchMode } from "postprocessing";
-import { FiInfo } from "react-icons/fi";
-import { MdNorthEast } from "react-icons/md";
-import { GoNorthStar } from "react-icons/go";
 
 const CAM_MOVE_DIST = 1.2;
 
@@ -49,7 +39,7 @@ export default function Cards() {
   const [openSearch, setOpenSearch] = useState(false);
   const [enableEffects, setEnableEffects] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isGlitchActive, setIsGlitchActive] = useState(true);
+  const [isPopoverVisible, setIsPopoverVisible] = useState(false);
   const {
     data: profiles,
     status,
@@ -63,16 +53,7 @@ export default function Cards() {
       retry: false,
     }
   );
-  useEffect(() => {
-    const id = setTimeout(() => {
-      if (isGlitchActive) {
-        setIsGlitchActive(false);
-      }
-    }, 950);
-    return () => {
-      clearTimeout(id);
-    };
-  }, [isGlitchActive]);
+
   if (status === "pending") return <HeartLoader />;
   if (status === "error")
     return (
@@ -96,12 +77,10 @@ export default function Cards() {
       const newIndex = prev + indexDelta;
       return Math.max(0, Math.min(newIndex, (profiles?.length ?? 1) - 1));
     });
-    setIsGlitchActive(true);
   }
   function handleSearch(s: string) {
     setSearchQuery(s);
   }
-  console.log("rerender");
   return (
     <main
       className={
@@ -174,10 +153,50 @@ export default function Cards() {
         </AppScene>
       )}
       {/* Menu */}
-      <div className="w-[35%] h-full flex items-start justify-center flex-col absolute right-0 top-0 ">
-        <div>
+      <div className="w-[30%] sm:w-[35%] h-full flex items-start justify-center flex-col absolute right-0 top-0 ">
+        <div className="relative">
+          <AnimatePresence>
+            {isPopoverVisible && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className="font-jost bg-white bg-opacity-20 backdrop-blur-md h-70 overflow-y-auto w-56 md:w-64 lg:w-72 absolute right-[110%] bottom-[70%] sm:right-[120%] sm:bottom-[80%] md:right-[130%] md:bottom-[90%] rounded-xl shadow-lg border border-white border-opacity-20 overflow-hidden"
+              >
+                <motion.div
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="p-4"
+                >
+                  <p className="text-white text-base sm:text-lg">
+                    Имя:{" "}
+                    <span className="font-bold">{profile?.displayName}</span>
+                  </p>
+                  <p className="text-white mt-2 text-sm sm:text-base">
+                    Статус:{" "}
+                    <span className="text-green-500 font-bold">
+                      {profile?.isActivated
+                        ? "Профиль Активирован"
+                        : "Не активирован"}
+                    </span>
+                  </p>
+                  <center>
+                    <Link
+                      to={`tribute/${profile?.userId}`}
+                      className="font-bold font-caveat mt-4 inline-block px-4 py-2 bg-white bg-opacity-30 text-white rounded-lg hover:bg-opacity-50 transition-all duration-300 text-sm sm:text-base"
+                    >
+                      открыть секрет
+                    </Link>
+                  </center>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className="flex justify-center  gap-4 items-center">
             <Button
+              onClick={() => setIsPopoverVisible(!isPopoverVisible)}
               roundedness="rounded-full"
               className="opacity-30 hover:opacity-100 scale-[60%] hover:scale-100 text-white text-opacity-30 hover:text-opacity-100"
             >
@@ -195,25 +214,23 @@ export default function Cards() {
       )}
       {/* Profile name */}
       {profile?.isActivated && (
-        <div className="absolute w-full top-10 sm:top-auto sm:bottom-14 flex items-center justify-center">
+        <div className="absolute w-full top-16 sm:top-auto sm:bottom-14 flex items-center justify-center">
           <div className="relative">
-            <Link
-              to={`tribute/${profile?.userId}`}
-              key={profile?.id}
+            <p
               className={joinClasses(
                 "relative",
                 "hover:scale-125 cursor-pointer bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-indigo-500 via-fuchsia-100 to-violet-100 bg-clip-text text-transparent",
                 "active:text-pink-600 transition-all duration-300 first-letter:uppercase",
-                "lg:text-6xl md:text-1xl text-3xl font-bold p-4 rounded-lg font-jost italic"
+                "lg:text-6xl sm:text-3xl text-2xl font-bold p-4 rounded-lg font-jost italic"
               )}
             >
               <ReactConfetti className="w-full h-full" />
               {(profile?.isActivated && profile.displayName) ??
                 "Тут пустенько..."}
-            </Link>
+            </p>
             <p
               className={joinClasses(
-                "text-yellow-400 absolute scale-75 sm:scale-100 -right-1 -top-1 z-10 text-2xl p-2 rounded-full bg-white bg-opacity-5",
+                "text-yellow-400 absolute scale-75 lg:scale-100 -right-2 top-0 sm:top-1 lg:-right-2 lg:top-4 z-10 text-2xl p-2 rounded-full bg-white bg-opacity-5",
                 "transition-all duration-500 hover:opacity-100",
                 "hover:text-pink-500",
                 {
