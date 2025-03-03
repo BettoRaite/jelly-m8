@@ -44,7 +44,16 @@ export const fragPlane = `
     vec4 noise_texture = texture2D(u_noise, mod(vUV * 1.0, 1.0));
 
     if (gl_FragColor.g >= 0.5 && gl_FragColor.r < 0.6) {
-      gl_FragColor = f + skull_texture;
+      float tone = pow(dot(normalize(v_cam_pos), normalize(skull_texture.rgb)), 1.0);
+      vec4 color_texture = texture2D(u_color, vec2(tone, 0.0));
+      if (skull_texture.a > 0.2) {
+        gl_FragColor = color_texture;
+        // gl_FragColor += vec4(108.0) * result;
+        // gl_FragColor += vec4(sin((tone + vUV.x + vUV.y / 10.0) * 10.0)) / 8.0;
+      } else {
+        gl_FragColor = vec4(0.0) + f;
+        gl_FragColor += noise_texture / 15.0;
+      }
       gl_FragColor += noise_texture / 5.0;
     } else {
       vec4 back_texture = texture2D(u_back_texture, vUV);
@@ -53,6 +62,7 @@ export const fragPlane = `
       vec2 center = vec2(0.5, 0.5); // Center of the texture
       vec2 animatedUv = fract(vUV + vec2(time * 0.1, time * 0.05));
       vec4 color_texture = texture2D(u_color, animatedUv);
+
       color_texture.rgb = mix(vec3(0.5), color_texture.rgb, 1.2); // Boost contrast
 
       // Sparkle code
@@ -71,9 +81,9 @@ export const fragPlane = `
       gl_FragColor += vec4(sin((0.1 + vUV.x + vUV.y / 10.0) * 10.0)) / 8.0;
       // Uncomment if needed (adjust brightness)
       // gl_FragColor += vec4(108.0) * result;
+      gl_FragColor.a = template_texture.a + 0.1;
     }
 
-    gl_FragColor.a = template_texture.a;
   }
 `;
 
@@ -182,13 +192,12 @@ export const profileImageFragmentShader = `
       gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); // Fully transparent
     } else {
       vec4 color = texture2D(profileImage, uv);
-
       // Generate stars
       vec2 starUV = uv * 10.0; // Scale the UV coordinates to create more stars
       float starValue = 0.0;
 
       // Create multiple layers of stars for a more natural look
-      for (int i = 0; i < 3; i++) {
+      for (int i = 0; i < 5; i++) {
         vec2 offset = vec2(random(vec2(i, i + 1)), random(vec2(i + 2, i + 3))) * 100.0;
         starValue += star(fract(starUV + offset) - 0.5, 0.005, 1.0);
       }

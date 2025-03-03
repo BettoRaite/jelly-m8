@@ -82,7 +82,6 @@ function ProfileForm({ formType, users, profile, onRefetch, onClose }: Props) {
         value: u.id,
       }))
     : [];
-  console.log(newProfileUserId);
   return (
     <FormProvider {...methods}>
       <div>

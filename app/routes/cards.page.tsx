@@ -8,6 +8,7 @@ import { ProfileActivationOverlay } from "@/components/ProfileActivationOverlay"
 import SearchBar from "@/components/SearchBar";
 import { SmoothCamera } from "@/components/SmoothCamera";
 import useProfileQuery from "@/hooks/useProfileQuery";
+import { EMOJIS } from "@/lib/constants";
 import type { Profile } from "@/lib/types";
 import { joinClasses } from "@/lib/utils/strings";
 import Button from "@/ui/Button";
@@ -23,12 +24,13 @@ import {
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
 import { BlendFunction } from "postprocessing";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { FaSearch } from "react-icons/fa";
 import { FiInfo } from "react-icons/fi";
 import { GoNorthStar } from "react-icons/go";
 import { IoMdEye } from "react-icons/io";
+import { RiContactsBookLine } from "react-icons/ri";
 import { Link } from "react-router";
 import { Vector3 } from "three";
 
@@ -53,6 +55,11 @@ export default function Cards() {
       retry: false,
     }
   );
+  const randEmojis = useMemo(() => {
+    return EMOJIS.slice().sort(() => {
+      return Math.random() > 0.5 ? 1 : -1;
+    });
+  }, []);
 
   if (status === "pending") return <HeartLoader />;
   if (status === "error")
@@ -243,7 +250,7 @@ export default function Cards() {
                 }
               )}
             >
-              🤓
+              {randEmojis.at(profile.id)}
             </p>
           </div>
         </div>
