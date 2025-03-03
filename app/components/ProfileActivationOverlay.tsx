@@ -124,6 +124,11 @@ export function ProfileActivationOverlay({ profile, onRefetchProfile }: Props) {
               className="relative flex justify-center"
             >
               <FormField.TextInput
+                onKeyDown={(e) => {
+                  if (e.code === "enter") {
+                    methods.handleSubmit(handleFormSubmit)();
+                  }
+                }}
                 placeholder="Секрет"
                 className={inputClassName}
               />
@@ -143,7 +148,7 @@ export function ProfileActivationOverlay({ profile, onRefetchProfile }: Props) {
           </FadeInExpand>
 
           <button
-            className="bg-white bg-opacity-10 p-4 rounded-full hover:shadow-sm border border-white
+            className="relative z-10 bg-white bg-opacity-10 p-4 rounded-full hover:shadow-sm border border-white
             border-opacity-10 hover:border text-white hover:border-pink-200 shadow-lg
             h-min hover:scale-125 transition-all duration-500"
             type="submit"
