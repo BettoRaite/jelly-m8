@@ -27,12 +27,6 @@ export default function FieldUploadInput({
   const defaultPlaceholder = "Выбери своё фото";
   const [fileName, setFileName] = useState(defaultPlaceholder);
 
-  const handleFileInputClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
   const handleSetImage = () => {
     const file = fileInputRef.current?.files?.[0];
     if (file && type === "display-image") {
@@ -51,7 +45,7 @@ export default function FieldUploadInput({
           <img
             src={imageUrl}
             alt=""
-            className="w-24 h-24 border border-gray-300 rounded-full mb-2 object-cover"
+            className="w-24 h-24 border-4 border-gray-300 rounded-full mb-2 object-cover"
           />
         </div>
       )}
@@ -59,36 +53,37 @@ export default function FieldUploadInput({
         control={control}
         name={fieldName}
         render={({ field: { onChange, onBlur, ref } }) => (
-          <input
-            className="hidden"
-            {...inputProps}
-            type="file"
-            id={fieldName}
-            ref={(e) => {
-              ref(e); // Assign the ref to the field
-              fileInputRef.current = e; // Assign the ref to your custom ref if needed
-            }}
-            placeholder={fieldName}
-            onChange={(e) => {
-              if (type === "display-image") {
-                handleSetImage();
-              }
-              setFileName(e.target?.files?.[0]?.name ?? defaultPlaceholder);
-              onChange(e.target.files); // Pass the file(s) to the form
-            }}
-            onBlur={onBlur}
-          />
+          <div className="relative flex justify-center mt-2">
+            {/* Custom file input button */}
+            <label
+              htmlFor={fieldName}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-blue-600 transition-colors"
+            >
+              {fileName || defaultPlaceholder}
+            </label>
+            {/* Hidden file input */}
+            <input
+              className="hidden"
+              {...inputProps}
+              type="file"
+              id={fieldName}
+              ref={(e) => {
+                ref(e); // Assign the ref to the field
+                fileInputRef.current = e; // Assign the ref to your custom ref if needed
+              }}
+              onChange={(e) => {
+                if (type === "display-image") {
+                  handleSetImage();
+                }
+                setFileName(e.target?.files?.[0]?.name ?? defaultPlaceholder);
+                onChange(e.target.files); // Pass the file(s) to the form
+              }}
+              onBlur={onBlur}
+            />
+            {/* Display selected file name */}
+          </div>
         )}
       />
-      <button
-        type="button"
-        onClick={handleFileInputClick}
-        className={`text-sm mt-1 block w-full p-2 border ${
-          errors[fieldName] ? "border-red-500" : "border-gray-200"
-        } rounded-md focus:outline-none focus:border-gray-400 transition-colors duration-200`}
-      >
-        {fileName}
-      </button>
     </div>
   );
 }
