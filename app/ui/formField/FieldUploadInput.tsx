@@ -63,7 +63,7 @@ export default function FieldUploadInput({
             </label>
             {/* Hidden file input */}
             <input
-              accept="images/*"
+              accept="image/*"
               className="hidden"
               {...inputProps}
               type="file"
