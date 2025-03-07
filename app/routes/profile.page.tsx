@@ -93,43 +93,46 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
         alt=""
         className="absolute w-full h-full bottom-0 -z-20 blur-xl"
       /> */}
-      <nav className="font-comfortaa backdrop-blur-sm text-sm fixed bottom-3 left-1/2 transform -translate-x-1/2">
-        <ul
-          className="flex flex-row gap-2 shadow-lg p-2 sm:p-3 text-xs sm:text-sm rounded-xl
-                     relative bg-white  bg-opacity-30 border-gray-300 border
-                     hover:bg-opacity-40 transition-all duration-300"
-        >
-          <li
-            className="px-2 py-2 rounded-lg cursor-pointer hover:bg-gray-100 hover:bg-opacity-50
-                       transition-all duration-200 active:scale-95"
+      {profile && (
+        <nav className="font-comfortaa backdrop-blur-sm text-sm fixed bottom-3 left-1/2 transform -translate-x-1/2">
+          <ul
+            className="flex flex-row gap-2 shadow-lg p-2 sm:p-3 text-xs sm:text-sm rounded-xl
+                       relative bg-white  bg-opacity-30 border-gray-300 border
+                       hover:bg-opacity-40 transition-all duration-300"
           >
-            <button
-              onClick={() => setTab("profile")}
-              type="button"
-              className="text-slate-700 font-bold hover:text-gray-800 transition-colors duration-200
-              flex items-center gap-2"
-            >
-              <BiUser /> Профиль
-            </button>
-          </li>
-          {role === "owner" && (
             <li
               className="px-2 py-2 rounded-lg cursor-pointer hover:bg-gray-100 hover:bg-opacity-50
-                       transition-all duration-200 active:scale-95"
+                         transition-all duration-200 active:scale-95"
             >
               <button
+                onClick={() => setTab("profile")}
                 type="button"
-                onClick={() => setTab("compliments")}
                 className="text-slate-700 font-bold hover:text-gray-800 transition-colors duration-200
                 flex items-center gap-2"
               >
-                <BiHeart />
-                Мои комплименты
+                <BiUser /> Профиль
               </button>
             </li>
-          )}
-        </ul>
-      </nav>
+            {role === "owner" && (
+              <li
+                className="px-2 py-2 rounded-lg cursor-pointer hover:bg-gray-100 hover:bg-opacity-50
+                         transition-all duration-200 active:scale-95"
+              >
+                <button
+                  type="button"
+                  onClick={() => setTab("compliments")}
+                  className="text-slate-700 font-bold hover:text-gray-800 transition-colors duration-200
+                  flex items-center gap-2"
+                >
+                  <BiHeart />
+                  Мои комплименты
+                </button>
+              </li>
+            )}
+          </ul>
+        </nav>
+      )}
+
       <GlassyBackground className="-z-10" intensity="medium" />
     </div>
   );

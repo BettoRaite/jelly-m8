@@ -1,20 +1,13 @@
-import { useFormContext } from "react-hook-form";
+import { useRef, useState, type ComponentProps } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import { useFormFieldContext } from "./FormFieldContext";
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type ComponentProps,
-} from "react";
+
 type Props = {
   containerClassName?: string;
   type?: "display-image" | "default";
   inputProps?: ComponentProps<"input">;
   defaultImage?: string;
 };
-import { useForm, Controller } from "react-hook-form";
-import type { h } from "node_modules/react-router/dist/development/fog-of-war-BhhVTjSZ.mjs";
 
 export default function FieldUploadInput({
   containerClassName,
