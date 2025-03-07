@@ -89,7 +89,7 @@ export default function Home() {
     >
       <audio ref={audioRef} src="/music/leateq_tokyo.mp3" />
       <span className="absolute z-10 top-32 font-caveat mx-auto py-4 flex border w-fit bg-gradient-to-r blur-xl from-blue-500 via-teal-500 to-pink-500 bg-clip-text text-8xl box-content font-extrabold text-transparent text-center select-none">
-        JellyM8
+        JellyM8 　
       </span>
       <div className="absolute z-10 top-32 flex justify-center items-center flex-col">
         <motion.h1

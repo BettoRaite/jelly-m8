@@ -15,12 +15,9 @@ export default [
     route("about", "./routes/about.page.tsx"),
     route("cards/tribute/:userId", "./routes/tribute.page.tsx"),
     route("users/:userId/profile", "./routes/profile.page.tsx"),
-    layout("./routes/userDashboard/layout.tsx", [
-      route("discovery", "./routes/userDashboard/discovery.page.tsx"),
-      route(
-        "compliments-feed",
-        "./routes/userDashboard/complimentsFeed.page.tsx"
-      ),
+    layout("./routes/explore/layout.tsx", [
+      route("discovery", "./routes/explore/discovery.page.tsx"),
+      route("compliments-feed", "./routes/explore/complimentsFeed.page.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;
