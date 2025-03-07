@@ -52,7 +52,7 @@ export const links: Route.LinksFunction = () => [
     href: "/tokyonight.jpg",
   },
   {
-    rel: "prefetch",
+    rel: "preload",
     as: "image",
     href: "/nihongoyama.jpg",
   },
