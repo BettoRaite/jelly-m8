@@ -7,8 +7,9 @@ import { ParticlesWrapper } from "@/components/ParticlesWrapper";
 import { ProfileActivationOverlay } from "@/components/ProfileActivationOverlay";
 import SearchBar from "@/components/SearchBar";
 import { SmoothCamera } from "@/components/SmoothCamera";
+import TypingTextEffect from "@/components/TypingText";
 import useProfileQuery from "@/hooks/useProfileQuery";
-import { EMOJIS } from "@/lib/constants";
+import { EMOJIS, KEY_CARDS_BTN } from "@/lib/constants";
 import type { Profile } from "@/lib/types";
 import { joinClasses } from "@/lib/utils/strings";
 import Button from "@/ui/Button";
@@ -24,7 +25,7 @@ import {
 import { AnimatePresence } from "motion/react";
 import * as motion from "motion/react-client";
 import { BlendFunction } from "postprocessing";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReactConfetti from "react-confetti";
 import { FaSearch } from "react-icons/fa";
 import { FiInfo } from "react-icons/fi";
@@ -42,6 +43,7 @@ export default function Cards() {
   const [enableEffects, setEnableEffects] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isPopoverVisible, setIsPopoverVisible] = useState(false);
+  const [hasEverToggledPopover, setHasEverToggledPopover] = useState(false);
   const {
     data: profiles,
     status,
@@ -60,7 +62,10 @@ export default function Cards() {
       return Math.random() > 0.5 ? 1 : -1;
     });
   }, []);
-
+  useEffect(() => {
+    const hasClicked = localStorage.getItem(KEY_CARDS_BTN);
+    setHasEverToggledPopover(Boolean(hasClicked));
+  }, []);
   if (status === "pending") return <HeartLoader />;
   if (status === "error")
     return (
@@ -87,6 +92,11 @@ export default function Cards() {
   }
   function handleSearch(s: string) {
     setSearchQuery(s);
+  }
+  function handleTogglePopover() {
+    setIsPopoverVisible(!isPopoverVisible);
+    localStorage.setItem(KEY_CARDS_BTN, "true");
+    setHasEverToggledPopover(true);
   }
   return (
     <main
@@ -206,11 +216,22 @@ export default function Cards() {
               </motion.div>
             )}
           </AnimatePresence>
-          <div className="flex justify-center  gap-4 items-center">
+          <div className="flex justify-center  gap-4 items-center relative">
+            {!hasEverToggledPopover && (
+              <TypingTextEffect
+                className="absolute text-white font-caveat w-60 -top-3 -left-6"
+                text="Нажми сюда 👇"
+              />
+            )}
             <Button
-              onClick={() => setIsPopoverVisible(!isPopoverVisible)}
+              onClick={handleTogglePopover}
               roundedness="rounded-full"
-              className="opacity-30 hover:opacity-100 scale-[60%] hover:scale-100 text-white text-opacity-30 hover:text-opacity-100"
+              className={joinClasses(
+                "m-[4px] opacity-100 hover:opacity-100 scale-[60%] text-lg hover:scale-100 text-white text-opacity-100 hover:text-opacity-100",
+                {
+                  "opacity-40": hasEverToggledPopover,
+                }
+              )}
             >
               <FiInfo className="md:my-2" />
             </Button>

@@ -16,8 +16,7 @@ import {
   type GroupProps,
   type Vector3,
 } from "@react-three/fiber";
-import { Outline, Select } from "@react-three/postprocessing";
-import { BlendFunction, KernelSize, Resizer } from "postprocessing";
+import { Select } from "@react-three/postprocessing";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import * as THREE from "three";
@@ -38,8 +37,7 @@ const CONFIG = {
     u_skull_render: "./heart.png",
     backPattern: "./heart.png",
     u_noise: "./noise2.png",
-    u_color:
-      "https://images.unsplash.com/photo-1597773026935-df49538167e4?w=400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nzd8fHBhdHRlcm58ZW58MHwwfDB8fHwy",
+    u_color: "./cardcolorpattern.jpeg",
     u_back_texture: "./backtexture.jpg",
   },
   dimensions: {
@@ -61,7 +59,6 @@ export function GlowingCard({ cardProps, profile, showSpecialEffects }: Props) {
     THREE.Texture
   > | null>(null);
   const cardRef = useRef<Group | null>(null);
-  const profilePicMeshRef = useRef<THREE.ShaderMaterial | null>(null);
   const [cardState, setCardState] = useState({
     hovered: false,
     flipped: false,

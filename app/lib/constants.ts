@@ -2,7 +2,7 @@ export const ERROR_MESSAGES = {
   UNEXPECTED_ERROR: "Что-то пошло не так",
   SERVER_ERROR: "Серверная ошибка",
 };
-
+export const KEY_CARDS_BTN = "KEY_CARDS_BTN";
 export const EMOJIS = [
   "😀",
   "😢",
