@@ -16,6 +16,7 @@ import { motion } from "motion/react";
 import ReactConfetti from "react-confetti";
 import { FiInfo, FiPlay } from "react-icons/fi";
 import TypingTextEffect from "@/components/TypingText";
+import { config } from "@/lib/config";
 
 export default function Home() {
   const { data: user, status, refetch } = useAuth();
@@ -225,7 +226,7 @@ export default function Home() {
           {/* Video Link */}
           {areAllProfilesActivated && (
             <Link
-              to="https://drive.google.com/file/d/1v8sNHC4vEcWHi7Y6yrYcBgCd_WVzuQpH/view?usp=drive_link" // Replace with your video link
+              to={config.video.url} // Replace with your video link
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 inline-flex items-center justify-center px-4 py-2 bg-white bg-opacity-30 hover:bg-opacity-50 text-white text-sm font-semibold rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105"

@@ -16,4 +16,7 @@ export const config = {
   server: {
     url: import.meta.env.VITE_API_BASE_URL,
   },
+  video: {
+    url: import.meta.env.VITE_VIDEO_URL,
+  },
 };
