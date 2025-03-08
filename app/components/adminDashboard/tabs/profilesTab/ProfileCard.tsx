@@ -100,7 +100,7 @@ function ProfileCard({ initialProfile }: Props) {
             </h1>
           </div>
           <StatusBadge isActive={profile.isActivated} />
-          <div className="flex items-center gap-2 absolute bottom-0 right-4 opacity-70">
+          <div className="flex items-center gap-2 absolute -bottom-6 right-4 opacity-70">
             <p className="text-slate-600">{profile.activationSecret}</p>
             <button
               type="button"

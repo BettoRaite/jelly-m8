@@ -1,7 +1,7 @@
 import { useRef, useState, type ComponentProps } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { useFormFieldContext } from "./FormFieldContext";
-
+import { useId } from "react";
 type Props = {
   containerClassName?: string;
   type?: "display-image" | "default";
@@ -26,7 +26,7 @@ export default function FieldUploadInput({
   const [imageUrl, setImageUrl] = useState(defaultImage);
   const defaultPlaceholder = "Выбери своё фото";
   const [fileName, setFileName] = useState(defaultPlaceholder);
-
+  const id = useId();
   const handleSetImage = () => {
     const file = fileInputRef.current?.files?.[0];
     if (file && type === "display-image") {
@@ -56,7 +56,7 @@ export default function FieldUploadInput({
           <div className="relative flex justify-center mt-2">
             {/* Custom file input button */}
             <label
-              htmlFor={fieldName}
+              htmlFor={`${fieldName} ${id}`}
               className="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-blue-600 transition-colors"
             >
               {fileName || defaultPlaceholder}
@@ -67,7 +67,7 @@ export default function FieldUploadInput({
               className="hidden"
               {...inputProps}
               type="file"
-              id={fieldName}
+              id={`${fieldName} ${id}`}
               ref={(e) => {
                 ref(e); // Assign the ref to the field
                 fileInputRef.current = e; // Assign the ref to your custom ref if needed
