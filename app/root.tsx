@@ -66,7 +66,7 @@ export function meta(_: Route.MetaArgs) {
   ];
 }
 
-export function Layout({ children }: { children: React.ReactNode })
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -77,7 +77,7 @@ export function Layout({ children }: { children: React.ReactNode })
       </head>
       <body className="bg-transparent font-nunito">
         {children}
-        <Analytics/>
+        <Analytics />
         <ScrollRestoration />
         <Scripts />
       </body>
