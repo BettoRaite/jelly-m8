@@ -10,6 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { Analytics } from "@vercel/analytics/react";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -65,7 +66,7 @@ export function meta(_: Route.MetaArgs) {
   ];
 }
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }: { children: React.ReactNode })
   return (
     <html lang="en">
       <head>
@@ -76,6 +77,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="bg-transparent font-nunito">
         {children}
+        <Analytics/>
         <ScrollRestoration />
         <Scripts />
       </body>
