@@ -73,7 +73,12 @@ export default function Home() {
   ];
 
   if (status === "pending" || profilesStatus === "pending") {
-    return <HeartLoader className="bg-black" />;
+    return (
+      <HeartLoader
+        className="bg-black"
+        text="Долго грузится? Скорее всего сервер заснул, нужно подождать пока он проснётся, а затем перезагрузить страничку"
+      />
+    );
   }
   const unlockedCount =
     profiles?.filter((profile) => profile.isActivated).length || 0;
