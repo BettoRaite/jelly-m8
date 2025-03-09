@@ -13,6 +13,7 @@ export const QUERY_KEYS = {
 };
 
 export const config = {
+  env: import.meta.env.ENV,
   server: {
     url: import.meta.env.VITE_API_BASE_URL,
   },

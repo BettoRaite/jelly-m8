@@ -4,12 +4,16 @@ import { Outlet } from "react-router";
 import { Toaster } from "react-hot-toast";
 import { FaExclamationCircle } from "react-icons/fa";
 import { MdInfo } from "react-icons/md";
+import Guard from "@/components/Guard";
+import type { Route } from "./+types/main.layout";
 
 export default function Layout() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <Outlet />
+        <Guard>
+          <Outlet />
+        </Guard>
         <Toaster
           toastOptions={{
             icon: <MdInfo className="text-blue-500 text-xl " />,

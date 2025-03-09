@@ -6,11 +6,12 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
+import type { ActionFunctionArgs } from "react-router";
+import { config } from "./lib/config";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -77,7 +78,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="bg-transparent font-nunito">
         {children}
-        <Analytics />
+        {config.env === "production" && <Analytics />}
         <ScrollRestoration />
         <Scripts />
       </body>
